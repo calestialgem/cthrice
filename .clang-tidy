@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-Checks: "bugprone-*,cert-*,-cert-err09-cpp.MaxSize,-cert-err61-cpp.MaxSize,-cert-dcl21-cpp,clang-*,concurrency-*,cppcoreguidelines-*,hicpp-*,-hicpp-explicit-conversions,llvm-*,-llvm-header-guard,misc-*,-misc-throw-by-value-catch-by-reference.MaxSize,-misc-non-private-member-variables-in-classes,modernize-*,performance-*,portability-*,readability-*,-readability-implicit-bool-conversion"
+Checks: "bugprone-*,-bugprone-suspicious-include,cert-*,-cert-err09-cpp.MaxSize,-cert-err61-cpp.MaxSize,-cert-dcl21-cpp,clang-*,concurrency-*,cppcoreguidelines-*,hicpp-*,-hicpp-explicit-conversions,llvm-*,-llvm-header-guard,misc-*,-misc-throw-by-value-catch-by-reference.MaxSize,-misc-non-private-member-variables-in-classes,modernize-*,performance-*,portability-*,readability-*,-readability-implicit-bool-conversion"
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 AnalyzeTemporaryDtors: false

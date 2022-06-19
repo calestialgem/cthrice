@@ -1,0 +1,3 @@
+main(str[] arg) sz {
+    return 0;
+}
