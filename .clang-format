@@ -1,0 +1,116 @@
+# SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+BasedOnStyle: LLVM
+AccessModifierOffset: 0
+AlignAfterOpenBracket: AlwaysBreak
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: Consecutive
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AlignTrailingComments: True
+AllowAllArgumentsOnNextLine: False
+AllowAllParametersOfDeclarationOnNextLine: False
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: False
+AllowShortEnumsOnASingleLine: False
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: False
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: True
+AlwaysBreakTemplateDeclarations: Yes
+AttributeMacros: []
+BinPackArguments: False
+BinPackParameters: False
+BitFieldColonSpacing: None
+BreakAfterJavaFieldAnnotations: True
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Linux
+BreakBeforeConceptDeclarations: True
+BreakBeforeTernaryOperators: True
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: True
+ColumnLimit: 80
+CompactNamespaces: False
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: True
+DeriveLineEnding: False
+DerivePointerAlignment: False
+DisableFormat: False
+EmptyLineAfterAccessModifier: Always
+EmptyLineBeforeAccessModifier: LogicalBlock
+FixNamespaceComments: True
+ForEachMacros: []
+IfMacros: []
+IncludeBlocks: Regroup
+IndentAccessModifiers: False
+IndentCaseBlocks: False
+IndentCaseLabels: True
+IndentExternBlock: NoIndent
+IndentGotoLabels: True
+IndentPPDirectives: AfterHash
+IndentRequires: False
+IndentWidth: 4
+IndentWrappedFunctionNames: False
+InsertTrailingCommas: None
+JavaImportGroups: ["gecgelcem", "java", "javax", "com", "org"]
+JavaScriptQuotes: Double
+JavaScriptWrapImports: True
+KeepEmptyLinesAtTheStartOfBlocks: False
+LambdaBodyIndentation: Signature
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+NamespaceMacros: []
+PPIndentWidth: 4
+# PackConstructorInitializers: Never
+ConstructorInitializerAllOnOneLineOrOnePerLine: False
+AllowAllConstructorInitializersOnNextLine: False
+PointerAlignment: Left
+# QualifierAlignment: Leave
+ReferenceAlignment: Pointer
+ReflowComments: True
+# RemoveBracesLLVM: True
+# SeparateDefinitionBlocks: Always
+ShortNamespaceLines: 0
+SortIncludes: CaseSensitive
+SortJavaStaticImport: Before
+SortUsingDeclarations: True
+SpaceAfterCStyleCast: False
+SpaceAfterLogicalNot: False
+SpaceAfterTemplateKeyword: False
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: True
+SpaceBeforeCaseColon: False
+SpaceBeforeCpp11BracedList: False
+SpaceBeforeCtorInitializerColon: True
+SpaceBeforeInheritanceColon: True
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: True
+SpaceBeforeSquareBrackets: False
+SpaceInEmptyBlock: False
+SpaceInEmptyParentheses: False
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: Never
+SpacesInCStyleCastParentheses: False
+SpacesInConditionalStatement: False
+SpacesInContainerLiterals: False
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
+SpacesInParentheses: False
+SpacesInSquareBrackets: False
+Standard: c++20
+StatementAttributeLikeMacros: []
+StatementMacros: []
+TabWidth: 4
+TypenameMacros: []
+UseCRLF: False
+UseTab: Never
+WhitespaceSensitiveMacros: []
