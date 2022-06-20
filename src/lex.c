@@ -52,18 +52,6 @@ cthr_lex_create(const enum tknt typ, const struct str val, const struct str src)
     };
 }
 
-enum tknt cthr_lex_punc(const struct str val)
-{
-    const struct str puncs = cthr_str_c(";()[]{}");
-    const uint8_t*   pos   = cthr_str_chr_first(puncs, *val.beg);
-
-    if (pos == puncs.end) {
-        return TKN_EOF;
-    }
-
-    return TKN_SEMCLN + (pos - puncs.beg);
-}
-
 bool cthr_lex_idchr(const uint8_t chr)
 {
     return chr == '_' || ('a' <= chr && 'z' >= chr) ||
@@ -72,47 +60,51 @@ bool cthr_lex_idchr(const uint8_t chr)
 
 struct lex cthr_lex(const struct str src)
 {
-    const struct str val = cthr_lex_val(src);
-    size_t           len = cthr_str_length(val);
+    const struct str word = cthr_lex_val(src);
 
-    if (len == 0) {
-        return cthr_lex_create(TKN_EOF, val, src);
+    if (!cthr_str_length(word)) {
+        return cthr_lex_create(TKN_EOF, word, src);
     }
 
-    if (len == 1) {
-        enum tknt punc = cthr_lex_punc(val);
-        if (punc != TKN_EOF) {
-            return cthr_lex_create(punc, val, src);
-        }
-        if (cthr_str_digit(*val.beg)) {
-            return cthr_lex_create(TKN_INTEGR, val, src);
-        }
-        if (cthr_lex_idchr(*val.beg)) {
-            return cthr_lex_create(TKN_ID, val, src);
-        }
-        cthr_err("Unknown token!");
-    }
+    { // Check for punctuation.
+        const struct str puncs = cthr_str_c(";()[]{}");
+        const uint8_t*   pos   = cthr_str_chr_first(puncs, *word.beg);
 
-    if (cthr_str_digit(*val.beg)) {
-        for (const uint8_t* i = val.beg + 1; i < val.end; i++) {
-            if (!cthr_str_digit(*i)) {
-                cthr_err("Nondigit character in a number!");
-            }
-        }
-        return cthr_lex_create(TKN_INTEGR, val, src);
-    }
-
-    if (!cthr_lex_idchr(*val.beg)) {
-        cthr_err("Invalid character at the start of an identifier!");
-    }
-
-    for (const uint8_t* i = val.beg + 1; i < val.end; i++) {
-        if (!cthr_str_digit(*i) && !cthr_lex_idchr(*i)) {
-            cthr_err("Invalid character in an identifier!");
+        if (pos < puncs.end) {
+            return cthr_lex_create(
+                TKN_SEMCLN + (pos - puncs.beg),
+                cthr_str_sub(word, 0, 1),
+                src);
         }
     }
 
-    return cthr_lex_create(TKN_ID, val, src);
+    // Check for number.
+    if (cthr_str_digit(*word.beg)) {
+        const uint8_t* end = word.beg + 1;
+        while (end < word.end && cthr_str_digit(*end)) {
+            end++;
+        }
+        return cthr_lex_create(
+            TKN_INTEGR,
+            (struct str){.beg = word.beg, .end = end},
+            src);
+    }
+
+    // Check for identifier.
+    if (cthr_lex_idchr(*word.beg)) {
+        const uint8_t* end = word.beg + 1;
+        while (end < word.end &&
+               (cthr_lex_idchr(*end) || cthr_str_digit(*end))) {
+            end++;
+        }
+        return cthr_lex_create(
+            TKN_INTEGR,
+            (struct str){.beg = word.beg, .end = end},
+            src);
+    }
+
+    printf("DEBUG: Lexed word: %.*s\n", (int)cthr_str_length(word), word.beg);
+    cthr_err("Unkown character!");
 }
 
 #endif // CTHR_LEXER
