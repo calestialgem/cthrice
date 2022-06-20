@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef CTHR_LEXER
-#define CTHR_LEXER
+#ifndef CTHR_LEX
+#define CTHR_LEX
 
 #include "err.c"
 #include "str.c"
@@ -13,10 +13,10 @@
 
 enum tknt {
     TKN_SEMCLN,
-    TKN_OPARAN,
-    TKN_CPARAN,
     TKN_OBRCKT,
     TKN_CBRCKT,
+    TKN_OSBRKT,
+    TKN_CSBRKT,
     TKN_OCBRKT,
     TKN_CCBRKT,
     TKN_INTEGR,
@@ -32,14 +32,14 @@ const char* cthr_lex_tknt_name(const enum tknt typ)
     switch (typ) {
         case TKN_SEMCLN:
             return "semicolon";
-        case TKN_OPARAN:
-            return "opening-paranthesis";
-        case TKN_CPARAN:
-            return "closing-paranthesis";
         case TKN_OBRCKT:
             return "opening-bracket";
         case TKN_CBRCKT:
             return "closing-bracket";
+        case TKN_OSBRKT:
+            return "opening-square-bracket";
+        case TKN_CSBRKT:
+            return "closing-square-bracket";
         case TKN_OCBRKT:
             return "opening-curly-bracket";
         case TKN_CCBRKT:
@@ -178,20 +178,29 @@ struct lex cthr_lex(const struct str src)
         return cthr_lex_number(word, src);
     }
 
-    // Check for identifier.
+    // Check for identifier or keyword.
     if (cthr_lex_idchr(*word.beg)) {
         const uint8_t* end = word.beg + 1;
         while (end < word.end && cthr_lex_idchr(*end) || cthr_str_digit(*end)) {
             end++;
         }
-        return cthr_lex_create(
-            TKN_ID,
-            (struct str){.beg = word.beg, .end = end},
-            src);
+        const struct str val = {.beg = word.beg, .end = end};
+#define CTHR_LEX_KEYWORD_COUNT 3
+        const struct str keywords[CTHR_LEX_KEYWORD_COUNT] = {
+            cthr_str_c("sz"),
+            cthr_str_c("str"),
+            cthr_str_c("return"),
+        };
+        for (size_t i = 0; i < CTHR_LEX_KEYWORD_COUNT; i++) {
+            if (cthr_str_equals(keywords[i], val)) {
+                return cthr_lex_create(TKN_KSZ + i, val, src);
+            }
+        }
+        return cthr_lex_create(TKN_ID, val, src);
     }
 
     printf("DEBUG: Lexed word: %.*s\n", (int)cthr_str_length(word), word.beg);
     cthr_err("Unkown character!");
 }
 
-#endif // CTHR_LEXER
+#endif // CTHR_LEX

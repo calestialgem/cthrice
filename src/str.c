@@ -76,6 +76,20 @@ size_t cthr_str_length(const struct str str)
     return str.end - str.beg;
 }
 
+bool cthr_str_equals(const struct str lhs, const struct str rhs)
+{
+    size_t len = cthr_str_length(lhs);
+    if (len != cthr_str_length(rhs)) {
+        return false;
+    }
+    for (size_t i = 0; i < len; i++) {
+        if (*(lhs.beg + i) != *(rhs.beg + i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 struct str cthr_str_trim(struct str str)
 {
     while (str.beg < str.end && cthr_str_whitespace(*str.beg)) {
