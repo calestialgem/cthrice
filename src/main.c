@@ -14,9 +14,9 @@ int main(int const argc, const char* const* argv)
     }
 
     const size_t CAPACITY = 1024;
-    struct buf   b        = cthr_buf_create(CAPACITY);
-    b                     = cthr_buf_append_file(b, "res/main.thr");
-    printf("%.*s\n", (int)cthr_buf_size(b), b.beg);
+    struct buf   buf      = cthr_buf_create(CAPACITY);
+    buf                   = cthr_buf_append_file(buf, "res/main.thr");
+    printf("%.*s\n", (int)cthr_buf_size(buf), buf.beg);
 
     return EXIT_SUCCESS;
 }

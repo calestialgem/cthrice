@@ -4,7 +4,8 @@
 #ifndef CTHR_BUF
 #define CTHR_BUF
 
-#include <err.h>
+#include "err.c"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,64 +18,68 @@ struct buf {
 
 struct buf cthr_buf_create(const size_t n)
 {
-    uint8_t* a = malloc(n);
-    if (!a) {
-        err(EXIT_FAILURE, "Could not allocate buffer!");
+    uint8_t* arr = malloc(n);
+    if (!arr) {
+        cthr_err("Could not allocate buffer!");
     }
-    return (struct buf){.beg = a, .end = a, .lst = a + n};
+    return (struct buf){.beg = arr, .end = arr, .lst = arr + n};
 }
 
-void cthr_buf_destroy(const struct buf b)
+void cthr_buf_destroy(const struct buf buf)
 {
-    free(b.beg);
+    free(buf.beg);
 }
 
-size_t cthr_buf_size(const struct buf b)
+size_t cthr_buf_size(const struct buf buf)
 {
-    return b.end - b.beg;
+    return buf.end - buf.beg;
 }
 
-size_t cthr_buf_capacity(const struct buf b)
+size_t cthr_buf_capacity(const struct buf buf)
 {
-    return b.lst - b.beg;
+    return buf.lst - buf.beg;
 }
 
-size_t cthr_buf_space(const struct buf b)
+size_t cthr_buf_space(const struct buf buf)
 {
-    return b.lst - b.end;
+    return buf.lst - buf.end;
 }
 
-struct buf cthr_buf_append_char(struct buf b, const uint8_t c)
+struct buf cthr_buf_append_char(struct buf buf, const uint8_t chr)
 {
-    if (cthr_buf_space(b) <= 0) {
-        const size_t capacity = cthr_buf_capacity(b);
-        uint8_t*     a        = realloc(b.beg, capacity * 2);
-        if (!a) {
-            err(EXIT_FAILURE, "Could not grow buffer!");
+    if (cthr_buf_space(buf) <= 0) {
+        const size_t capacity = cthr_buf_capacity(buf);
+        uint8_t*     arr      = realloc(buf.beg, capacity * 2);
+        if (!arr) {
+            cthr_err("Could not grow buffer!");
         }
-        b.lst = a + capacity;
+        buf.lst = arr + capacity;
     }
 
-    *(b.end) = c;
-    b.end++;
-    return b;
+    *(buf.end) = chr;
+    buf.end++;
+    return buf;
 }
 
-struct buf cthr_buf_append_file(struct buf b, const char* const name)
+struct buf cthr_buf_append_file(struct buf buf, const char* const name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {
-        err(EXIT_FAILURE, "Cannot open file %s!", name);
+        cthr_err("Could not open file!");
     }
 
-    int c = fgetc(file);
+    int chr = fgetc(file);
     do {
-        b = cthr_buf_append_char(b, c);
-        c = fgetc(file);
-    } while (c != EOF);
+        buf = cthr_buf_append_char(buf, chr);
+        chr = fgetc(file);
+    } while (chr != EOF);
+
+    if (!feof(file)) {
+        cthr_err("Problem while reading!");
+    }
 
     fclose(file);
-    return b;
+    return buf;
 }
 
 #endif // CTHR_BUF
