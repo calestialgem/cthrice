@@ -73,7 +73,6 @@ bool cthr_lex_idchr(const uint8_t chr)
 struct lex cthr_lex(const struct str src)
 {
     const struct str val = cthr_lex_val(src);
-    printf("DEBUG: LEXER: %.*s", (int)cthr_str_length(val), val.beg);
     size_t           len = cthr_str_length(val);
 
     if (len == 0) {
