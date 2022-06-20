@@ -69,10 +69,10 @@ struct buf cthr_buf_append_file(struct buf buf, const char* const name)
     }
 
     int chr = fgetc(file);
-    do {
+    while (chr != EOF) {
         buf = cthr_buf_append_char(buf, chr);
         chr = fgetc(file);
-    } while (chr != EOF);
+    }
 
     if (!feof(file)) {
         cthr_err("Problem while reading!");
