@@ -25,9 +25,10 @@ struct buf cthr_buf_create(const size_t n)
     return (struct buf){.beg = arr, .end = arr, .lst = arr + n};
 }
 
-void cthr_buf_destroy(const struct buf buf)
+struct buf cthr_buf_destroy(const struct buf buf)
 {
     free(buf.beg);
+    return (struct buf){.beg = 0, .end = 0, .lst = 0};
 }
 
 size_t cthr_buf_size(const struct buf buf)
@@ -43,6 +44,12 @@ size_t cthr_buf_capacity(const struct buf buf)
 size_t cthr_buf_space(const struct buf buf)
 {
     return buf.lst - buf.end;
+}
+
+struct buf cthr_buf_clear(struct buf buf)
+{
+    buf.end = buf.beg;
+    return buf;
 }
 
 struct buf cthr_buf_append_char(struct buf buf, const uint8_t chr)

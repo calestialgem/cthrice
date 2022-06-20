@@ -10,22 +10,25 @@
 
 int main(int const argc, const char* const* argv)
 {
-    printf("Running Thrice Transpiler to C with arguments:\n");
-    for (int i = 0; i < argc; i++) {
-        printf("[%d] %s\n", i, argv[i]);
+    if (argc < 2) {
+        printf("Provide a Thrice file!");
     }
-
     const size_t CAPACITY = 1024;
     struct buf   buf      = cthr_buf_create(CAPACITY);
-    buf                   = cthr_buf_append_file(buf, "res/main.thr");
 
-    struct str src = cthr_str_view(buf);
-    struct lex lex = cthr_lex(src);
+    for (int i = 1; i < argc; i++) {
+        buf = cthr_buf_clear(buf);
+        buf = cthr_buf_append_file(buf, argv[i]);
 
-    while (lex.tkn.typ != TKN_EOF) {
-        cthr_lex_print_tkn(lex.tkn);
-        lex = cthr_lex(lex.src);
+        struct str src = cthr_str_view(buf);
+        struct lex lex = cthr_lex(src);
+
+        while (lex.tkn.typ != TKN_EOF) {
+            cthr_lex_print_tkn(lex.tkn);
+            lex = cthr_lex(lex.src);
+        }
     }
 
+    cthr_buf_destroy(buf);
     return EXIT_SUCCESS;
 }
