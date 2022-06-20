@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 bool cthr_str_whitespace(const uint8_t chr)
@@ -43,7 +44,7 @@ struct str cthr_str_view(const struct buf buf)
 const uint8_t* cthr_str_chr_first(const struct str str, const uint8_t chr)
 {
     const uint8_t* pos = str.beg;
-    while (pos < str.end || *pos != chr) {
+    while (pos < str.end && *pos != chr) {
         pos++;
     }
     return pos;
