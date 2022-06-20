@@ -17,9 +17,30 @@ bool cthr_str_whitespace(const uint8_t chr)
     return chr == '\n' || chr == '\r' || chr == '\t' || chr == ' ';
 }
 
+bool cthr_str_alpha(const uint8_t chr)
+{
+    return ('A' <= chr && 'Z' >= chr) || ('a' <= chr && 'z' >= chr);
+}
+
 bool cthr_str_digit(const uint8_t chr)
 {
     return '0' <= chr && '9' >= chr;
+}
+
+bool cthr_str_digitb(const uint8_t chr)
+{
+    return '0' <= chr && '1' >= chr;
+}
+
+bool cthr_str_digito(const uint8_t chr)
+{
+    return '0' <= chr && '7' >= chr;
+}
+
+bool cthr_str_digitx(const uint8_t chr)
+{
+    return ('0' <= chr && '9' >= chr) || ('A' <= chr && 'F' >= chr) ||
+           ('a' <= chr && 'f' >= chr);
 }
 
 struct str {

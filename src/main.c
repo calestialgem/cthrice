@@ -23,7 +23,7 @@ int main(int const argc, const char* const* argv)
     struct lex lex = cthr_lex(src);
 
     while (lex.tkn.typ != TKN_EOF) {
-        printf("%.*s\n", (int)cthr_str_length(lex.tkn.val), lex.tkn.val.beg);
+        cthr_lex_print_tkn(lex.tkn);
         lex = cthr_lex(lex.src);
     }
 
