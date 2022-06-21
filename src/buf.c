@@ -69,7 +69,7 @@ struct buf cthr_buf_grow(struct buf buf, size_t cap)
     return buf;
 }
 
-struct buf cthr_buf_append_char(struct buf buf, const uint8_t chr)
+struct buf cthr_buf_u8(struct buf buf, const uint8_t chr)
 {
     if (cthr_buf_space(buf) < 1) {
         buf = cthr_buf_grow(buf, 2 * cthr_buf_capacity(buf));
@@ -80,7 +80,25 @@ struct buf cthr_buf_append_char(struct buf buf, const uint8_t chr)
     return buf;
 }
 
-struct buf cthr_buf_append(struct buf des, struct str src)
+struct buf cthr_buf_u64(struct buf buf, uint64_t u64)
+{
+    const uint64_t base  = 10;
+    uint64_t       place = base;
+
+    while (place != 1) {
+        if (u64 > place) {
+            place *= base;
+            break;
+        }
+        place /= base;
+        buf = cthr_buf_u8(buf, '0' + u64 / place);
+        u64 %= place;
+    }
+
+    return buf;
+}
+
+struct buf cthr_buf_str(struct buf des, struct str src)
 {
     const size_t spc = cthr_buf_space(des);
     const size_t len = cthr_str_length(src);
@@ -92,7 +110,7 @@ struct buf cthr_buf_append(struct buf des, struct str src)
     return des;
 }
 
-struct buf cthr_buf_append_file(struct buf buf, const char* const name)
+struct buf cthr_buf_file(struct buf buf, const char* const name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {

@@ -70,8 +70,21 @@ void cthr_lex_print_tkn(const struct tkn tkn)
 {
     printf("%s", cthr_lex_tknt_name(tkn.typ));
     switch (tkn.typ) {
+        case TKN_SEMCLN:
+        case TKN_OBRCKT:
+        case TKN_CBRCKT:
+        case TKN_OSBRKT:
+        case TKN_CSBRKT:
+        case TKN_OCBRKT:
+        case TKN_CCBRKT:
+        case TKN_KSZ:
+        case TKN_KSTR:
+        case TKN_KRETRN:
+        case TKN_EOF:
+            break;
         case TKN_INTEGR:
         case TKN_ID:
+        default:
             printf(" {%.*s}", (int)cthr_str_length(tkn.val), tkn.val.beg);
     }
     printf("\n");
@@ -181,7 +194,8 @@ struct lex cthr_lex(const struct str src)
     // Check for identifier or keyword.
     if (cthr_lex_idchr(*word.beg)) {
         const uint8_t* end = word.beg + 1;
-        while (end < word.end && cthr_lex_idchr(*end) || cthr_str_digit(*end)) {
+        while (end < word.end &&
+               (cthr_lex_idchr(*end) || cthr_str_digit(*end))) {
             end++;
         }
         const struct str val = {.beg = word.beg, .end = end};
@@ -199,8 +213,8 @@ struct lex cthr_lex(const struct str src)
         return cthr_lex_create(TKN_ID, val, src);
     }
 
-    printf("DEBUG: Lexed word: %.*s\n", (int)cthr_str_length(word), word.beg);
-    cthr_err("Unkown character!");
+    const struct str val = cthr_str_sub(word, 0, 1);
+    return cthr_lex_create(-1, val, src);
 }
 
 #endif // CTHR_LEX

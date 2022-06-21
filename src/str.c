@@ -116,12 +116,12 @@ struct str cthr_str_skip(struct str str, const size_t amt)
     return str;
 }
 
-uint32_t cthr_str_u32(struct str str)
+uint64_t cthr_str_u64(struct str str)
 {
-    uint32_t res = 0;
+    uint64_t res = 0;
 
     for (const uint8_t* i = str.beg; i < str.end; i++) {
-        const uint32_t base = 10;
+        const uint64_t base = 10;
         res *= base;
         res += *i - '0';
     }

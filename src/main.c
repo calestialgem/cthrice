@@ -18,7 +18,7 @@ int main(int const argc, const char* const* argv)
 
     for (int i = 1; i < argc; i++) {
         buf = cthr_buf_clear(buf);
-        buf = cthr_buf_append_file(buf, argv[i]);
+        buf = cthr_buf_file(buf, argv[i]);
 
         struct str src = cthr_buf_view(buf);
         struct lex lex = cthr_lex(src);
