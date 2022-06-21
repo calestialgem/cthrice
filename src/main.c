@@ -20,7 +20,7 @@ int main(int const argc, const char* const* argv)
         buf = cthr_buf_clear(buf);
         buf = cthr_buf_append_file(buf, argv[i]);
 
-        struct str src = cthr_str_view(buf);
+        struct str src = cthr_buf_view(buf);
         struct lex lex = cthr_lex(src);
 
         while (lex.tkn.typ != TKN_EOF) {

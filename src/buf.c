@@ -5,6 +5,7 @@
 #define CTHR_BUF
 
 #include "err.c"
+#include "str.c"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -47,6 +48,11 @@ size_t cthr_buf_space(const struct buf buf)
     return buf.lst - buf.end;
 }
 
+struct str cthr_buf_view(struct buf buf)
+{
+    return (struct str){.beg = buf.beg, .end = buf.end};
+}
+
 struct buf cthr_buf_clear(struct buf buf)
 {
     buf.end = buf.beg;
@@ -74,10 +80,10 @@ struct buf cthr_buf_append_char(struct buf buf, const uint8_t chr)
     return buf;
 }
 
-struct buf cthr_buf_append(struct buf des, struct buf src)
+struct buf cthr_buf_append(struct buf des, struct str src)
 {
     const size_t spc = cthr_buf_space(des);
-    const size_t len = cthr_buf_size(src);
+    const size_t len = cthr_str_length(src);
     if (spc < len) {
         des = cthr_buf_grow(des, len - spc);
     }

@@ -4,8 +4,6 @@
 #ifndef CTHR_STR
 #define CTHR_STR
 
-#include "buf.c"
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -55,11 +53,6 @@ struct str cthr_str_c(const char* cstr)
         str.end++;
     }
     return str;
-}
-
-struct str cthr_str_view(const struct buf buf)
-{
-    return (struct str){.beg = buf.beg, .end = buf.end};
 }
 
 const uint8_t* cthr_str_chr_first(const struct str str, const uint8_t chr)
@@ -121,6 +114,19 @@ struct str cthr_str_skip(struct str str, const size_t amt)
 {
     str.beg += amt;
     return str;
+}
+
+uint32_t cthr_str_u32(struct str str)
+{
+    uint32_t res = 0;
+
+    for (const uint8_t* i = str.beg; i < str.end; i++) {
+        const uint32_t base = 10;
+        res *= base;
+        res += *i - '0';
+    }
+
+    return res;
 }
 
 #endif // CTHR_STR
