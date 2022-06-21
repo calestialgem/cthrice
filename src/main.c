@@ -8,27 +8,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int const argc, const char* const* argv)
+int main(int const argumentCount, const char* const* argumentValues)
 {
-    if (argc < 2) {
+    if (argumentCount < 2) {
         printf("Provide a Thrice file!");
     }
     const size_t CAPACITY = 1024;
-    struct buf   buf      = cthr_buf_create(CAPACITY);
+    struct buf   buffer   = thriceBufferCreate(CAPACITY);
 
-    for (int i = 1; i < argc; i++) {
-        buf = cthr_buf_clear(buf);
-        buf = cthr_buf_file(buf, argv[i]);
+    for (int i = 1; i < argumentCount; i++) {
+        buffer = thriceBufferClear(buffer);
+        buffer = thriceBufferAppendFile(buffer, argumentValues[i]);
 
-        struct str src = cthr_buf_view(buf);
-        struct lex lex = cthr_lex(src);
+        struct str src = thriceBufferView(buffer);
+        struct lex lex = thriceLex(src);
 
-        while (lex.tkn.typ != TKN_EOF) {
-            cthr_lex_print_tkn(lex.tkn);
-            lex = cthr_lex(lex.src);
+        while (lex.tkn.typ != THRICE_TOKEN_EOF) {
+            thriceTokenPrint(lex.tkn);
+            lex = thriceLex(lex.src);
         }
     }
 
-    cthr_buf_destroy(buf);
+    thriceBufferDestroy(buffer);
     return EXIT_SUCCESS;
 }

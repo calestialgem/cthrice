@@ -1,21 +1,22 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef CTHR_ERR
-#define CTHR_ERR
+#ifndef THRICE_ERROR
+#define THRICE_ERROR
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define CTHR_ERR_ALLOC 2
+#define THRICE_ERROR_ALLOC 2
 
-void cthr_alloc_err() {
+void thriceErrorAllocation(void)
+{
     fprintf(stderr, "ERROR: Could not allocate memory!\n");
-    exit(CTHR_ERR_ALLOC);
+    exit(THRICE_ERROR_ALLOC);
 }
 
-void cthr_err(const char* msg)
+void thriceError(const char* msg)
 {
     static bool once = false;
     if (once) {
@@ -27,4 +28,4 @@ void cthr_err(const char* msg)
     }
 }
 
-#endif // CTHR_ERR
+#endif // THRICE_ERROR

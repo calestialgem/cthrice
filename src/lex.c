@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef CTHR_LEX
-#define CTHR_LEX
+#ifndef THRICE_LEXER
+#define THRICE_LEXER
 
 #include "err.c"
 #include "str.c"
@@ -12,49 +12,49 @@
 #include <stdio.h>
 
 enum tknt {
-    TKN_SEMCLN,
-    TKN_OBRCKT,
-    TKN_CBRCKT,
-    TKN_OSBRKT,
-    TKN_CSBRKT,
-    TKN_OCBRKT,
-    TKN_CCBRKT,
-    TKN_INTEGR,
-    TKN_KSZ,
-    TKN_KSTR,
-    TKN_KRETRN,
-    TKN_ID,
-    TKN_EOF
+    THRICE_TOKEN_SEMCLN,
+    THRICE_TOKEN_OBRCKT,
+    THRICE_TOKEN_CBRCKT,
+    THRICE_TOKEN_OSBRKT,
+    THRICE_TOKEN_CSBRKT,
+    THRICE_TOKEN_OCBRKT,
+    THRICE_TOKEN_CCBRKT,
+    THRICE_TOKEN_INTEGR,
+    THRICE_TOKEN_KSZ,
+    THRICE_TOKEN_KSTR,
+    THRICE_TOKEN_KRETRN,
+    THRICE_TOKEN_ID,
+    THRICE_TOKEN_EOF
 };
 
-const char* cthr_lex_tknt_name(const enum tknt typ)
+const char* thriceTokenName(const enum tknt typ)
 {
     switch (typ) {
-        case TKN_SEMCLN:
+        case THRICE_TOKEN_SEMCLN:
             return "semicolon";
-        case TKN_OBRCKT:
+        case THRICE_TOKEN_OBRCKT:
             return "opening-bracket";
-        case TKN_CBRCKT:
+        case THRICE_TOKEN_CBRCKT:
             return "closing-bracket";
-        case TKN_OSBRKT:
+        case THRICE_TOKEN_OSBRKT:
             return "opening-square-bracket";
-        case TKN_CSBRKT:
+        case THRICE_TOKEN_CSBRKT:
             return "closing-square-bracket";
-        case TKN_OCBRKT:
+        case THRICE_TOKEN_OCBRKT:
             return "opening-curly-bracket";
-        case TKN_CCBRKT:
+        case THRICE_TOKEN_CCBRKT:
             return "closing-curly-bracket";
-        case TKN_INTEGR:
+        case THRICE_TOKEN_INTEGR:
             return "integer";
-        case TKN_KSZ:
+        case THRICE_TOKEN_KSZ:
             return "sz keyword";
-        case TKN_KSTR:
+        case THRICE_TOKEN_KSTR:
             return "str keyword";
-        case TKN_KRETRN:
+        case THRICE_TOKEN_KRETRN:
             return "return keyword";
-        case TKN_ID:
+        case THRICE_TOKEN_ID:
             return "identifier";
-        case TKN_EOF:
+        case THRICE_TOKEN_EOF:
             return "end-of-file";
         default:
             return "unkown-token";
@@ -66,26 +66,26 @@ struct tkn {
     struct str val;
 };
 
-void cthr_lex_print_tkn(const struct tkn tkn)
+void thriceTokenPrint(const struct tkn tkn)
 {
-    printf("%s", cthr_lex_tknt_name(tkn.typ));
+    printf("%s", thriceTokenName(tkn.typ));
     switch (tkn.typ) {
-        case TKN_SEMCLN:
-        case TKN_OBRCKT:
-        case TKN_CBRCKT:
-        case TKN_OSBRKT:
-        case TKN_CSBRKT:
-        case TKN_OCBRKT:
-        case TKN_CCBRKT:
-        case TKN_KSZ:
-        case TKN_KSTR:
-        case TKN_KRETRN:
-        case TKN_EOF:
+        case THRICE_TOKEN_SEMCLN:
+        case THRICE_TOKEN_OBRCKT:
+        case THRICE_TOKEN_CBRCKT:
+        case THRICE_TOKEN_OSBRKT:
+        case THRICE_TOKEN_CSBRKT:
+        case THRICE_TOKEN_OCBRKT:
+        case THRICE_TOKEN_CCBRKT:
+        case THRICE_TOKEN_KSZ:
+        case THRICE_TOKEN_KSTR:
+        case THRICE_TOKEN_KRETRN:
+        case THRICE_TOKEN_EOF:
             break;
-        case TKN_INTEGR:
-        case TKN_ID:
+        case THRICE_TOKEN_INTEGR:
+        case THRICE_TOKEN_ID:
         default:
-            printf(" {%.*s}", (int)cthr_str_length(tkn.val), tkn.val.beg);
+            printf(" {%.*s}", (int)thriceStringLength(tkn.val), tkn.val.beg);
     }
     printf("\n");
 }
@@ -95,14 +95,16 @@ struct lex {
     struct str src;
 };
 
-struct str cthr_lex_val(const struct str src)
+struct str thriceLexerWord(const struct str src)
 {
-    const struct str trm = cthr_str_trim(src);
-    return cthr_str_word(trm);
+    const struct str trm = thriceStringTrim(src);
+    return thriceStringFirstWord(trm);
 }
 
-struct lex
-cthr_lex_create(const enum tknt typ, const struct str val, const struct str src)
+struct lex thriceLexerCreate(
+    const enum tknt  typ,
+    const struct str val,
+    const struct str src)
 {
     return (struct lex){
         .tkn = {    .typ = typ,     .val = val},
@@ -110,39 +112,39 @@ cthr_lex_create(const enum tknt typ, const struct str val, const struct str src)
     };
 }
 
-struct lex cthr_lex_number(const struct str word, const struct str src)
+struct lex thriceLexerNumber(const struct str word, const struct str src)
 {
-    const size_t len = cthr_str_length(word);
+    const size_t len = thriceStringLength(word);
 
     if (len == 1) {
-        return cthr_lex_create(TKN_INTEGR, word, src);
+        return thriceLexerCreate(THRICE_TOKEN_INTEGR, word, src);
     }
 
-    bool (*digit)(uint8_t) = &cthr_str_digit;
+    bool (*digit)(uint8_t) = &thriceDigit;
     const uint8_t* end     = word.beg + 1;
 
     if ('0' == *word.beg) {
         switch (*end) {
             case 'b':
-                digit = &cthr_str_digitb;
+                digit = &thriceDigitBin;
                 break;
             case 'o':
-                digit = &cthr_str_digito;
+                digit = &thriceDigitOct;
                 break;
             case 'x':
-                digit = &cthr_str_digitx;
+                digit = &thriceDigitHex;
                 break;
             case '_':
                 break;
             default:
-                return cthr_lex_create(
-                    TKN_INTEGR,
-                    cthr_str_sub(word, 0, 1),
+                return thriceLexerCreate(
+                    THRICE_TOKEN_INTEGR,
+                    thriceStringPart(word, 0, 1),
                     src);
         }
 
         if (++end >= word.end) {
-            cthr_err("Number ended after the base indicator!");
+            thriceError("Number ended after the base indicator!");
         }
     }
 
@@ -155,66 +157,66 @@ struct lex cthr_lex_number(const struct str word, const struct str src)
         end--;
     }
 
-    return cthr_lex_create(
-        TKN_INTEGR,
+    return thriceLexerCreate(
+        THRICE_TOKEN_INTEGR,
         (struct str){.beg = word.beg, .end = end},
         src);
 }
 
-bool cthr_lex_idchr(const uint8_t chr)
+bool thriceLexerIdChr(const uint8_t chr)
 {
-    return chr == '_' || cthr_str_alpha(chr);
+    return chr == '_' || thriceLetter(chr);
 }
 
-struct lex cthr_lex(const struct str src)
+struct lex thriceLex(const struct str src)
 {
-    const struct str word = cthr_lex_val(src);
+    const struct str word = thriceLexerWord(src);
 
-    if (!cthr_str_length(word)) {
-        return cthr_lex_create(TKN_EOF, word, src);
+    if (!thriceStringLength(word)) {
+        return thriceLexerCreate(THRICE_TOKEN_EOF, word, src);
     }
 
     { // Check for punctuation.
-        const struct str puncs = cthr_str_c(";()[]{}");
-        const uint8_t*   pos   = cthr_str_chr_first(puncs, *word.beg);
+        const struct str puncs = thriceStringStatic(";()[]{}");
+        const uint8_t*   pos   = thriceStringFirstPosChr(puncs, *word.beg);
 
         if (pos < puncs.end) {
-            return cthr_lex_create(
-                TKN_SEMCLN + (pos - puncs.beg),
-                cthr_str_sub(word, 0, 1),
+            return thriceLexerCreate(
+                THRICE_TOKEN_SEMCLN + (pos - puncs.beg),
+                thriceStringPart(word, 0, 1),
                 src);
         }
     }
 
     // Check for number.
-    if (cthr_str_digit(*word.beg)) {
-        return cthr_lex_number(word, src);
+    if (thriceDigit(*word.beg)) {
+        return thriceLexerNumber(word, src);
     }
 
     // Check for identifier or keyword.
-    if (cthr_lex_idchr(*word.beg)) {
+    if (thriceLexerIdChr(*word.beg)) {
         const uint8_t* end = word.beg + 1;
         while (end < word.end &&
-               (cthr_lex_idchr(*end) || cthr_str_digit(*end))) {
+               (thriceLexerIdChr(*end) || thriceDigit(*end))) {
             end++;
         }
         const struct str val = {.beg = word.beg, .end = end};
-#define CTHR_LEX_KEYWORD_COUNT 3
-        const struct str keywords[CTHR_LEX_KEYWORD_COUNT] = {
-            cthr_str_c("sz"),
-            cthr_str_c("str"),
-            cthr_str_c("return"),
+#define THRICE_LEXER_KEYWORD_COUNT 3
+        const struct str keywords[THRICE_LEXER_KEYWORD_COUNT] = {
+            thriceStringStatic("sz"),
+            thriceStringStatic("str"),
+            thriceStringStatic("return"),
         };
-        for (size_t i = 0; i < CTHR_LEX_KEYWORD_COUNT; i++) {
-            if (cthr_str_equals(keywords[i], val)) {
-                return cthr_lex_create(TKN_KSZ + i, val, src);
+        for (size_t i = 0; i < THRICE_LEXER_KEYWORD_COUNT; i++) {
+            if (thriceStringEquals(keywords[i], val)) {
+                return thriceLexerCreate(THRICE_TOKEN_KSZ + i, val, src);
             }
         }
-        return cthr_lex_create(TKN_ID, val, src);
+        return thriceLexerCreate(THRICE_TOKEN_ID, val, src);
     }
 
-    const struct str val = cthr_str_sub(word, 0, 1);
-    return cthr_lex_create(-1, val, src);
+    const struct str val = thriceStringPart(word, 0, 1);
+    return thriceLexerCreate(-1, val, src);
 }
 
-#endif // CTHR_LEX
+#endif // THRICE_LEXER

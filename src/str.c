@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef CTHR_STR
-#define CTHR_STR
+#ifndef THRICE_STRING
+#define THRICE_STRING
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -10,32 +10,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-bool cthr_str_whitespace(const uint8_t chr)
+bool thriceWhitespace(const uint8_t chr)
 {
     return chr == '\n' || chr == '\r' || chr == '\t' || chr == ' ';
 }
 
-bool cthr_str_alpha(const uint8_t chr)
+bool thriceLetter(const uint8_t chr)
 {
     return ('A' <= chr && 'Z' >= chr) || ('a' <= chr && 'z' >= chr);
 }
 
-bool cthr_str_digit(const uint8_t chr)
+bool thriceDigit(const uint8_t chr)
 {
     return '0' <= chr && '9' >= chr;
 }
 
-bool cthr_str_digitb(const uint8_t chr)
+bool thriceDigitBin(const uint8_t chr)
 {
     return '0' <= chr && '1' >= chr;
 }
 
-bool cthr_str_digito(const uint8_t chr)
+bool thriceDigitOct(const uint8_t chr)
 {
     return '0' <= chr && '7' >= chr;
 }
 
-bool cthr_str_digitx(const uint8_t chr)
+bool thriceDigitHex(const uint8_t chr)
 {
     return ('0' <= chr && '9' >= chr) || ('A' <= chr && 'F' >= chr) ||
            ('a' <= chr && 'f' >= chr);
@@ -46,7 +46,7 @@ struct str {
     const uint8_t* end;
 };
 
-struct str cthr_str_c(const char* cstr)
+struct str thriceStringStatic(const char* cstr)
 {
     struct str str = {.beg = (const uint8_t*)cstr, .end = (const uint8_t*)cstr};
     while (*str.end) {
@@ -55,7 +55,7 @@ struct str cthr_str_c(const char* cstr)
     return str;
 }
 
-const uint8_t* cthr_str_chr_first(const struct str str, const uint8_t chr)
+const uint8_t* thriceStringFirstPosChr(const struct str str, const uint8_t chr)
 {
     const uint8_t* pos = str.beg;
     while (pos < str.end && *pos != chr) {
@@ -64,15 +64,15 @@ const uint8_t* cthr_str_chr_first(const struct str str, const uint8_t chr)
     return pos;
 }
 
-size_t cthr_str_length(const struct str str)
+size_t thriceStringLength(const struct str str)
 {
     return str.end - str.beg;
 }
 
-bool cthr_str_equals(const struct str lhs, const struct str rhs)
+bool thriceStringEquals(const struct str lhs, const struct str rhs)
 {
-    size_t len = cthr_str_length(lhs);
-    if (len != cthr_str_length(rhs)) {
+    size_t len = thriceStringLength(lhs);
+    if (len != thriceStringLength(rhs)) {
         return false;
     }
     for (size_t i = 0; i < len; i++) {
@@ -83,19 +83,19 @@ bool cthr_str_equals(const struct str lhs, const struct str rhs)
     return true;
 }
 
-struct str cthr_str_trim(struct str str)
+struct str thriceStringTrim(struct str str)
 {
-    while (str.beg < str.end && cthr_str_whitespace(*str.beg)) {
+    while (str.beg < str.end && thriceWhitespace(*str.beg)) {
         str.beg++;
     }
     return str;
 }
 
-struct str cthr_str_word(struct str str)
+struct str thriceStringFirstWord(struct str str)
 {
     const uint8_t* end = str.beg;
 
-    while (end < str.end && !cthr_str_whitespace(*end)) {
+    while (end < str.end && !thriceWhitespace(*end)) {
         end++;
     }
 
@@ -103,20 +103,21 @@ struct str cthr_str_word(struct str str)
     return str;
 }
 
-struct str cthr_str_sub(struct str str, const size_t boff, const size_t eoff)
+struct str
+thriceStringPart(struct str str, const size_t boff, const size_t eoff)
 {
     str.end = str.beg + eoff;
     str.beg += boff;
     return str;
 }
 
-struct str cthr_str_skip(struct str str, const size_t amt)
+struct str thriceStringSkip(struct str str, const size_t amt)
 {
     str.beg += amt;
     return str;
 }
 
-uint64_t cthr_str_u64(struct str str)
+uint64_t thriceStringParseU64(struct str str)
 {
     uint64_t res = 0;
 
@@ -129,4 +130,4 @@ uint64_t cthr_str_u64(struct str str)
     return res;
 }
 
-#endif // CTHR_STR
+#endif // THRICE_STRING
