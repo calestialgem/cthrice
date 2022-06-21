@@ -8,6 +8,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CTHR_ERR_ALLOC 2
+
+void cthr_alloc_err() {
+    fprintf(stderr, "ERROR: Could not allocate memory!\n");
+    exit(CTHR_ERR_ALLOC);
+}
+
 void cthr_err(const char* msg)
 {
     static bool once = false;
