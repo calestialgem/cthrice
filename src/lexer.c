@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef THRICE_LEXER
-#define THRICE_LEXER
+#ifndef THR_LEXER
+#define THR_LEXER
 
 #include "error.c"
 #include "string.c"
@@ -12,49 +12,49 @@
 #include <stdio.h>
 
 typedef enum {
-    THRICE_TOKEN_SEMCLN,
-    THRICE_TOKEN_OBRCKT,
-    THRICE_TOKEN_CBRCKT,
-    THRICE_TOKEN_OSBRKT,
-    THRICE_TOKEN_CSBRKT,
-    THRICE_TOKEN_OCBRKT,
-    THRICE_TOKEN_CCBRKT,
-    THRICE_TOKEN_INTEGR,
-    THRICE_TOKEN_KSZ,
-    THRICE_TOKEN_KSTR,
-    THRICE_TOKEN_KRETRN,
-    THRICE_TOKEN_ID,
-    THRICE_TOKEN_EOF
+    THR_TOKEN_SEMICOLON,
+    THR_TOKEN_OPENING_BRACKET,
+    THR_TOKEN_CLOSING_BRACKET,
+    THR_TOKEN_OPENING_SQUARE_BRACKET,
+    THR_TOKEN_CLOSING_SQUARE_BRACKET,
+    THR_TOKEN_OPENING_CURLY_BRACKET,
+    THR_TOKEN_CLOSING_CURLY_BRACKET,
+    THR_TOKEN_INTEGER,
+    THR_TOKEN_KEYWORD_SIZE,
+    THR_TOKEN_KEYWORD_STRING,
+    THR_TOKEN_KEYWORD_RETURN,
+    THR_TOKEN_IDENTIFIER,
+    THR_TOKEN_END_OF_FILE
 } thr_tkn_typ;
 
 const char* thriceTokenName(const thr_tkn_typ typ)
 {
     switch (typ) {
-        case THRICE_TOKEN_SEMCLN:
+        case THR_TOKEN_SEMICOLON:
             return "semicolon";
-        case THRICE_TOKEN_OBRCKT:
+        case THR_TOKEN_OPENING_BRACKET:
             return "opening-bracket";
-        case THRICE_TOKEN_CBRCKT:
+        case THR_TOKEN_CLOSING_BRACKET:
             return "closing-bracket";
-        case THRICE_TOKEN_OSBRKT:
+        case THR_TOKEN_OPENING_SQUARE_BRACKET:
             return "opening-square-bracket";
-        case THRICE_TOKEN_CSBRKT:
+        case THR_TOKEN_CLOSING_SQUARE_BRACKET:
             return "closing-square-bracket";
-        case THRICE_TOKEN_OCBRKT:
+        case THR_TOKEN_OPENING_CURLY_BRACKET:
             return "opening-curly-bracket";
-        case THRICE_TOKEN_CCBRKT:
+        case THR_TOKEN_CLOSING_CURLY_BRACKET:
             return "closing-curly-bracket";
-        case THRICE_TOKEN_INTEGR:
+        case THR_TOKEN_INTEGER:
             return "integer";
-        case THRICE_TOKEN_KSZ:
+        case THR_TOKEN_KEYWORD_SIZE:
             return "sz keyword";
-        case THRICE_TOKEN_KSTR:
+        case THR_TOKEN_KEYWORD_STRING:
             return "str keyword";
-        case THRICE_TOKEN_KRETRN:
+        case THR_TOKEN_KEYWORD_RETURN:
             return "return keyword";
-        case THRICE_TOKEN_ID:
+        case THR_TOKEN_IDENTIFIER:
             return "identifier";
-        case THRICE_TOKEN_EOF:
+        case THR_TOKEN_END_OF_FILE:
             return "end-of-file";
         default:
             return "unkown-token";
@@ -70,20 +70,20 @@ void thriceTokenPrint(const thr_tkn tkn)
 {
     printf("%s", thriceTokenName(tkn.typ));
     switch (tkn.typ) {
-        case THRICE_TOKEN_SEMCLN:
-        case THRICE_TOKEN_OBRCKT:
-        case THRICE_TOKEN_CBRCKT:
-        case THRICE_TOKEN_OSBRKT:
-        case THRICE_TOKEN_CSBRKT:
-        case THRICE_TOKEN_OCBRKT:
-        case THRICE_TOKEN_CCBRKT:
-        case THRICE_TOKEN_KSZ:
-        case THRICE_TOKEN_KSTR:
-        case THRICE_TOKEN_KRETRN:
-        case THRICE_TOKEN_EOF:
+        case THR_TOKEN_SEMICOLON:
+        case THR_TOKEN_OPENING_BRACKET:
+        case THR_TOKEN_CLOSING_BRACKET:
+        case THR_TOKEN_OPENING_SQUARE_BRACKET:
+        case THR_TOKEN_CLOSING_SQUARE_BRACKET:
+        case THR_TOKEN_OPENING_CURLY_BRACKET:
+        case THR_TOKEN_CLOSING_CURLY_BRACKET:
+        case THR_TOKEN_KEYWORD_SIZE:
+        case THR_TOKEN_KEYWORD_STRING:
+        case THR_TOKEN_KEYWORD_RETURN:
+        case THR_TOKEN_END_OF_FILE:
             break;
-        case THRICE_TOKEN_INTEGR:
-        case THRICE_TOKEN_ID:
+        case THR_TOKEN_INTEGER:
+        case THR_TOKEN_IDENTIFIER:
         default:
             printf(" {%.*s}", (int)thriceStringLength(tkn.val), tkn.val.beg);
     }
@@ -115,7 +115,7 @@ thr_lxd_tkn thriceLexerNumber(const thr_str word, const thr_str src)
     const size_t len = thriceStringLength(word);
 
     if (len == 1) {
-        return thriceLexerCreate(THRICE_TOKEN_INTEGR, word, src);
+        return thriceLexerCreate(THR_TOKEN_INTEGER, word, src);
     }
 
     bool (*digit)(uint8_t) = &thriceDigit;
@@ -136,7 +136,7 @@ thr_lxd_tkn thriceLexerNumber(const thr_str word, const thr_str src)
                 break;
             default:
                 return thriceLexerCreate(
-                    THRICE_TOKEN_INTEGR,
+                    THR_TOKEN_INTEGER,
                     thriceStringPart(word, 0, 1),
                     src);
         }
@@ -156,7 +156,7 @@ thr_lxd_tkn thriceLexerNumber(const thr_str word, const thr_str src)
     }
 
     return thriceLexerCreate(
-        THRICE_TOKEN_INTEGR,
+        THR_TOKEN_INTEGER,
         (thr_str){.beg = word.beg, .end = end},
         src);
 }
@@ -171,7 +171,7 @@ thr_lxd_tkn thriceLex(const thr_str src)
     const thr_str word = thriceLexerWord(src);
 
     if (!thriceStringLength(word)) {
-        return thriceLexerCreate(THRICE_TOKEN_EOF, word, src);
+        return thriceLexerCreate(THR_TOKEN_END_OF_FILE, word, src);
     }
 
     { // Check for punctuation.
@@ -180,7 +180,7 @@ thr_lxd_tkn thriceLex(const thr_str src)
 
         if (pos < puncs.end) {
             return thriceLexerCreate(
-                THRICE_TOKEN_SEMCLN + (pos - puncs.beg),
+                THR_TOKEN_SEMICOLON + (pos - puncs.beg),
                 thriceStringPart(word, 0, 1),
                 src);
         }
@@ -199,22 +199,22 @@ thr_lxd_tkn thriceLex(const thr_str src)
             end++;
         }
         const thr_str val = {.beg = word.beg, .end = end};
-#define THRICE_LEXER_KEYWORD_COUNT 3
-        const thr_str keywords[THRICE_LEXER_KEYWORD_COUNT] = {
+#define THR_LEXER_KEYWORD_COUNT 3
+        const thr_str keywords[THR_LEXER_KEYWORD_COUNT] = {
             thriceStringStatic("sz"),
             thriceStringStatic("str"),
             thriceStringStatic("return"),
         };
-        for (size_t i = 0; i < THRICE_LEXER_KEYWORD_COUNT; i++) {
+        for (size_t i = 0; i < THR_LEXER_KEYWORD_COUNT; i++) {
             if (thriceStringEquals(keywords[i], val)) {
-                return thriceLexerCreate(THRICE_TOKEN_KSZ + i, val, src);
+                return thriceLexerCreate(THR_TOKEN_KEYWORD_SIZE + i, val, src);
             }
         }
-        return thriceLexerCreate(THRICE_TOKEN_ID, val, src);
+        return thriceLexerCreate(THR_TOKEN_IDENTIFIER, val, src);
     }
 
     const thr_str val = thriceStringPart(word, 0, 1);
     return thriceLexerCreate(-1, val, src);
 }
 
-#endif // THRICE_LEXER
+#endif // THR_LEXER

@@ -23,7 +23,7 @@ int main(int const argc, const char* const* argv)
         thr_str     src = thriceBufferView(buf);
         thr_lxd_tkn lex = thriceLex(src);
 
-        while (lex.tkn.typ != THRICE_TOKEN_EOF) {
+        while (lex.tkn.typ != THR_TOKEN_END_OF_FILE) {
             thriceTokenPrint(lex.tkn);
             lex = thriceLex(lex.src);
         }
