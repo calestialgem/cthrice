@@ -8,19 +8,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int const argumentCount, const char* const* argumentValues)
+int main(int const argc, const char* const* argv)
 {
-    if (argumentCount < 2) {
+    if (argc < 2) {
         printf("Provide a Thrice file!");
     }
-    const size_t CAPACITY = 1024;
-    ThriceBuffer buffer   = thriceBufferCreate(CAPACITY);
+    const size_t CAP = 1024;
+    ThriceBuffer bfr = thriceBufferCreate(CAP);
 
-    for (int i = 1; i < argumentCount; i++) {
-        buffer = thriceBufferClear(buffer);
-        buffer = thriceBufferAppendFile(buffer, argumentValues[i]);
+    for (int i = 1; i < argc; i++) {
+        bfr = thriceBufferClear(bfr);
+        bfr = thriceBufferAppendFile(bfr, argv[i]);
 
-        ThriceString     src = thriceBufferView(buffer);
+        ThriceString     src = thriceBufferView(bfr);
         ThriceLexedToken lex = thriceLex(src);
 
         while (lex.tkn.typ != THRICE_TOKEN_EOF) {
@@ -29,6 +29,6 @@ int main(int const argumentCount, const char* const* argumentValues)
         }
     }
 
-    thriceBufferDestroy(buffer);
+    thriceBufferDestroy(bfr);
     return EXIT_SUCCESS;
 }
