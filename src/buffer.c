@@ -12,54 +12,54 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct buf {
+typedef struct {
     uint8_t* restrict beg;
     uint8_t* restrict end;
     uint8_t* restrict lst;
-};
+} Buffer;
 
-struct buf thriceBufferCreate(const size_t n)
+Buffer thriceBufferCreate(const size_t n)
 {
     uint8_t* arr = malloc(n);
     if (!arr) {
         thriceErrorAllocation();
     }
-    return (struct buf){.beg = arr, .end = arr, .lst = arr + n};
+    return (Buffer){.beg = arr, .end = arr, .lst = arr + n};
 }
 
-struct buf thriceBufferDestroy(const struct buf buf)
+Buffer thriceBufferDestroy(const Buffer buf)
 {
     free(buf.beg);
-    return (struct buf){.beg = 0, .end = 0, .lst = 0};
+    return (Buffer){.beg = 0, .end = 0, .lst = 0};
 }
 
-size_t thriceBufferSize(const struct buf buf)
+size_t thriceBufferSize(const Buffer buf)
 {
     return buf.end - buf.beg;
 }
 
-size_t thriceBufferCapacity(const struct buf buf)
+size_t thriceBufferCapacity(const Buffer buf)
 {
     return buf.lst - buf.beg;
 }
 
-size_t thriceBufferSpace(const struct buf buf)
+size_t thriceBufferSpace(const Buffer buf)
 {
     return buf.lst - buf.end;
 }
 
-struct str thriceBufferView(struct buf buf)
+struct str thriceBufferView(Buffer buf)
 {
     return (struct str){.beg = buf.beg, .end = buf.end};
 }
 
-struct buf thriceBufferClear(struct buf buf)
+Buffer thriceBufferClear(Buffer buf)
 {
     buf.end = buf.beg;
     return buf;
 }
 
-struct buf thriceBufferGrow(struct buf buf, size_t cap)
+Buffer thriceBufferGrow(Buffer buf, size_t cap)
 {
     uint8_t* const restrict arr = realloc(buf.beg, cap);
     if (!arr) {
@@ -69,7 +69,7 @@ struct buf thriceBufferGrow(struct buf buf, size_t cap)
     return buf;
 }
 
-struct buf thriceBufferAppendU8(struct buf buf, const uint8_t chr)
+Buffer thriceBufferAppendU8(Buffer buf, const uint8_t chr)
 {
     if (thriceBufferSpace(buf) < 1) {
         buf = thriceBufferGrow(buf, 2 * thriceBufferCapacity(buf));
@@ -80,7 +80,7 @@ struct buf thriceBufferAppendU8(struct buf buf, const uint8_t chr)
     return buf;
 }
 
-struct buf thriceBufferAppendU64(struct buf buf, uint64_t u64)
+Buffer thriceBufferAppendU64(Buffer buf, uint64_t u64)
 {
     const uint64_t base  = 10;
     uint64_t       place = base;
@@ -98,7 +98,7 @@ struct buf thriceBufferAppendU64(struct buf buf, uint64_t u64)
     return buf;
 }
 
-struct buf thriceBufferAppendString(struct buf des, struct str src)
+Buffer thriceBufferAppendString(Buffer des, struct str src)
 {
     const size_t spc = thriceBufferSpace(des);
     const size_t len = thriceStringLength(src);
@@ -110,7 +110,7 @@ struct buf thriceBufferAppendString(struct buf des, struct str src)
     return des;
 }
 
-struct buf thriceBufferAppendFile(struct buf buf, const char* const name)
+Buffer thriceBufferAppendFile(Buffer buf, const char* const name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {

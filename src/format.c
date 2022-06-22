@@ -30,7 +30,7 @@ union fmtf {
 
 struct fmtc {
     va_list        arp;
-    struct buf     buf;
+    Buffer     buf;
     struct str     fmt;
     const uint8_t* crt;
     union fmtf     flg;
@@ -192,7 +192,7 @@ struct fmtc thriceFormatString(struct fmtc ctx)
     return ctx;
 }
 
-struct buf thriceFormatAppend(struct buf buf000, struct str fmt000, ...)
+Buffer thriceFormatAppend(Buffer buf000, struct str fmt000, ...)
 {
     struct fmtc ctx = {.buf = buf000, .fmt = fmt000};
     va_start(ctx.arp, fmt000);
