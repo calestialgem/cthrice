@@ -29,7 +29,7 @@ typedef union {
     };
 } ThriceFormatFlags;
 
-struct fmtc {
+typedef struct {
     va_list           arp;
     Buffer            buf;
     String            fmt;
@@ -38,15 +38,15 @@ struct fmtc {
     uint32_t          wid;
     uint32_t          pre;
     size_t            mod;
-};
+} ThriceFormatContext;
 
-struct fmtc thriceFormatConsume(struct fmtc ctx)
+ThriceFormatContext thriceFormatConsume(ThriceFormatContext ctx)
 {
     ctx.fmt.beg = ctx.crt;
     return ctx;
 }
 
-struct fmtc thriceFormatSkip(struct fmtc ctx)
+ThriceFormatContext thriceFormatSkip(ThriceFormatContext ctx)
 {
     ctx.crt = thriceStringFirstPosChr(ctx.fmt, THRICE_FORMAT_INTRODUCTORY);
     ctx.buf = thriceBufferAppendString(
@@ -55,7 +55,7 @@ struct fmtc thriceFormatSkip(struct fmtc ctx)
     return ctx;
 }
 
-struct fmtc thriceFormatEscape(struct fmtc ctx)
+ThriceFormatContext thriceFormatEscape(ThriceFormatContext ctx)
 {
     if (thriceStringLength(ctx.fmt) < 2) {
         thriceError("No format conversion specifier!");
@@ -69,7 +69,7 @@ struct fmtc thriceFormatEscape(struct fmtc ctx)
     return ctx;
 }
 
-struct fmtc thriceFormatFlags(struct fmtc ctx)
+ThriceFormatContext thriceFormatFlags(ThriceFormatContext ctx)
 {
     const String flags = thriceStringStatic(THRICE_FORMAT_FLAGS);
     for (; ctx.crt < ctx.fmt.end; ctx.crt++) {
@@ -87,7 +87,7 @@ struct fmtc thriceFormatFlags(struct fmtc ctx)
     return ctx;
 }
 
-struct fmtc thriceFormatNumber(struct fmtc ctx, bool const wid)
+ThriceFormatContext thriceFormatNumber(ThriceFormatContext ctx, bool const wid)
 {
     uint32_t num = 0;
     if (*ctx.crt == THRICE_FORMAT_WIDTH) {
@@ -112,7 +112,7 @@ struct fmtc thriceFormatNumber(struct fmtc ctx, bool const wid)
     return ctx;
 }
 
-struct fmtc thriceFormatModifier(struct fmtc ctx)
+ThriceFormatContext thriceFormatModifier(ThriceFormatContext ctx)
 {
     const String specifiers = thriceStringStatic(THRICE_FORMAT_SPECIFICATIONS);
     const uint8_t* pos      = thriceStringFirstPosChr(specifiers, *ctx.crt);
@@ -153,7 +153,7 @@ struct fmtc thriceFormatModifier(struct fmtc ctx)
     return ctx;
 }
 
-struct fmtc thriceFormatChr(struct fmtc ctx)
+ThriceFormatContext thriceFormatChr(ThriceFormatContext ctx)
 {
     if (ctx.mod != 0) {
         thriceError("Unsupported length modifier for formatting a char!");
@@ -173,7 +173,7 @@ struct fmtc thriceFormatChr(struct fmtc ctx)
     return ctx;
 }
 
-struct fmtc thriceFormatString(struct fmtc ctx)
+ThriceFormatContext thriceFormatString(ThriceFormatContext ctx)
 {
     if (ctx.mod != 0) {
         thriceError("Unsupported length modifier for formatting a string!");
@@ -195,7 +195,7 @@ struct fmtc thriceFormatString(struct fmtc ctx)
 
 Buffer thriceFormatAppend(Buffer buf000, String fmt000, ...)
 {
-    struct fmtc ctx = {.buf = buf000, .fmt = fmt000};
+    ThriceFormatContext ctx = {.buf = buf000, .fmt = fmt000};
     va_start(ctx.arp, fmt000);
 
     while (thriceStringLength(ctx.fmt)) {
