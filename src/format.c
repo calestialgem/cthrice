@@ -11,14 +11,15 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-const uint8_t     THRICE_FORMAT_INTRODUCTORY   = '%';
-const uint8_t     THRICE_FORMAT_WIDTH          = '*';
-const uint8_t     THRICE_FORMAT_PRECISION      = '.';
-const char* const THRICE_FORMAT_FLAGS          = "-+ #0";
+const uint8_t     THRICE_FORMAT_INTRODUCTORY = '%';
+const uint8_t     THRICE_FORMAT_WIDTH        = '*';
+const uint8_t     THRICE_FORMAT_PRECISION    = '.';
+const char* const THRICE_FORMAT_FLAGS        = "-+ #0";
+#define THRICE_FORMAT_FLAG_COUNT 5
 const char* const THRICE_FORMAT_SPECIFICATIONS = "csdioxXufFeEaAgGnP";
 
-union fmtf {
-    bool dat[5];
+typedef union {
+    bool dat[THRICE_FORMAT_FLAG_COUNT];
     struct {
         bool left;
         bool plus;
@@ -26,17 +27,17 @@ union fmtf {
         bool altn;
         bool zero;
     };
-};
+} ThriceFormatFlags;
 
 struct fmtc {
-    va_list        arp;
-    Buffer         buf;
-    String         fmt;
-    const uint8_t* crt;
-    union fmtf     flg;
-    uint32_t       wid;
-    uint32_t       pre;
-    size_t         mod;
+    va_list           arp;
+    Buffer            buf;
+    String            fmt;
+    const uint8_t*    crt;
+    ThriceFormatFlags flg;
+    uint32_t          wid;
+    uint32_t          pre;
+    size_t            mod;
 };
 
 struct fmtc thriceFormatConsume(struct fmtc ctx)
