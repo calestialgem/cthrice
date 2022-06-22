@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-enum tknt {
+typedef enum {
     THRICE_TOKEN_SEMCLN,
     THRICE_TOKEN_OBRCKT,
     THRICE_TOKEN_CBRCKT,
@@ -25,9 +25,9 @@ enum tknt {
     THRICE_TOKEN_KRETRN,
     THRICE_TOKEN_ID,
     THRICE_TOKEN_EOF
-};
+} ThriceTokenType;
 
-const char* thriceTokenName(const enum tknt typ)
+const char* thriceTokenName(const ThriceTokenType typ)
 {
     switch (typ) {
         case THRICE_TOKEN_SEMCLN:
@@ -62,8 +62,8 @@ const char* thriceTokenName(const enum tknt typ)
 }
 
 struct tkn {
-    enum tknt typ;
-    String    val;
+    ThriceTokenType typ;
+    String          val;
 };
 
 void thriceTokenPrint(const struct tkn tkn)
@@ -102,7 +102,7 @@ String thriceLexerWord(const String src)
 }
 
 struct lex
-thriceLexerCreate(const enum tknt typ, const String val, const String src)
+thriceLexerCreate(const ThriceTokenType typ, const String val, const String src)
 {
     return (struct lex){
         .tkn = {    .typ = typ,     .val = val},
