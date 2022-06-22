@@ -20,7 +20,7 @@ int main(int const argc, const char* const* argv)
         buf = thriceBufferClear(buf);
         buf = thriceBufferAppendFile(buf, argv[i]);
 
-        ThriceString     src = thriceBufferView(buf);
+        thr_str          src = thriceBufferView(buf);
         ThriceLexedToken lex = thriceLex(src);
 
         while (lex.tkn.typ != THRICE_TOKEN_EOF) {
