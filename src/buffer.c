@@ -4,8 +4,8 @@
 #ifndef THRICE_BUFFER
 #define THRICE_BUFFER
 
-#include "err.c"
-#include "str.c"
+#include "error.c"
+#include "string.c"
 
 #include <stdint.h>
 #include <stdio.h>

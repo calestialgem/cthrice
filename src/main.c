@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "buf.c"
-#include "lex.c"
-#include "str.c"
+#include "buffer.c"
+#include "lexer.c"
+#include "string.c"
 
 #include <stdio.h>
 #include <stdlib.h>

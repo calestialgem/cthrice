@@ -4,9 +4,9 @@
 #ifndef THRICE_FORMAT
 #define THRICE_FORMAT
 
-#include "buf.c"
-#include "err.c"
-#include "str.c"
+#include "buffer.c"
+#include "error.c"
+#include "string.c"
 
 #include <stdarg.h>
 #include <stdint.h>

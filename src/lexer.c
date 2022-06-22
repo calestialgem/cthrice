@@ -4,8 +4,8 @@
 #ifndef THRICE_LEXER
 #define THRICE_LEXER
 
-#include "err.c"
-#include "str.c"
+#include "error.c"
+#include "string.c"
 
 #include <stdbool.h>
 #include <stdint.h>
