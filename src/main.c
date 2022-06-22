@@ -14,21 +14,21 @@ int main(int const argumentCount, const char* const* argumentValues)
         printf("Provide a Thrice file!");
     }
     const size_t CAPACITY = 1024;
-    ThriceBuffer buffer   = ThriceBufferCreate(CAPACITY);
+    ThriceBuffer buffer   = thriceBufferCreate(CAPACITY);
 
     for (int i = 1; i < argumentCount; i++) {
-        buffer = ThriceBufferClear(buffer);
-        buffer = ThriceBufferAppendFile(buffer, argumentValues[i]);
+        buffer = thriceBufferClear(buffer);
+        buffer = thriceBufferAppendFile(buffer, argumentValues[i]);
 
-        ThriceString     src = ThriceBufferView(buffer);
-        ThriceLexedToken lex = ThriceLex(src);
+        ThriceString     src = thriceBufferView(buffer);
+        ThriceLexedToken lex = thriceLex(src);
 
         while (lex.tkn.typ != THRICE_TOKEN_EOF) {
-            ThriceTokenPrint(lex.tkn);
-            lex = ThriceLex(lex.src);
+            thriceTokenPrint(lex.tkn);
+            lex = thriceLex(lex.src);
         }
     }
 
-    ThriceBufferDestroy(buffer);
+    thriceBufferDestroy(buffer);
     return EXIT_SUCCESS;
 }

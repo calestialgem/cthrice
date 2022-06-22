@@ -40,40 +40,40 @@ typedef struct {
     size_t            mod;
 } ThriceFormatContext;
 
-ThriceFormatContext ThriceFormatConsume(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatConsume(ThriceFormatContext ctx)
 {
     ctx.fmt.beg = ctx.crt;
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatSkip(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatSkip(ThriceFormatContext ctx)
 {
-    ctx.crt = ThriceStringFirstPosChr(ctx.fmt, THRICE_FORMAT_INTRODUCTORY);
-    ctx.buf = ThriceBufferAppendString(
+    ctx.crt = thriceStringFirstPosChr(ctx.fmt, THRICE_FORMAT_INTRODUCTORY);
+    ctx.buf = thriceBufferAppendString(
         ctx.buf,
         (ThriceString){.beg = ctx.fmt.beg, .end = ctx.crt});
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatEscape(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatEscape(ThriceFormatContext ctx)
 {
-    if (ThriceStringLength(ctx.fmt) < 2) {
-        ThriceError("No format conversion specifier!");
+    if (thriceStringLength(ctx.fmt) < 2) {
+        thriceError("No format conversion specifier!");
     }
     ctx.crt++;
-    ctx = ThriceFormatConsume(ctx);
+    ctx = thriceFormatConsume(ctx);
     if (*ctx.crt == THRICE_FORMAT_INTRODUCTORY) {
-        ctx.buf = ThriceBufferAppendU8(ctx.buf, THRICE_FORMAT_INTRODUCTORY);
+        ctx.buf = thriceBufferAppendU8(ctx.buf, THRICE_FORMAT_INTRODUCTORY);
         ctx.crt++;
     }
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatFlags(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatFlags(ThriceFormatContext ctx)
 {
-    const ThriceString flags = ThriceStringStatic(THRICE_FORMAT_FLAGS);
+    const ThriceString flags = thriceStringStatic(THRICE_FORMAT_FLAGS);
     for (; ctx.crt < ctx.fmt.end; ctx.crt++) {
-        const uint8_t* pos = ThriceStringFirstPosChr(flags, *ctx.crt);
+        const uint8_t* pos = thriceStringFirstPosChr(flags, *ctx.crt);
         if (pos == flags.end) {
             break;
         }
@@ -81,27 +81,27 @@ ThriceFormatContext ThriceFormatFlags(ThriceFormatContext ctx)
     }
 
     if (ctx.crt == ctx.fmt.end) {
-        ThriceError("No format conversion specifier!");
+        thriceError("No format conversion specifier!");
     }
 
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatNumber(ThriceFormatContext ctx, bool const wid)
+ThriceFormatContext thriceFormatNumber(ThriceFormatContext ctx, bool const wid)
 {
     uint32_t num = 0;
     if (*ctx.crt == THRICE_FORMAT_WIDTH) {
         num = va_arg(ctx.arp, uint32_t);
         ctx.crt++;
-    } else if (ThriceDigit(*ctx.crt)) {
+    } else if (thriceDigit(*ctx.crt)) {
         do {
             ctx.crt++;
-        } while (ctx.crt < ctx.fmt.end && ThriceDigit(*ctx.crt));
-        num = ThriceStringParseU64(
+        } while (ctx.crt < ctx.fmt.end && thriceDigit(*ctx.crt));
+        num = thriceStringParseU64(
             (ThriceString){.beg = ctx.fmt.beg, .end = ctx.crt});
     }
     if (ctx.crt == ctx.fmt.end) {
-        ThriceError("No format conversion specifier!");
+        thriceError("No format conversion specifier!");
     }
 
     if (wid) {
@@ -112,165 +112,165 @@ ThriceFormatContext ThriceFormatNumber(ThriceFormatContext ctx, bool const wid)
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatModifier(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatModifier(ThriceFormatContext ctx)
 {
     const ThriceString specifiers =
-        ThriceStringStatic(THRICE_FORMAT_SPECIFICATIONS);
-    const uint8_t* pos = ThriceStringFirstPosChr(specifiers, *ctx.crt);
+        thriceStringStatic(THRICE_FORMAT_SPECIFICATIONS);
+    const uint8_t* pos = thriceStringFirstPosChr(specifiers, *ctx.crt);
 
     while (ctx.crt < ctx.fmt.end && pos < specifiers.end) {
-        pos = ThriceStringFirstPosChr(specifiers, *ctx.crt);
+        pos = thriceStringFirstPosChr(specifiers, *ctx.crt);
         ctx.crt++;
     }
 
     const ThriceString mod = {.beg = ctx.fmt.beg, .end = ctx.crt};
 
     if (ctx.crt == ctx.fmt.end) {
-        ThriceError("No format conversion specifier!");
+        thriceError("No format conversion specifier!");
     }
 
 #define THRICE_FORMAT_MOD_COUNT 9
     const ThriceString mods[THRICE_FORMAT_MOD_COUNT] = {
-        ThriceStringStatic(""),
-        ThriceStringStatic("hh"),
-        ThriceStringStatic("h"),
-        ThriceStringStatic("l"),
-        ThriceStringStatic("ll"),
-        ThriceStringStatic("j"),
-        ThriceStringStatic("z"),
-        ThriceStringStatic("t"),
-        ThriceStringStatic("L")};
+        thriceStringStatic(""),
+        thriceStringStatic("hh"),
+        thriceStringStatic("h"),
+        thriceStringStatic("l"),
+        thriceStringStatic("ll"),
+        thriceStringStatic("j"),
+        thriceStringStatic("z"),
+        thriceStringStatic("t"),
+        thriceStringStatic("L")};
     ctx.mod = -1;
     for (size_t i = 0; i < THRICE_FORMAT_MOD_COUNT; i++) {
-        if (ThriceStringEquals(mods[i], mod)) {
+        if (thriceStringEquals(mods[i], mod)) {
             ctx.mod = i;
             break;
         }
     }
     if (ctx.mod == -1) {
-        ThriceError("Unkown length modifier!");
+        thriceError("Unkown length modifier!");
     }
 
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatChr(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatChr(ThriceFormatContext ctx)
 {
     if (ctx.mod != 0) {
-        ThriceError("Unsupported length modifier for formatting a char!");
+        thriceError("Unsupported length modifier for formatting a char!");
     }
     const uint8_t chr = (uint8_t)va_arg(ctx.arp, int);
     if (ctx.flg.left) {
-        ctx.buf = ThriceBufferAppendU8(ctx.buf, chr);
+        ctx.buf = thriceBufferAppendU8(ctx.buf, chr);
     }
     uint32_t wid = ctx.wid;
     while (--wid) {
-        ctx.buf = ThriceBufferAppendU8(ctx.buf, ' ');
+        ctx.buf = thriceBufferAppendU8(ctx.buf, ' ');
     }
     if (!ctx.flg.left) {
-        ctx.buf = ThriceBufferAppendU8(ctx.buf, chr);
+        ctx.buf = thriceBufferAppendU8(ctx.buf, chr);
     }
 
     return ctx;
 }
 
-ThriceFormatContext ThriceFormatString(ThriceFormatContext ctx)
+ThriceFormatContext thriceFormatString(ThriceFormatContext ctx)
 {
     if (ctx.mod != 0) {
-        ThriceError("Unsupported length modifier for formatting a string!");
+        thriceError("Unsupported length modifier for formatting a string!");
     }
     const ThriceString str = va_arg(ctx.arp, ThriceString);
     if (ctx.flg.left) {
-        ctx.buf = ThriceBufferAppendString(ctx.buf, str);
+        ctx.buf = thriceBufferAppendString(ctx.buf, str);
     }
     uint32_t wid = ctx.wid;
     while (--wid) {
-        ctx.buf = ThriceBufferAppendU8(ctx.buf, ' ');
+        ctx.buf = thriceBufferAppendU8(ctx.buf, ' ');
     }
     if (!ctx.flg.left) {
-        ctx.buf = ThriceBufferAppendString(ctx.buf, str);
+        ctx.buf = thriceBufferAppendString(ctx.buf, str);
     }
 
     return ctx;
 }
 
-ThriceBuffer ThriceFormatAppend(ThriceBuffer buf000, ThriceString fmt000, ...)
+ThriceBuffer thriceFormatAppend(ThriceBuffer buf000, ThriceString fmt000, ...)
 {
     ThriceFormatContext ctx = {.buf = buf000, .fmt = fmt000};
     va_start(ctx.arp, fmt000);
 
-    while (ThriceStringLength(ctx.fmt)) {
-        ctx = ThriceFormatSkip(ctx);
+    while (thriceStringLength(ctx.fmt)) {
+        ctx = thriceFormatSkip(ctx);
         if (ctx.fmt.beg != ctx.crt) {
-            ctx = ThriceFormatConsume(ctx);
+            ctx = thriceFormatConsume(ctx);
             continue;
         }
 
-        ctx = ThriceFormatEscape(ctx);
+        ctx = thriceFormatEscape(ctx);
         if (ctx.fmt.beg != ctx.crt) {
-            ctx = ThriceFormatConsume(ctx);
+            ctx = thriceFormatConsume(ctx);
             continue;
         }
 
-        ctx = ThriceFormatFlags(ctx);
-        ctx = ThriceFormatConsume(ctx);
+        ctx = thriceFormatFlags(ctx);
+        ctx = thriceFormatConsume(ctx);
 
-        ctx = ThriceFormatNumber(ctx, true);
-        ctx = ThriceFormatConsume(ctx);
+        ctx = thriceFormatNumber(ctx, true);
+        ctx = thriceFormatConsume(ctx);
 
-        ctx = ThriceFormatNumber(ctx, false);
-        ctx = ThriceFormatConsume(ctx);
+        ctx = thriceFormatNumber(ctx, false);
+        ctx = thriceFormatConsume(ctx);
 
-        ctx = ThriceFormatModifier(ctx);
-        ctx = ThriceFormatConsume(ctx);
+        ctx = thriceFormatModifier(ctx);
+        ctx = thriceFormatConsume(ctx);
 
         switch (*ctx.crt) {
             case 'c':
-                ctx = ThriceFormatChr(ctx);
+                ctx = thriceFormatChr(ctx);
                 break;
             case 's':
-                ctx = ThriceFormatString(ctx);
+                ctx = thriceFormatString(ctx);
                 break;
             case 'd':
             case 'i':
-                // ctx = ThriceFormatSigned(ctx);
+                // ctx = thriceFormatSigned(ctx);
                 // break;
             case 'o':
-                // ctx = ThriceFormatOct(ctx);
+                // ctx = thriceFormatOct(ctx);
                 // break;
             case 'x':
             case 'X':
-                // ctx = ThriceFormatHex(ctx);
+                // ctx = thriceFormatHex(ctx);
                 // break;
             case 'u':
-                // ctx = ThriceFormatUnsigned(ctx);
+                // ctx = thriceFormatUnsigned(ctx);
                 // break;
             case 'f':
             case 'F':
-                // ctx = ThriceFormatFloat(ctx);
+                // ctx = thriceFormatFloat(ctx);
                 // break;
             case 'e':
             case 'E':
-                // ctx = ThriceFormatFloatE(ctx);
+                // ctx = thriceFormatFloatE(ctx);
                 // break;
             case 'a':
             case 'A':
-                // ctx = ThriceFormatFloatA(ctx);
+                // ctx = thriceFormatFloatA(ctx);
                 // break;
             case 'g':
             case 'G':
-                // ctx = ThriceFormatFloatG(ctx);
+                // ctx = thriceFormatFloatG(ctx);
                 // break;
             case 'n':
-                // ctx = ThriceFormatCount(ctx);
+                // ctx = thriceFormatCount(ctx);
                 // break;
             case 'p':
-                // ctx = ThriceFormatPointer(ctx);
+                // ctx = thriceFormatPointer(ctx);
                 // break;
-                ThriceError("Unsupported format conversion specifier!");
+                thriceError("Unsupported format conversion specifier!");
                 break;
             default:
-                ThriceError("Unkown format conversion specifier!");
+                thriceError("Unkown format conversion specifier!");
         }
     }
 
