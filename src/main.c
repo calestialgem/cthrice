@@ -20,7 +20,7 @@ int main(int const argumentCount, const char* const* argumentValues)
         buffer = thriceBufferClear(buffer);
         buffer = thriceBufferAppendFile(buffer, argumentValues[i]);
 
-        String           src = thriceBufferView(buffer);
+        ThriceString     src = thriceBufferView(buffer);
         ThriceLexedToken lex = thriceLex(src);
 
         while (lex.tkn.typ != THRICE_TOKEN_EOF) {

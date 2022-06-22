@@ -32,7 +32,7 @@ typedef union {
 typedef struct {
     va_list           arp;
     Buffer            buf;
-    String            fmt;
+    ThriceString      fmt;
     const uint8_t*    crt;
     ThriceFormatFlags flg;
     uint32_t          wid;
@@ -51,7 +51,7 @@ ThriceFormatContext thriceFormatSkip(ThriceFormatContext ctx)
     ctx.crt = thriceStringFirstPosChr(ctx.fmt, THRICE_FORMAT_INTRODUCTORY);
     ctx.buf = thriceBufferAppendString(
         ctx.buf,
-        (String){.beg = ctx.fmt.beg, .end = ctx.crt});
+        (ThriceString){.beg = ctx.fmt.beg, .end = ctx.crt});
     return ctx;
 }
 
@@ -71,7 +71,7 @@ ThriceFormatContext thriceFormatEscape(ThriceFormatContext ctx)
 
 ThriceFormatContext thriceFormatFlags(ThriceFormatContext ctx)
 {
-    const String flags = thriceStringStatic(THRICE_FORMAT_FLAGS);
+    const ThriceString flags = thriceStringStatic(THRICE_FORMAT_FLAGS);
     for (; ctx.crt < ctx.fmt.end; ctx.crt++) {
         const uint8_t* pos = thriceStringFirstPosChr(flags, *ctx.crt);
         if (pos == flags.end) {
@@ -97,8 +97,8 @@ ThriceFormatContext thriceFormatNumber(ThriceFormatContext ctx, bool const wid)
         do {
             ctx.crt++;
         } while (ctx.crt < ctx.fmt.end && thriceDigit(*ctx.crt));
-        num =
-            thriceStringParseU64((String){.beg = ctx.fmt.beg, .end = ctx.crt});
+        num = thriceStringParseU64(
+            (ThriceString){.beg = ctx.fmt.beg, .end = ctx.crt});
     }
     if (ctx.crt == ctx.fmt.end) {
         thriceError("No format conversion specifier!");
@@ -114,22 +114,23 @@ ThriceFormatContext thriceFormatNumber(ThriceFormatContext ctx, bool const wid)
 
 ThriceFormatContext thriceFormatModifier(ThriceFormatContext ctx)
 {
-    const String specifiers = thriceStringStatic(THRICE_FORMAT_SPECIFICATIONS);
-    const uint8_t* pos      = thriceStringFirstPosChr(specifiers, *ctx.crt);
+    const ThriceString specifiers =
+        thriceStringStatic(THRICE_FORMAT_SPECIFICATIONS);
+    const uint8_t* pos = thriceStringFirstPosChr(specifiers, *ctx.crt);
 
     while (ctx.crt < ctx.fmt.end && pos < specifiers.end) {
         pos = thriceStringFirstPosChr(specifiers, *ctx.crt);
         ctx.crt++;
     }
 
-    const String mod = {.beg = ctx.fmt.beg, .end = ctx.crt};
+    const ThriceString mod = {.beg = ctx.fmt.beg, .end = ctx.crt};
 
     if (ctx.crt == ctx.fmt.end) {
         thriceError("No format conversion specifier!");
     }
 
 #define THRICE_FORMAT_MOD_COUNT 9
-    const String mods[THRICE_FORMAT_MOD_COUNT] = {
+    const ThriceString mods[THRICE_FORMAT_MOD_COUNT] = {
         thriceStringStatic(""),
         thriceStringStatic("hh"),
         thriceStringStatic("h"),
@@ -178,7 +179,7 @@ ThriceFormatContext thriceFormatString(ThriceFormatContext ctx)
     if (ctx.mod != 0) {
         thriceError("Unsupported length modifier for formatting a string!");
     }
-    const String str = va_arg(ctx.arp, String);
+    const ThriceString str = va_arg(ctx.arp, ThriceString);
     if (ctx.flg.left) {
         ctx.buf = thriceBufferAppendString(ctx.buf, str);
     }
@@ -193,7 +194,7 @@ ThriceFormatContext thriceFormatString(ThriceFormatContext ctx)
     return ctx;
 }
 
-Buffer thriceFormatAppend(Buffer buf000, String fmt000, ...)
+Buffer thriceFormatAppend(Buffer buf000, ThriceString fmt000, ...)
 {
     ThriceFormatContext ctx = {.buf = buf000, .fmt = fmt000};
     va_start(ctx.arp, fmt000);

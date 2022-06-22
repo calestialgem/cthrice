@@ -48,9 +48,9 @@ size_t thriceBufferSpace(const Buffer buf)
     return buf.lst - buf.end;
 }
 
-String thriceBufferView(Buffer buf)
+ThriceString thriceBufferView(Buffer buf)
 {
-    return (String){.beg = buf.beg, .end = buf.end};
+    return (ThriceString){.beg = buf.beg, .end = buf.end};
 }
 
 Buffer thriceBufferClear(Buffer buf)
@@ -98,7 +98,7 @@ Buffer thriceBufferAppendU64(Buffer buf, uint64_t u64)
     return buf;
 }
 
-Buffer thriceBufferAppendString(Buffer des, String src)
+Buffer thriceBufferAppendString(Buffer des, ThriceString src)
 {
     const size_t spc = thriceBufferSpace(des);
     const size_t len = thriceStringLength(src);

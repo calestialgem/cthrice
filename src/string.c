@@ -44,18 +44,21 @@ bool thriceDigitHex(const uint8_t chr)
 typedef struct {
     const uint8_t* beg;
     const uint8_t* end;
-} String;
+} ThriceString;
 
-String thriceStringStatic(const char* cstr)
+ThriceString thriceStringStatic(const char* cstr)
 {
-    String str = {.beg = (const uint8_t*)cstr, .end = (const uint8_t*)cstr};
+    ThriceString str = {
+        .beg = (const uint8_t*)cstr,
+        .end = (const uint8_t*)cstr};
     while (*str.end) {
         str.end++;
     }
     return str;
 }
 
-const uint8_t* thriceStringFirstPosChr(const String str, const uint8_t chr)
+const uint8_t*
+thriceStringFirstPosChr(const ThriceString str, const uint8_t chr)
 {
     const uint8_t* pos = str.beg;
     while (pos < str.end && *pos != chr) {
@@ -64,12 +67,12 @@ const uint8_t* thriceStringFirstPosChr(const String str, const uint8_t chr)
     return pos;
 }
 
-size_t thriceStringLength(const String str)
+size_t thriceStringLength(const ThriceString str)
 {
     return str.end - str.beg;
 }
 
-bool thriceStringEquals(const String lhs, const String rhs)
+bool thriceStringEquals(const ThriceString lhs, const ThriceString rhs)
 {
     size_t len = thriceStringLength(lhs);
     if (len != thriceStringLength(rhs)) {
@@ -83,7 +86,7 @@ bool thriceStringEquals(const String lhs, const String rhs)
     return true;
 }
 
-String thriceStringTrim(String str)
+ThriceString thriceStringTrim(ThriceString str)
 {
     while (str.beg < str.end && thriceWhitespace(*str.beg)) {
         str.beg++;
@@ -91,7 +94,7 @@ String thriceStringTrim(String str)
     return str;
 }
 
-String thriceStringFirstWord(String str)
+ThriceString thriceStringFirstWord(ThriceString str)
 {
     const uint8_t* end = str.beg;
 
@@ -103,20 +106,21 @@ String thriceStringFirstWord(String str)
     return str;
 }
 
-String thriceStringPart(String str, const size_t boff, const size_t eoff)
+ThriceString
+thriceStringPart(ThriceString str, const size_t boff, const size_t eoff)
 {
     str.end = str.beg + eoff;
     str.beg += boff;
     return str;
 }
 
-String thriceStringSkip(String str, const size_t amt)
+ThriceString thriceStringSkip(ThriceString str, const size_t amt)
 {
     str.beg += amt;
     return str;
 }
 
-uint64_t thriceStringParseU64(String str)
+uint64_t thriceStringParseU64(ThriceString str)
 {
     uint64_t res = 0;
 

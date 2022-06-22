@@ -63,7 +63,7 @@ const char* thriceTokenName(const ThriceTokenType typ)
 
 typedef struct {
     ThriceTokenType typ;
-    String          val;
+    ThriceString    val;
 } ThriceToken;
 
 void thriceTokenPrint(const ThriceToken tkn)
@@ -91,18 +91,20 @@ void thriceTokenPrint(const ThriceToken tkn)
 }
 
 typedef struct {
-    ThriceToken tkn;
-    String      src;
+    ThriceToken  tkn;
+    ThriceString src;
 } ThriceLexedToken;
 
-String thriceLexerWord(const String src)
+ThriceString thriceLexerWord(const ThriceString src)
 {
-    const String trm = thriceStringTrim(src);
+    const ThriceString trm = thriceStringTrim(src);
     return thriceStringFirstWord(trm);
 }
 
-ThriceLexedToken
-thriceLexerCreate(const ThriceTokenType typ, const String val, const String src)
+ThriceLexedToken thriceLexerCreate(
+    const ThriceTokenType typ,
+    const ThriceString    val,
+    const ThriceString    src)
 {
     return (ThriceLexedToken){
         .tkn = {    .typ = typ,     .val = val},
@@ -110,7 +112,8 @@ thriceLexerCreate(const ThriceTokenType typ, const String val, const String src)
     };
 }
 
-ThriceLexedToken thriceLexerNumber(const String word, const String src)
+ThriceLexedToken
+thriceLexerNumber(const ThriceString word, const ThriceString src)
 {
     const size_t len = thriceStringLength(word);
 
@@ -157,7 +160,7 @@ ThriceLexedToken thriceLexerNumber(const String word, const String src)
 
     return thriceLexerCreate(
         THRICE_TOKEN_INTEGR,
-        (String){.beg = word.beg, .end = end},
+        (ThriceString){.beg = word.beg, .end = end},
         src);
 }
 
@@ -166,17 +169,17 @@ bool thriceLexerIdChr(const uint8_t chr)
     return chr == '_' || thriceLetter(chr);
 }
 
-ThriceLexedToken thriceLex(const String src)
+ThriceLexedToken thriceLex(const ThriceString src)
 {
-    const String word = thriceLexerWord(src);
+    const ThriceString word = thriceLexerWord(src);
 
     if (!thriceStringLength(word)) {
         return thriceLexerCreate(THRICE_TOKEN_EOF, word, src);
     }
 
     { // Check for punctuation.
-        const String   puncs = thriceStringStatic(";()[]{}");
-        const uint8_t* pos   = thriceStringFirstPosChr(puncs, *word.beg);
+        const ThriceString puncs = thriceStringStatic(";()[]{}");
+        const uint8_t*     pos   = thriceStringFirstPosChr(puncs, *word.beg);
 
         if (pos < puncs.end) {
             return thriceLexerCreate(
@@ -198,9 +201,9 @@ ThriceLexedToken thriceLex(const String src)
                (thriceLexerIdChr(*end) || thriceDigit(*end))) {
             end++;
         }
-        const String val = {.beg = word.beg, .end = end};
+        const ThriceString val = {.beg = word.beg, .end = end};
 #define THRICE_LEXER_KEYWORD_COUNT 3
-        const String keywords[THRICE_LEXER_KEYWORD_COUNT] = {
+        const ThriceString keywords[THRICE_LEXER_KEYWORD_COUNT] = {
             thriceStringStatic("sz"),
             thriceStringStatic("str"),
             thriceStringStatic("return"),
@@ -213,7 +216,7 @@ ThriceLexedToken thriceLex(const String src)
         return thriceLexerCreate(THRICE_TOKEN_ID, val, src);
     }
 
-    const String val = thriceStringPart(word, 0, 1);
+    const ThriceString val = thriceStringPart(word, 0, 1);
     return thriceLexerCreate(-1, val, src);
 }
 
