@@ -18,61 +18,61 @@ typedef struct {
     uint8_t* restrict lst;
 } ThriceBuffer;
 
-ThriceBuffer thriceBufferCreate(const size_t n)
+ThriceBuffer ThriceBufferCreate(const size_t n)
 {
     uint8_t* arr = malloc(n);
     if (!arr) {
-        thriceErrorAllocation();
+        ThriceErrorAllocation();
     }
     return (ThriceBuffer){.beg = arr, .end = arr, .lst = arr + n};
 }
 
-ThriceBuffer thriceBufferDestroy(const ThriceBuffer buf)
+ThriceBuffer ThriceBufferDestroy(const ThriceBuffer buf)
 {
     free(buf.beg);
     return (ThriceBuffer){.beg = 0, .end = 0, .lst = 0};
 }
 
-size_t thriceBufferSize(const ThriceBuffer buf)
+size_t ThriceBufferSize(const ThriceBuffer buf)
 {
     return buf.end - buf.beg;
 }
 
-size_t thriceBufferCapacity(const ThriceBuffer buf)
+size_t ThriceBufferCapacity(const ThriceBuffer buf)
 {
     return buf.lst - buf.beg;
 }
 
-size_t thriceBufferSpace(const ThriceBuffer buf)
+size_t ThriceBufferSpace(const ThriceBuffer buf)
 {
     return buf.lst - buf.end;
 }
 
-ThriceString thriceBufferView(ThriceBuffer buf)
+ThriceString ThriceBufferView(ThriceBuffer buf)
 {
     return (ThriceString){.beg = buf.beg, .end = buf.end};
 }
 
-ThriceBuffer thriceBufferClear(ThriceBuffer buf)
+ThriceBuffer ThriceBufferClear(ThriceBuffer buf)
 {
     buf.end = buf.beg;
     return buf;
 }
 
-ThriceBuffer thriceBufferGrow(ThriceBuffer buf, size_t cap)
+ThriceBuffer ThriceBufferGrow(ThriceBuffer buf, size_t cap)
 {
     uint8_t* const restrict arr = realloc(buf.beg, cap);
     if (!arr) {
-        thriceErrorAllocation();
+        ThriceErrorAllocation();
     }
     buf.lst = arr + cap;
     return buf;
 }
 
-ThriceBuffer thriceBufferAppendU8(ThriceBuffer buf, const uint8_t chr)
+ThriceBuffer ThriceBufferAppendU8(ThriceBuffer buf, const uint8_t chr)
 {
-    if (thriceBufferSpace(buf) < 1) {
-        buf = thriceBufferGrow(buf, 2 * thriceBufferCapacity(buf));
+    if (ThriceBufferSpace(buf) < 1) {
+        buf = ThriceBufferGrow(buf, 2 * ThriceBufferCapacity(buf));
     }
 
     *(buf.end) = chr;
@@ -80,7 +80,7 @@ ThriceBuffer thriceBufferAppendU8(ThriceBuffer buf, const uint8_t chr)
     return buf;
 }
 
-ThriceBuffer thriceBufferAppendU64(ThriceBuffer buf, uint64_t u64)
+ThriceBuffer ThriceBufferAppendU64(ThriceBuffer buf, uint64_t u64)
 {
     const uint64_t base  = 10;
     uint64_t       place = base;
@@ -91,46 +91,46 @@ ThriceBuffer thriceBufferAppendU64(ThriceBuffer buf, uint64_t u64)
             break;
         }
         place /= base;
-        buf = thriceBufferAppendU8(buf, '0' + (uint8_t)(u64 / place));
+        buf = ThriceBufferAppendU8(buf, '0' + (uint8_t)(u64 / place));
         u64 %= place;
     }
 
     return buf;
 }
 
-ThriceBuffer thriceBufferAppendString(ThriceBuffer des, ThriceString src)
+ThriceBuffer ThriceBufferAppendString(ThriceBuffer des, ThriceString src)
 {
-    const size_t spc = thriceBufferSpace(des);
-    const size_t len = thriceStringLength(src);
+    const size_t spc = ThriceBufferSpace(des);
+    const size_t len = ThriceStringLength(src);
     if (spc < len) {
-        des = thriceBufferGrow(des, len - spc);
+        des = ThriceBufferGrow(des, len - spc);
     }
 
     memcpy(des.end, src.beg, len);
     return des;
 }
 
-ThriceBuffer thriceBufferAppendFile(ThriceBuffer buf, const char* const name)
+ThriceBuffer ThriceBufferAppendFile(ThriceBuffer buf, const char* const name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {
-        thriceError("Could not open file!");
+        ThriceError("Could not open file!");
     }
 
     const size_t red = 1024;
     size_t       app = red;
 
     while (red == app) {
-        const size_t spc = thriceBufferSpace(buf);
+        const size_t spc = ThriceBufferSpace(buf);
         if (spc < red) {
-            buf = thriceBufferGrow(buf, red - spc);
+            buf = ThriceBufferGrow(buf, red - spc);
         }
         app = fread(buf.end, 1, red, file);
         buf.end += app;
     }
 
     if (!feof(file)) {
-        thriceError("Problem while reading!");
+        ThriceError("Problem while reading!");
     }
 
     fclose(file);

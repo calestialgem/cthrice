@@ -10,13 +10,13 @@
 
 #define THRICE_ERROR_ALLOC 2
 
-void thriceErrorAllocation(void)
+void ThriceErrorAllocation(void)
 {
     fprintf(stderr, "ERROR: Could not allocate memory!\n");
     exit(THRICE_ERROR_ALLOC);
 }
 
-void thriceError(const char* msg)
+void ThriceError(const char* msg)
 {
     static bool once = false;
     if (once) {
