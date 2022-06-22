@@ -11,11 +11,11 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-const uint8_t     fmtmeta  = '%';
-const uint8_t     fmtdyna  = '*';
-const uint8_t     fmtprec  = '.';
-const char* const fmtflags = "-+ #0";
-const char* const fmtspec  = "csdioxXufFeEaAgGnP";
+const uint8_t     THRICE_FORMAT_INTRODUCTORY   = '%';
+const uint8_t     THRICE_FORMAT_WIDTH          = '*';
+const uint8_t     THRICE_FORMAT_PRECISION      = '.';
+const char* const THRICE_FORMAT_FLAGS          = "-+ #0";
+const char* const THRICE_FORMAT_SPECIFICATIONS = "csdioxXufFeEaAgGnP";
 
 union fmtf {
     bool dat[5];
@@ -47,7 +47,7 @@ struct fmtc thriceFormatConsume(struct fmtc ctx)
 
 struct fmtc thriceFormatSkip(struct fmtc ctx)
 {
-    ctx.crt = thriceStringFirstPosChr(ctx.fmt, fmtmeta);
+    ctx.crt = thriceStringFirstPosChr(ctx.fmt, THRICE_FORMAT_INTRODUCTORY);
     ctx.buf = thriceBufferAppendString(
         ctx.buf,
         (String){.beg = ctx.fmt.beg, .end = ctx.crt});
@@ -61,8 +61,8 @@ struct fmtc thriceFormatEscape(struct fmtc ctx)
     }
     ctx.crt++;
     ctx = thriceFormatConsume(ctx);
-    if (*ctx.crt == fmtmeta) {
-        ctx.buf = thriceBufferAppendU8(ctx.buf, fmtmeta);
+    if (*ctx.crt == THRICE_FORMAT_INTRODUCTORY) {
+        ctx.buf = thriceBufferAppendU8(ctx.buf, THRICE_FORMAT_INTRODUCTORY);
         ctx.crt++;
     }
     return ctx;
@@ -70,7 +70,7 @@ struct fmtc thriceFormatEscape(struct fmtc ctx)
 
 struct fmtc thriceFormatFlags(struct fmtc ctx)
 {
-    const String flags = thriceStringStatic(fmtflags);
+    const String flags = thriceStringStatic(THRICE_FORMAT_FLAGS);
     for (; ctx.crt < ctx.fmt.end; ctx.crt++) {
         const uint8_t* pos = thriceStringFirstPosChr(flags, *ctx.crt);
         if (pos == flags.end) {
@@ -89,7 +89,7 @@ struct fmtc thriceFormatFlags(struct fmtc ctx)
 struct fmtc thriceFormatNumber(struct fmtc ctx, bool const wid)
 {
     uint32_t num = 0;
-    if (*ctx.crt == fmtdyna) {
+    if (*ctx.crt == THRICE_FORMAT_WIDTH) {
         num = va_arg(ctx.arp, uint32_t);
         ctx.crt++;
     } else if (thriceDigit(*ctx.crt)) {
@@ -113,8 +113,8 @@ struct fmtc thriceFormatNumber(struct fmtc ctx, bool const wid)
 
 struct fmtc thriceFormatModifier(struct fmtc ctx)
 {
-    const String   specifiers = thriceStringStatic(fmtspec);
-    const uint8_t* pos        = thriceStringFirstPosChr(specifiers, *ctx.crt);
+    const String specifiers = thriceStringStatic(THRICE_FORMAT_SPECIFICATIONS);
+    const uint8_t* pos      = thriceStringFirstPosChr(specifiers, *ctx.crt);
 
     while (ctx.crt < ctx.fmt.end && pos < specifiers.end) {
         pos = thriceStringFirstPosChr(specifiers, *ctx.crt);
