@@ -16,50 +16,50 @@ typedef struct {
     uint8_t* restrict beg;
     uint8_t* restrict end;
     uint8_t* restrict lst;
-} Buffer;
+} ThriceBuffer;
 
-Buffer thriceBufferCreate(const size_t n)
+ThriceBuffer thriceBufferCreate(const size_t n)
 {
     uint8_t* arr = malloc(n);
     if (!arr) {
         thriceErrorAllocation();
     }
-    return (Buffer){.beg = arr, .end = arr, .lst = arr + n};
+    return (ThriceBuffer){.beg = arr, .end = arr, .lst = arr + n};
 }
 
-Buffer thriceBufferDestroy(const Buffer buf)
+ThriceBuffer thriceBufferDestroy(const ThriceBuffer buf)
 {
     free(buf.beg);
-    return (Buffer){.beg = 0, .end = 0, .lst = 0};
+    return (ThriceBuffer){.beg = 0, .end = 0, .lst = 0};
 }
 
-size_t thriceBufferSize(const Buffer buf)
+size_t thriceBufferSize(const ThriceBuffer buf)
 {
     return buf.end - buf.beg;
 }
 
-size_t thriceBufferCapacity(const Buffer buf)
+size_t thriceBufferCapacity(const ThriceBuffer buf)
 {
     return buf.lst - buf.beg;
 }
 
-size_t thriceBufferSpace(const Buffer buf)
+size_t thriceBufferSpace(const ThriceBuffer buf)
 {
     return buf.lst - buf.end;
 }
 
-ThriceString thriceBufferView(Buffer buf)
+ThriceString thriceBufferView(ThriceBuffer buf)
 {
     return (ThriceString){.beg = buf.beg, .end = buf.end};
 }
 
-Buffer thriceBufferClear(Buffer buf)
+ThriceBuffer thriceBufferClear(ThriceBuffer buf)
 {
     buf.end = buf.beg;
     return buf;
 }
 
-Buffer thriceBufferGrow(Buffer buf, size_t cap)
+ThriceBuffer thriceBufferGrow(ThriceBuffer buf, size_t cap)
 {
     uint8_t* const restrict arr = realloc(buf.beg, cap);
     if (!arr) {
@@ -69,7 +69,7 @@ Buffer thriceBufferGrow(Buffer buf, size_t cap)
     return buf;
 }
 
-Buffer thriceBufferAppendU8(Buffer buf, const uint8_t chr)
+ThriceBuffer thriceBufferAppendU8(ThriceBuffer buf, const uint8_t chr)
 {
     if (thriceBufferSpace(buf) < 1) {
         buf = thriceBufferGrow(buf, 2 * thriceBufferCapacity(buf));
@@ -80,7 +80,7 @@ Buffer thriceBufferAppendU8(Buffer buf, const uint8_t chr)
     return buf;
 }
 
-Buffer thriceBufferAppendU64(Buffer buf, uint64_t u64)
+ThriceBuffer thriceBufferAppendU64(ThriceBuffer buf, uint64_t u64)
 {
     const uint64_t base  = 10;
     uint64_t       place = base;
@@ -98,7 +98,7 @@ Buffer thriceBufferAppendU64(Buffer buf, uint64_t u64)
     return buf;
 }
 
-Buffer thriceBufferAppendString(Buffer des, ThriceString src)
+ThriceBuffer thriceBufferAppendString(ThriceBuffer des, ThriceString src)
 {
     const size_t spc = thriceBufferSpace(des);
     const size_t len = thriceStringLength(src);
@@ -110,7 +110,7 @@ Buffer thriceBufferAppendString(Buffer des, ThriceString src)
     return des;
 }
 
-Buffer thriceBufferAppendFile(Buffer buf, const char* const name)
+ThriceBuffer thriceBufferAppendFile(ThriceBuffer buf, const char* const name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {
