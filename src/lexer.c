@@ -25,9 +25,9 @@ typedef enum {
     THRICE_TOKEN_KRETRN,
     THRICE_TOKEN_ID,
     THRICE_TOKEN_EOF
-} ThriceTokenType;
+} thr_tkn_typ;
 
-const char* thriceTokenName(const ThriceTokenType typ)
+const char* thriceTokenName(const thr_tkn_typ typ)
 {
     switch (typ) {
         case THRICE_TOKEN_SEMCLN:
@@ -62,8 +62,8 @@ const char* thriceTokenName(const ThriceTokenType typ)
 }
 
 typedef struct {
-    ThriceTokenType typ;
-    thr_str         val;
+    thr_tkn_typ typ;
+    thr_str     val;
 } ThriceToken;
 
 void thriceTokenPrint(const ThriceToken tkn)
@@ -101,10 +101,8 @@ thr_str thriceLexerWord(const thr_str src)
     return thriceStringFirstWord(trm);
 }
 
-ThriceLexedToken thriceLexerCreate(
-    const ThriceTokenType typ,
-    const thr_str         val,
-    const thr_str         src)
+ThriceLexedToken
+thriceLexerCreate(const thr_tkn_typ typ, const thr_str val, const thr_str src)
 {
     return (ThriceLexedToken){
         .tkn = {    .typ = typ,     .val = val},
