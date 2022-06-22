@@ -14,13 +14,13 @@ int main(int const argc, const char* const* argv)
         printf("Provide a Thrice file!");
     }
     const size_t CAP = 1024;
-    ThriceBuffer bfr = thriceBufferCreate(CAP);
+    ThriceBuffer buf = thriceBufferCreate(CAP);
 
     for (int i = 1; i < argc; i++) {
-        bfr = thriceBufferClear(bfr);
-        bfr = thriceBufferAppendFile(bfr, argv[i]);
+        buf = thriceBufferClear(buf);
+        buf = thriceBufferAppendFile(buf, argv[i]);
 
-        ThriceString     src = thriceBufferView(bfr);
+        ThriceString     src = thriceBufferView(buf);
         ThriceLexedToken lex = thriceLex(src);
 
         while (lex.tkn.typ != THRICE_TOKEN_EOF) {
@@ -29,6 +29,6 @@ int main(int const argc, const char* const* argv)
         }
     }
 
-    thriceBufferDestroy(bfr);
+    thriceBufferDestroy(buf);
     return EXIT_SUCCESS;
 }
