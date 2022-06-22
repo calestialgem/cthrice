@@ -64,9 +64,9 @@ const char* thriceTokenName(const thr_tkn_typ typ)
 typedef struct {
     thr_tkn_typ typ;
     thr_str     val;
-} ThriceToken;
+} thr_tkn;
 
-void thriceTokenPrint(const ThriceToken tkn)
+void thriceTokenPrint(const thr_tkn tkn)
 {
     printf("%s", thriceTokenName(tkn.typ));
     switch (tkn.typ) {
@@ -91,8 +91,8 @@ void thriceTokenPrint(const ThriceToken tkn)
 }
 
 typedef struct {
-    ThriceToken tkn;
-    thr_str     src;
+    thr_tkn tkn;
+    thr_str src;
 } ThriceLexedToken;
 
 thr_str thriceLexerWord(const thr_str src)
