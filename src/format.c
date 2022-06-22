@@ -31,7 +31,7 @@ typedef union {
 
 typedef struct {
     va_list           arp;
-    ThriceBuffer      buf;
+    thr_buf           buf;
     ThriceString      fmt;
     const uint8_t*    crt;
     ThriceFormatFlags flg;
@@ -194,7 +194,7 @@ ThriceFormatContext thriceFormatString(ThriceFormatContext ctx)
     return ctx;
 }
 
-ThriceBuffer thriceFormatAppend(ThriceBuffer buf000, ThriceString fmt000, ...)
+thr_buf thriceFormatAppend(thr_buf buf000, ThriceString fmt000, ...)
 {
     ThriceFormatContext ctx = {.buf = buf000, .fmt = fmt000};
     va_start(ctx.arp, fmt000);

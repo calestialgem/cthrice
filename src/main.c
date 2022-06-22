@@ -14,7 +14,7 @@ int main(int const argc, const char* const* argv)
         printf("Provide a Thrice file!");
     }
     const size_t CAP = 1024;
-    ThriceBuffer buf = thriceBufferCreate(CAP);
+    thr_buf      buf = thriceBufferCreate(CAP);
 
     for (int i = 1; i < argc; i++) {
         buf = thriceBufferClear(buf);
