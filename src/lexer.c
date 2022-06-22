@@ -90,10 +90,10 @@ void thriceTokenPrint(const ThriceToken tkn)
     printf("\n");
 }
 
-struct lex {
+typedef struct {
     ThriceToken tkn;
     String      src;
-};
+} ThriceLexedToken;
 
 String thriceLexerWord(const String src)
 {
@@ -101,16 +101,16 @@ String thriceLexerWord(const String src)
     return thriceStringFirstWord(trm);
 }
 
-struct lex
+ThriceLexedToken
 thriceLexerCreate(const ThriceTokenType typ, const String val, const String src)
 {
-    return (struct lex){
+    return (ThriceLexedToken){
         .tkn = {    .typ = typ,     .val = val},
         .src = {.beg = val.end, .end = src.end}
     };
 }
 
-struct lex thriceLexerNumber(const String word, const String src)
+ThriceLexedToken thriceLexerNumber(const String word, const String src)
 {
     const size_t len = thriceStringLength(word);
 
@@ -166,7 +166,7 @@ bool thriceLexerIdChr(const uint8_t chr)
     return chr == '_' || thriceLetter(chr);
 }
 
-struct lex thriceLex(const String src)
+ThriceLexedToken thriceLex(const String src)
 {
     const String word = thriceLexerWord(src);
 
