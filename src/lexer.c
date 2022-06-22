@@ -61,12 +61,12 @@ const char* thriceTokenName(const ThriceTokenType typ)
     }
 }
 
-struct tkn {
+typedef struct {
     ThriceTokenType typ;
     String          val;
-};
+} ThriceToken;
 
-void thriceTokenPrint(const struct tkn tkn)
+void thriceTokenPrint(const ThriceToken tkn)
 {
     printf("%s", thriceTokenName(tkn.typ));
     switch (tkn.typ) {
@@ -91,8 +91,8 @@ void thriceTokenPrint(const struct tkn tkn)
 }
 
 struct lex {
-    struct tkn tkn;
-    String     src;
+    ThriceToken tkn;
+    String      src;
 };
 
 String thriceLexerWord(const String src)
