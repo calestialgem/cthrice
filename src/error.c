@@ -8,24 +8,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CTHRICE_ERROR_LOGIC 1
 #define CTHRICE_ERROR_ALLOC 2
+
+void cthrice_error(const char* msg)
+{
+    fprintf(stderr, "ERROR: %s\n", msg);
+    exit(CTHRICE_ERROR_LOGIC);
+}
 
 void cthrice_error_alloc(void)
 {
     fprintf(stderr, "ERROR: Could not allocate memory!\n");
     exit(CTHRICE_ERROR_ALLOC);
-}
-
-void cthrice_error(const char* msg)
-{
-    static bool once = false;
-    if (once) {
-        fprintf(stderr, "ERROR: Called exit again!\n");
-    } else {
-        once = true;
-        fprintf(stderr, "ERROR: %s\n", msg);
-        exit(EXIT_FAILURE);
-    }
 }
 
 #endif // CTHRICE_ERROR
