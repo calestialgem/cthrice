@@ -4,14 +4,15 @@
 #ifndef CTHRICE_ERROR
 #define CTHRICE_ERROR
 
-#include <stdbool.h>
+#include "scalar.c"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #define CTHRICE_ERROR_LOGIC 1
 #define CTHRICE_ERROR_ALLOC 2
 
-void cthrice_error(const char* msg)
+void cthrice_error(ichr* msg)
 {
     fprintf(stderr, "ERROR: %s\n", msg);
     exit(CTHRICE_ERROR_LOGIC);
