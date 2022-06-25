@@ -4,80 +4,74 @@
 #ifndef CTHRICE_STRING
 #define CTHRICE_STRING
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "scalar.c"
 
-bool cthrice_whitespace(uint8_t chr)
+bool cthrice_whitespace(uchr chr)
 {
     return chr == '\n' || chr == '\r' || chr == '\t' || chr == ' ';
 }
 
-bool cthrice_letter(uint8_t chr)
+bool cthrice_letter(uchr chr)
 {
     return ('A' <= chr && 'Z' >= chr) || ('a' <= chr && 'z' >= chr);
 }
 
-bool cthrice_digit(uint8_t chr)
+bool cthrice_digit(uchr chr)
 {
     return '0' <= chr && '9' >= chr;
 }
 
-bool cthrice_digit_bin(uint8_t chr)
+bool cthrice_digit_bin(uchr chr)
 {
     return '0' <= chr && '1' >= chr;
 }
 
-bool cthrice_digit_oct(uint8_t chr)
+bool cthrice_digit_oct(uchr chr)
 {
     return '0' <= chr && '7' >= chr;
 }
 
-bool cthrice_digit_hex(uint8_t chr)
+bool cthrice_digit_hex(uchr chr)
 {
     return ('0' <= chr && '9' >= chr) || ('A' <= chr && 'F' >= chr) ||
            ('a' <= chr && 'f' >= chr);
 }
 
 typedef struct {
-    const uint8_t* bgn;
-    const uint8_t* end;
+    uchr* bgn;
+    uchr* end;
 } Cthrice_String;
 
-Cthrice_String cthrice_string_static(const char* cstr)
+Cthrice_String cthrice_string_static(ichr* cstr)
 {
-    Cthrice_String str = {
-        .bgn = (const uint8_t*)cstr,
-        .end = (const uint8_t*)cstr};
+    Cthrice_String str = {.bgn = (uchr*)cstr, .end = (uchr*)cstr};
     while (*str.end) {
         str.end++;
     }
     return str;
 }
 
-const uint8_t* cthrice_string_first_pos_chr(Cthrice_String str, uint8_t chr)
+uchr* cthrice_string_first_pos_chr(Cthrice_String str, uchr chr)
 {
-    const uint8_t* pos = str.bgn;
+    uchr* pos = str.bgn;
     while (pos < str.end && *pos != chr) {
         pos++;
     }
     return pos;
 }
 
-size_t cthrice_string_length(Cthrice_String str)
+uptr cthrice_string_length(Cthrice_String str)
 {
     return str.end - str.bgn;
 }
 
 bool cthrice_string_equals(Cthrice_String lhs, Cthrice_String rhs)
 {
-    size_t len = cthrice_string_length(lhs);
+    uptr len = cthrice_string_length(lhs);
     if (len != cthrice_string_length(rhs)) {
         return false;
     }
-    for (size_t i = 0; i < len; i++) {
+    for (uptr i = 0; i < len; i++) {
         if (*(lhs.bgn + i) != *(rhs.bgn + i)) {
             return false;
         }
@@ -95,7 +89,7 @@ Cthrice_String cthrice_string_trim(Cthrice_String str)
 
 Cthrice_String cthrice_string_first_word(Cthrice_String str)
 {
-    const uint8_t* end = str.bgn;
+    uchr* end = str.bgn;
 
     while (end < str.end && !cthrice_whitespace(*end)) {
         end++;
@@ -105,25 +99,25 @@ Cthrice_String cthrice_string_first_word(Cthrice_String str)
     return str;
 }
 
-Cthrice_String cthrice_string_part(Cthrice_String str, size_t boff, size_t eoff)
+Cthrice_String cthrice_string_part(Cthrice_String str, uptr boff, uptr eoff)
 {
     str.end = str.bgn + eoff;
     str.bgn += boff;
     return str;
 }
 
-Cthrice_String cthrice_string_skip(Cthrice_String str, size_t amt)
+Cthrice_String cthrice_string_skip(Cthrice_String str, uptr amt)
 {
     str.bgn += amt;
     return str;
 }
 
-uint64_t cthrice_string_parse_u64(Cthrice_String str)
+unt64 cthrice_string_parse_u64(Cthrice_String str)
 {
-    uint64_t res = 0;
+    unt64 res = 0;
 
-    for (const uint8_t* i = str.bgn; i < str.end; i++) {
-        const uint64_t BASE = 10;
+    for (uchr* i = str.bgn; i < str.end; i++) {
+        const unt64 BASE = 10;
         res *= BASE;
         res += *i - '0';
     }
