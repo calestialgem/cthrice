@@ -73,7 +73,7 @@ Cthrice_Format_Context cthrice_format_escape(Cthrice_Format_Context ctx)
 
 Cthrice_Format_Context cthrice_format_flags(Cthrice_Format_Context ctx)
 {
-    const Cthrice_String flags = cthrice_string_static(CTHRICE_FORMAT_FLAGS);
+    Cthrice_String flags = cthrice_string_static(CTHRICE_FORMAT_FLAGS);
     for (; ctx.crt < ctx.fmt.end; ctx.crt++) {
         const uint8_t* pos = cthrice_string_first_pos_chr(flags, *ctx.crt);
         if (pos == flags.end) {
@@ -90,7 +90,7 @@ Cthrice_Format_Context cthrice_format_flags(Cthrice_Format_Context ctx)
 }
 
 Cthrice_Format_Context
-cthrice_format_number(Cthrice_Format_Context ctx, bool const wid)
+cthrice_format_number(Cthrice_Format_Context ctx, bool wid)
 {
     uint32_t num = 0;
     if (*ctx.crt == CTHRICE_FORMAT_WIDTH) {
@@ -117,7 +117,7 @@ cthrice_format_number(Cthrice_Format_Context ctx, bool const wid)
 
 Cthrice_Format_Context cthrice_format_modifier(Cthrice_Format_Context ctx)
 {
-    const Cthrice_String specifiers =
+    Cthrice_String specifiers =
         cthrice_string_static(CTHRICE_FORMAT_SPECIFICATIONS);
     const uint8_t* pos = cthrice_string_first_pos_chr(specifiers, *ctx.crt);
 
@@ -126,14 +126,14 @@ Cthrice_Format_Context cthrice_format_modifier(Cthrice_Format_Context ctx)
         ctx.crt++;
     }
 
-    const Cthrice_String mod = {.bgn = ctx.fmt.bgn, .end = ctx.crt};
+    Cthrice_String mod = {.bgn = ctx.fmt.bgn, .end = ctx.crt};
 
     if (ctx.crt == ctx.fmt.end) {
         cthrice_error("No format conversion specifier!");
     }
 
 #define CTHRICE_FORMAT_MOD_COUNT 9
-    const Cthrice_String mods[CTHRICE_FORMAT_MOD_COUNT] = {
+    Cthrice_String mods[CTHRICE_FORMAT_MOD_COUNT] = {
         cthrice_string_static(""),
         cthrice_string_static("hh"),
         cthrice_string_static("h"),
@@ -162,7 +162,7 @@ Cthrice_Format_Context cthrice_format_chr(Cthrice_Format_Context ctx)
     if (ctx.mod != 0) {
         cthrice_error("Unsupported length modifier for formatting a char!");
     }
-    const uint8_t chr = (uint8_t)va_arg(ctx.arp, int);
+    uint8_t chr = (uint8_t)va_arg(ctx.arp, int);
     if (ctx.flg.left) {
         ctx.bfr = cthrice_buffer_append_u8(ctx.bfr, chr);
     }
@@ -182,7 +182,7 @@ Cthrice_Format_Context cthrice_format_string(Cthrice_Format_Context ctx)
     if (ctx.mod != 0) {
         cthrice_error("Unsupported length modifier for formatting a string!");
     }
-    const Cthrice_String str = va_arg(ctx.arp, Cthrice_String);
+    Cthrice_String str = va_arg(ctx.arp, Cthrice_String);
     if (ctx.flg.left) {
         ctx.bfr = cthrice_buffer_append_string(ctx.bfr, str);
     }
