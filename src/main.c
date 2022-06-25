@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int const argc, const char* const* argv)
+int main(int argc, const char** argv)
 {
     if (argc < 2) {
         printf("Provide a Thrice file!");
