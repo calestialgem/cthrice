@@ -3,17 +3,17 @@
 
 #include "buffer.c"
 #include "lexer.c"
+#include "scalar.c"
 #include "string.c"
 
 #include <stdio.h>
-#include <stdlib.h>
 
-int main(int argc, const char** argv)
+int main(int argc, char** argv)
 {
     if (argc < 2) {
         printf("Provide a Thrice file!");
     }
-    const size_t   CAPPACITY = 1024;
+    const uptr     CAPPACITY = 1024;
     Cthrice_Buffer buf       = cthrice_buffer_create(CAPPACITY);
 
     for (int i = 1; i < argc; i++) {
