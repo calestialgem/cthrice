@@ -13,19 +13,19 @@ int main(int const argc, const char* const* argv)
     if (argc < 2) {
         printf("Provide a Thrice file!");
     }
-    const size_t   CAP = 1024;
-    Cthrice_Buffer buf = cthrice_buffer_create(CAP);
+    const size_t   CAPPACITY = 1024;
+    Cthrice_Buffer buf       = cthrice_buffer_create(CAPPACITY);
 
     for (int i = 1; i < argc; i++) {
         buf = cthrice_buffer_clear(buf);
         buf = cthrice_buffer_append_file(buf, argv[i]);
 
-        Cthrice_String src = cthrice_buffer_view(buf);
-        thr_lxd_tkn    lex = thriceLex(src);
+        Cthrice_String      src = cthrice_buffer_view(buf);
+        Cthrice_Lexed_Token lex = cthrice_lex(src);
 
-        while (lex.tkn.typ != THR_TOKEN_END_OF_FILE) {
-            thriceTokenPrint(lex.tkn);
-            lex = thriceLex(lex.src);
+        while (lex.tkn.typ != CTHRICE_TOKEN_END_OF_FILE) {
+            cthrice_token_print(lex.tkn);
+            lex = cthrice_lex(lex.src);
         }
     }
 

@@ -119,15 +119,15 @@ cthrice_buffer_append_file(Cthrice_Buffer buf, const char* const name)
         cthrice_error("Could not open file!");
     }
 
-    const size_t red = 1024;
-    size_t       app = red;
+    const size_t READ_LENGTH = 1024;
+    size_t       app         = READ_LENGTH;
 
-    while (red == app) {
+    while (READ_LENGTH == app) {
         const size_t spc = cthrice_buffer_space(buf);
-        if (spc < red) {
-            buf = cthrice_buffer_grow(buf, red - spc);
+        if (spc < READ_LENGTH) {
+            buf = cthrice_buffer_grow(buf, READ_LENGTH - spc);
         }
-        app = fread(buf.end, 1, red, file);
+        app = fread(buf.end, 1, READ_LENGTH, file);
         buf.end += app;
     }
 
