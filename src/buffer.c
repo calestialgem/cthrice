@@ -18,117 +18,116 @@ typedef struct {
     uint8_t* restrict lst;
 } Cthrice_Buffer;
 
-Cthrice_Buffer cthrice_buffer_create(const size_t n)
+Cthrice_Buffer cthrice_buffer_create(size_t len)
 {
-    uint8_t* arr = malloc(n);
-    if (!arr) {
+    uint8_t* restrict mem = malloc(len);
+    if (!mem) {
         cthrice_error_alloc();
     }
-    return (Cthrice_Buffer){.bgn = arr, .end = arr, .lst = arr + n};
+    return (Cthrice_Buffer){.bgn = mem, .end = mem, .lst = mem + len};
 }
 
-Cthrice_Buffer cthrice_buffer_destroy(const Cthrice_Buffer buf)
+Cthrice_Buffer cthrice_buffer_destroy(Cthrice_Buffer bfr)
 {
-    free(buf.bgn);
+    free(bfr.bgn);
     return (Cthrice_Buffer){.bgn = 0, .end = 0, .lst = 0};
 }
 
-size_t cthrice_buffer_size(const Cthrice_Buffer buf)
+size_t cthrice_buffer_size(Cthrice_Buffer bfr)
 {
-    return buf.end - buf.bgn;
+    return bfr.end - bfr.bgn;
 }
 
-size_t cthrice_buffer_capacity(const Cthrice_Buffer buf)
+size_t cthrice_buffer_capacity(Cthrice_Buffer bfr)
 {
-    return buf.lst - buf.bgn;
+    return bfr.lst - bfr.bgn;
 }
 
-size_t cthrice_buffer_space(const Cthrice_Buffer buf)
+size_t cthrice_buffer_space(Cthrice_Buffer bfr)
 {
-    return buf.lst - buf.end;
+    return bfr.lst - bfr.end;
 }
 
-Cthrice_String cthrice_buffer_view(Cthrice_Buffer buf)
+Cthrice_String cthrice_buffer_view(Cthrice_Buffer bfr)
 {
-    return (Cthrice_String){.bgn = buf.bgn, .end = buf.end};
+    return (Cthrice_String){.bgn = bfr.bgn, .end = bfr.end};
 }
 
-Cthrice_Buffer cthrice_buffer_clear(Cthrice_Buffer buf)
+Cthrice_Buffer cthrice_buffer_clear(Cthrice_Buffer bfr)
 {
-    buf.end = buf.bgn;
-    return buf;
+    bfr.end = bfr.bgn;
+    return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer buf, size_t cap)
+Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, size_t cap)
 {
-    uint8_t* const restrict arr = realloc(buf.bgn, cap);
-    if (!arr) {
+    uint8_t* restrict mem = realloc(bfr.bgn, cap);
+    if (!mem) {
         cthrice_error_alloc();
     }
-    buf.lst = arr + cap;
-    return buf;
+    bfr.lst = mem + cap;
+    return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_append_u8(Cthrice_Buffer buf, const uint8_t chr)
+Cthrice_Buffer cthrice_buffer_append_u8(Cthrice_Buffer bfr, uint8_t chr)
 {
-    if (cthrice_buffer_space(buf) < 1) {
-        buf = cthrice_buffer_grow(buf, 2 * cthrice_buffer_capacity(buf));
+    if (cthrice_buffer_space(bfr) < 1) {
+        bfr = cthrice_buffer_grow(bfr, 2 * cthrice_buffer_capacity(bfr));
     }
 
-    *(buf.end) = chr;
-    buf.end++;
-    return buf;
+    *(bfr.end) = chr;
+    bfr.end++;
+    return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_append_u64(Cthrice_Buffer buf, uint64_t u64)
+Cthrice_Buffer cthrice_buffer_append_u64(Cthrice_Buffer bfr, uint64_t unt)
 {
-    const uint64_t base  = 10;
-    uint64_t       place = base;
+    const uint64_t BASE  = 10;
+    uint64_t       place = BASE;
 
-    while (place != 1) {
-        if (u64 > place) {
-            place *= base;
+    while (1 != place) {
+        if (unt > place) {
+            place *= BASE;
             break;
         }
-        place /= base;
-        buf = cthrice_buffer_append_u8(buf, '0' + (uint8_t)(u64 / place));
-        u64 %= place;
+        place /= BASE;
+        bfr = cthrice_buffer_append_u8(bfr, '0' + (uint8_t)(unt / place));
+        unt %= place;
     }
 
-    return buf;
+    return bfr;
 }
 
 Cthrice_Buffer
-cthrice_buffer_append_string(Cthrice_Buffer des, Cthrice_String src)
+cthrice_buffer_append_string(Cthrice_Buffer bfr, Cthrice_String str)
 {
-    const size_t spc = cthrice_buffer_space(des);
-    const size_t len = cthrice_string_length(src);
+    size_t spc = cthrice_buffer_space(bfr);
+    size_t len = cthrice_string_length(str);
     if (spc < len) {
-        des = cthrice_buffer_grow(des, len - spc);
+        bfr = cthrice_buffer_grow(bfr, len - spc);
     }
 
-    memcpy(des.end, src.bgn, len);
-    return des;
+    memcpy(bfr.end, str.bgn, len);
+    return bfr;
 }
 
-Cthrice_Buffer
-cthrice_buffer_append_file(Cthrice_Buffer buf, const char* const name)
+Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, const char* name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {
         cthrice_error("Could not open file!");
     }
 
-    const size_t READ_LENGTH = 1024;
-    size_t       app         = READ_LENGTH;
+    const size_t CHUNK = 1024;
+    size_t       wrt   = CHUNK;
 
-    while (READ_LENGTH == app) {
-        const size_t spc = cthrice_buffer_space(buf);
-        if (spc < READ_LENGTH) {
-            buf = cthrice_buffer_grow(buf, READ_LENGTH - spc);
+    while (CHUNK == wrt) {
+        size_t spc = cthrice_buffer_space(bfr);
+        if (spc < CHUNK) {
+            bfr = cthrice_buffer_grow(bfr, CHUNK - spc);
         }
-        app = fread(buf.end, 1, READ_LENGTH, file);
-        buf.end += app;
+        wrt = fread(bfr.end, 1, CHUNK, file);
+        bfr.end += wrt;
     }
 
     if (!feof(file)) {
@@ -136,7 +135,7 @@ cthrice_buffer_append_file(Cthrice_Buffer buf, const char* const name)
     }
 
     fclose(file);
-    return buf;
+    return bfr;
 }
 
 #endif // CTHRICE_BUFFER
