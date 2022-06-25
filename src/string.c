@@ -72,7 +72,7 @@ bool cthrice_string_equals(Cthrice_String lhs, Cthrice_String rhs)
         return false;
     }
     for (uptr i = 0; i < len; i++) {
-        if (*(lhs.bgn + i) != *(rhs.bgn + i)) {
+        if (lhs.bgn[i] != rhs.bgn[i]) {
             return false;
         }
     }
