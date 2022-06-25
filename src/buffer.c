@@ -5,26 +5,25 @@
 #define CTHRICE_BUFFER
 
 #include "error.c"
+#include "scalar.c"
 #include "string.c"
 
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
-    uint8_t* restrict bgn;
-    uint8_t* restrict end;
-    uint8_t* restrict lst;
+    unt8* restrict bgn;
+    unt8* restrict end;
+    unt8* restrict lst;
 } Cthrice_Buffer;
 
-Cthrice_Buffer cthrice_buffer_create(size_t len)
+Cthrice_Buffer cthrice_buffer_create(uptr cap)
 {
-    uint8_t* restrict mem = malloc(len);
+    unt8* restrict mem = malloc(cap);
     if (!mem) {
         cthrice_error_alloc();
     }
-    return (Cthrice_Buffer){.bgn = mem, .end = mem, .lst = mem + len};
+    return (Cthrice_Buffer){.bgn = mem, .end = mem, .lst = mem + cap};
 }
 
 Cthrice_Buffer cthrice_buffer_destroy(Cthrice_Buffer bfr)
@@ -33,17 +32,17 @@ Cthrice_Buffer cthrice_buffer_destroy(Cthrice_Buffer bfr)
     return (Cthrice_Buffer){.bgn = 0, .end = 0, .lst = 0};
 }
 
-size_t cthrice_buffer_size(Cthrice_Buffer bfr)
+uptr cthrice_buffer_size(Cthrice_Buffer bfr)
 {
     return bfr.end - bfr.bgn;
 }
 
-size_t cthrice_buffer_capacity(Cthrice_Buffer bfr)
+uptr cthrice_buffer_capacity(Cthrice_Buffer bfr)
 {
     return bfr.lst - bfr.bgn;
 }
 
-size_t cthrice_buffer_space(Cthrice_Buffer bfr)
+uptr cthrice_buffer_space(Cthrice_Buffer bfr)
 {
     return bfr.lst - bfr.end;
 }
@@ -59,9 +58,9 @@ Cthrice_Buffer cthrice_buffer_clear(Cthrice_Buffer bfr)
     return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, size_t cap)
+Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, uptr cap)
 {
-    uint8_t* restrict mem = realloc(bfr.bgn, cap);
+    unt8* restrict mem = realloc(bfr.bgn, cap);
     if (!mem) {
         cthrice_error_alloc();
     }
@@ -69,7 +68,7 @@ Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, size_t cap)
     return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_append_u8(Cthrice_Buffer bfr, uint8_t chr)
+Cthrice_Buffer cthrice_buffer_append_unt8(Cthrice_Buffer bfr, unt8 chr)
 {
     if (cthrice_buffer_space(bfr) < 1) {
         bfr = cthrice_buffer_grow(bfr, 2 * cthrice_buffer_capacity(bfr));
@@ -80,10 +79,10 @@ Cthrice_Buffer cthrice_buffer_append_u8(Cthrice_Buffer bfr, uint8_t chr)
     return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_append_u64(Cthrice_Buffer bfr, uint64_t unt)
+Cthrice_Buffer cthrice_buffer_append_unt64(Cthrice_Buffer bfr, unt64 unt)
 {
-    const uint64_t BASE  = 10;
-    uint64_t       place = BASE;
+    const unt64 BASE  = 10;
+    unt64       place = BASE;
 
     while (1 != place) {
         if (unt > place) {
@@ -91,7 +90,7 @@ Cthrice_Buffer cthrice_buffer_append_u64(Cthrice_Buffer bfr, uint64_t unt)
             break;
         }
         place /= BASE;
-        bfr = cthrice_buffer_append_u8(bfr, '0' + (uint8_t)(unt / place));
+        bfr = cthrice_buffer_append_unt8(bfr, '0' + (unt8)(unt / place));
         unt %= place;
     }
 
@@ -101,8 +100,8 @@ Cthrice_Buffer cthrice_buffer_append_u64(Cthrice_Buffer bfr, uint64_t unt)
 Cthrice_Buffer
 cthrice_buffer_append_string(Cthrice_Buffer bfr, Cthrice_String str)
 {
-    size_t spc = cthrice_buffer_space(bfr);
-    size_t len = cthrice_string_length(str);
+    uptr spc = cthrice_buffer_space(bfr);
+    uptr len = cthrice_string_length(str);
     if (spc < len) {
         bfr = cthrice_buffer_grow(bfr, len - spc);
     }
@@ -111,18 +110,18 @@ cthrice_buffer_append_string(Cthrice_Buffer bfr, Cthrice_String str)
     return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, const char* name)
+Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, ichr* name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {
         cthrice_error("Could not open file!");
     }
 
-    const size_t CHUNK = 1024;
-    size_t       wrt   = CHUNK;
+    const uptr CHUNK = 1024;
+    uptr       wrt   = CHUNK;
 
     while (CHUNK == wrt) {
-        size_t spc = cthrice_buffer_space(bfr);
+        uptr spc = cthrice_buffer_space(bfr);
         if (spc < CHUNK) {
             bfr = cthrice_buffer_grow(bfr, CHUNK - spc);
         }
