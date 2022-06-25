@@ -11,14 +11,14 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-const uint8_t     CTHRICE_FORMAT_INTRODUCTORY = '%';
-const uint8_t     CTHRICE_FORMAT_WIDTH        = '*';
-const uint8_t     CTHRICE_FORMAT_PRECISION    = '.';
-const char* const CTHRICE_FORMAT_FLAGS        = "-+ #0";
-#define CTHRICE_FORMAT_FLAG_COUNT 5
+const uint8_t     CTHRICE_FORMAT_INTRODUCTORY   = '%';
+const uint8_t     CTHRICE_FORMAT_WIDTH          = '*';
+const uint8_t     CTHRICE_FORMAT_PRECISION      = '.';
+const char* const CTHRICE_FORMAT_FLAGS          = "-+ #0";
 const char* const CTHRICE_FORMAT_SPECIFICATIONS = "csdioxXufFeEaAgGnP";
 
 typedef union {
+#define CTHRICE_FORMAT_FLAG_COUNT 5
     bool dat[CTHRICE_FORMAT_FLAG_COUNT];
     struct {
         bool left;
@@ -31,7 +31,7 @@ typedef union {
 
 typedef struct {
     va_list              arp;
-    Cthrice_Buffer       buf;
+    Cthrice_Buffer       bfr;
     Cthrice_String       fmt;
     const uint8_t*       crt;
     Cthrice_Format_Flags flg;
@@ -50,8 +50,8 @@ Cthrice_Format_Context cthrice_format_skip(Cthrice_Format_Context ctx)
 {
     ctx.crt =
         cthrice_string_first_pos_chr(ctx.fmt, CTHRICE_FORMAT_INTRODUCTORY);
-    ctx.buf = cthrice_buffer_append_string(
-        ctx.buf,
+    ctx.bfr = cthrice_buffer_append_string(
+        ctx.bfr,
         (Cthrice_String){.bgn = ctx.fmt.bgn, .end = ctx.crt});
     return ctx;
 }
@@ -64,8 +64,8 @@ Cthrice_Format_Context cthrice_format_escape(Cthrice_Format_Context ctx)
     ctx.crt++;
     ctx = cthrice_format_consume(ctx);
     if (*ctx.crt == CTHRICE_FORMAT_INTRODUCTORY) {
-        ctx.buf =
-            cthrice_buffer_append_u8(ctx.buf, CTHRICE_FORMAT_INTRODUCTORY);
+        ctx.bfr =
+            cthrice_buffer_append_u8(ctx.bfr, CTHRICE_FORMAT_INTRODUCTORY);
         ctx.crt++;
     }
     return ctx;
@@ -164,14 +164,14 @@ Cthrice_Format_Context cthrice_format_chr(Cthrice_Format_Context ctx)
     }
     const uint8_t chr = (uint8_t)va_arg(ctx.arp, int);
     if (ctx.flg.left) {
-        ctx.buf = cthrice_buffer_append_u8(ctx.buf, chr);
+        ctx.bfr = cthrice_buffer_append_u8(ctx.bfr, chr);
     }
     uint32_t wid = ctx.wid;
     while (--wid) {
-        ctx.buf = cthrice_buffer_append_u8(ctx.buf, ' ');
+        ctx.bfr = cthrice_buffer_append_u8(ctx.bfr, ' ');
     }
     if (!ctx.flg.left) {
-        ctx.buf = cthrice_buffer_append_u8(ctx.buf, chr);
+        ctx.bfr = cthrice_buffer_append_u8(ctx.bfr, chr);
     }
 
     return ctx;
@@ -184,23 +184,23 @@ Cthrice_Format_Context cthrice_format_string(Cthrice_Format_Context ctx)
     }
     const Cthrice_String str = va_arg(ctx.arp, Cthrice_String);
     if (ctx.flg.left) {
-        ctx.buf = cthrice_buffer_append_string(ctx.buf, str);
+        ctx.bfr = cthrice_buffer_append_string(ctx.bfr, str);
     }
     uint32_t wid = ctx.wid;
     while (--wid) {
-        ctx.buf = cthrice_buffer_append_u8(ctx.buf, ' ');
+        ctx.bfr = cthrice_buffer_append_u8(ctx.bfr, ' ');
     }
     if (!ctx.flg.left) {
-        ctx.buf = cthrice_buffer_append_string(ctx.buf, str);
+        ctx.bfr = cthrice_buffer_append_string(ctx.bfr, str);
     }
 
     return ctx;
 }
 
-Cthrice_Buffer cthrice_format(Cthrice_Buffer buf000, Cthrice_String fmt000, ...)
+Cthrice_Buffer cthrice_format(Cthrice_Buffer bfr, Cthrice_String fmt, ...)
 {
-    Cthrice_Format_Context ctx = {.buf = buf000, .fmt = fmt000};
-    va_start(ctx.arp, fmt000);
+    Cthrice_Format_Context ctx = {.bfr = bfr, .fmt = fmt};
+    va_start(ctx.arp, fmt);
 
     while (cthrice_string_length(ctx.fmt)) {
         ctx = cthrice_format_skip(ctx);
@@ -236,39 +236,39 @@ Cthrice_Buffer cthrice_format(Cthrice_Buffer buf000, Cthrice_String fmt000, ...)
                 break;
             case 'd':
             case 'i':
-                // ctx = thriceFormatSigned(ctx);
+                // ctx = cthrice_format_signed(ctx);
                 // break;
             case 'o':
-                // ctx = thriceFormatOct(ctx);
+                // ctx = cthrice_format_oct(ctx);
                 // break;
             case 'x':
             case 'X':
-                // ctx = thriceFormatHex(ctx);
+                // ctx = cthrice_format_hex(ctx);
                 // break;
             case 'u':
-                // ctx = thriceFormatUnsigned(ctx);
+                // ctx = cthrice_format_unsigned(ctx);
                 // break;
             case 'f':
             case 'F':
-                // ctx = thriceFormatFloat(ctx);
+                // ctx = cthrice_format_float(ctx);
                 // break;
             case 'e':
             case 'E':
-                // ctx = thriceFormatFloatE(ctx);
+                // ctx = cthrice_format_float_e(ctx);
                 // break;
             case 'a':
             case 'A':
-                // ctx = thriceFormatFloatA(ctx);
+                // ctx = cthrice_format_float_a(ctx);
                 // break;
             case 'g':
             case 'G':
-                // ctx = thriceFormatFloatG(ctx);
+                // ctx = cthrice_format_float_g(ctx);
                 // break;
             case 'n':
-                // ctx = thriceFormatCount(ctx);
+                // ctx = cthrice_format_count(ctx);
                 // break;
             case 'p':
-                // ctx = thriceFormatPointer(ctx);
+                // ctx = cthrice_format_pointer(ctx);
                 // break;
                 cthrice_error("Unsupported format conversion specifier!");
                 break;
@@ -278,7 +278,7 @@ Cthrice_Buffer cthrice_format(Cthrice_Buffer buf000, Cthrice_String fmt000, ...)
     }
 
     va_end(ctx.arp);
-    return ctx.buf;
+    return ctx.bfr;
 }
 
 #endif // CTHRICE_FORMAT
