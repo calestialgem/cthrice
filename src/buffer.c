@@ -9,6 +9,7 @@
 #include "string.c"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
@@ -60,9 +61,17 @@ Cthrice_Buffer cthrice_buffer_clear(Cthrice_Buffer bfr)
 
 Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, uptr cap)
 {
+    if (!cap) {
+        cap = 1;
+    }
     unt8* restrict mem = realloc(bfr.bgn, cap);
     if (!mem) {
         cthrice_error_alloc();
+    }
+    if (mem != bfr.bgn) {
+        memcpy(mem, bfr.bgn, cthrice_buffer_size(bfr));
+        free(bfr.bgn);
+        bfr.bgn = mem;
     }
     bfr.lst = mem + cap;
     return bfr;
@@ -118,16 +127,16 @@ Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, ichr* name)
     }
 
     const uptr CHUNK = 1024;
-    uptr       wrt   = CHUNK;
+    uptr       wrt   = 0;
 
-    while (CHUNK == wrt) {
+    do {
         uptr spc = cthrice_buffer_space(bfr);
         if (spc < CHUNK) {
             bfr = cthrice_buffer_grow(bfr, CHUNK - spc);
         }
         wrt = fread(bfr.end, 1, CHUNK, file);
         bfr.end += wrt;
-    }
+    } while (CHUNK == wrt);
 
     if (!feof(file)) {
         cthrice_error("Problem while reading!");
