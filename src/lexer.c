@@ -27,7 +27,7 @@ typedef enum {
     CTHRICE_TOKEN_END_OF_FILE
 } Cthrice_Token_Type;
 
-const char* cthrice_token_name(const Cthrice_Token_Type typ)
+const char* cthrice_token_name(Cthrice_Token_Type typ)
 {
     switch (typ) {
         case CTHRICE_TOKEN_SEMICOLON:
@@ -66,7 +66,7 @@ typedef struct {
     Cthrice_String     val;
 } Cthrice_Token;
 
-void cthrice_token_print(const Cthrice_Token tkn)
+void cthrice_token_print(Cthrice_Token tkn)
 {
     printf("%s", cthrice_token_name(tkn.typ));
     switch (tkn.typ) {
@@ -95,16 +95,16 @@ typedef struct {
     Cthrice_String src;
 } Cthrice_Lexed_Token;
 
-Cthrice_String cthrice_lexer_word(const Cthrice_String src)
+Cthrice_String cthrice_lexer_word(Cthrice_String src)
 {
-    const Cthrice_String trm = cthrice_string_trim(src);
+    Cthrice_String trm = cthrice_string_trim(src);
     return cthrice_string_first_word(trm);
 }
 
 Cthrice_Lexed_Token cthrice_lexer_create(
-    const Cthrice_Token_Type typ,
-    const Cthrice_String     val,
-    const Cthrice_String     src)
+    Cthrice_Token_Type typ,
+    Cthrice_String     val,
+    Cthrice_String     src)
 {
     return (Cthrice_Lexed_Token){
         .tkn = {    .typ = typ,     .val = val},
@@ -113,9 +113,9 @@ Cthrice_Lexed_Token cthrice_lexer_create(
 }
 
 Cthrice_Lexed_Token
-cthrice_lexer_number(const Cthrice_String word, const Cthrice_String src)
+cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
 {
-    const size_t len = cthrice_string_length(word);
+    size_t len = cthrice_string_length(word);
 
     if (len == 1) {
         return cthrice_lexer_create(CTHRICE_TOKEN_INTEGER, word, src);
@@ -164,22 +164,22 @@ cthrice_lexer_number(const Cthrice_String word, const Cthrice_String src)
         src);
 }
 
-bool cthrice_lexer_id_char(const uint8_t chr)
+bool cthrice_lexer_id_char(uint8_t chr)
 {
     return chr == '_' || cthrice_letter(chr);
 }
 
-Cthrice_Lexed_Token cthrice_lex(const Cthrice_String src)
+Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
 {
-    const Cthrice_String word = cthrice_lexer_word(src);
+    Cthrice_String word = cthrice_lexer_word(src);
 
     if (!cthrice_string_length(word)) {
         return cthrice_lexer_create(CTHRICE_TOKEN_END_OF_FILE, word, src);
     }
 
     { // Check for punctuation.
-        const Cthrice_String puncs = cthrice_string_static(";()[]{}");
-        const uint8_t* pos = cthrice_string_first_pos_chr(puncs, *word.bgn);
+        Cthrice_String puncs = cthrice_string_static(";()[]{}");
+        const uint8_t* pos   = cthrice_string_first_pos_chr(puncs, *word.bgn);
 
         if (pos < puncs.end) {
             return cthrice_lexer_create(
@@ -201,9 +201,9 @@ Cthrice_Lexed_Token cthrice_lex(const Cthrice_String src)
                (cthrice_lexer_id_char(*end) || cthrice_digit(*end))) {
             end++;
         }
-        const Cthrice_String val = {.bgn = word.bgn, .end = end};
+        Cthrice_String val = {.bgn = word.bgn, .end = end};
 #define CTHRICE_LEXER_KEYWORD_COUNT 3
-        const Cthrice_String keywords[CTHRICE_LEXER_KEYWORD_COUNT] = {
+        Cthrice_String keywords[CTHRICE_LEXER_KEYWORD_COUNT] = {
             cthrice_string_static("sz"),
             cthrice_string_static("str"),
             cthrice_string_static("return"),
@@ -219,7 +219,7 @@ Cthrice_Lexed_Token cthrice_lex(const Cthrice_String src)
         return cthrice_lexer_create(CTHRICE_TOKEN_IDENTIFIER, val, src);
     }
 
-    const Cthrice_String val = cthrice_string_part(word, 0, 1);
+    Cthrice_String val = cthrice_string_part(word, 0, 1);
     return cthrice_lexer_create(-1, val, src);
 }
 
