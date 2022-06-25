@@ -145,7 +145,7 @@ thriceLexerNumber(const Cthrice_String word, const Cthrice_String src)
         }
 
         if (++end >= word.end) {
-            thriceError("Number ended after the base indicator!");
+            cthrice_error("Number ended after the base indicator!");
         }
     }
 

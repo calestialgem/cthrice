@@ -22,7 +22,7 @@ Cthrice_Buffer cthrice_buffer_create(const size_t n)
 {
     uint8_t* arr = malloc(n);
     if (!arr) {
-        thriceErrorAllocation();
+        cthrice_error_alloc();
     }
     return (Cthrice_Buffer){.bgn = arr, .end = arr, .lst = arr + n};
 }
@@ -63,7 +63,7 @@ Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer buf, size_t cap)
 {
     uint8_t* const restrict arr = realloc(buf.bgn, cap);
     if (!arr) {
-        thriceErrorAllocation();
+        cthrice_error_alloc();
     }
     buf.lst = arr + cap;
     return buf;
@@ -116,7 +116,7 @@ cthrice_buffer_append_file(Cthrice_Buffer buf, const char* const name)
 {
     FILE* file = fopen(name, "r");
     if (!file) {
-        thriceError("Could not open file!");
+        cthrice_error("Could not open file!");
     }
 
     const size_t red = 1024;
@@ -132,7 +132,7 @@ cthrice_buffer_append_file(Cthrice_Buffer buf, const char* const name)
     }
 
     if (!feof(file)) {
-        thriceError("Problem while reading!");
+        cthrice_error("Problem while reading!");
     }
 
     fclose(file);
