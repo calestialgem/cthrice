@@ -20,7 +20,7 @@ typedef uint64_t unt64;
 typedef float  flt32;
 typedef double flt64;
 
-typedef const int8 ichr;
+typedef const char ichr;
 typedef const unt8 uchr;
 
 typedef intptr_t  iptr;

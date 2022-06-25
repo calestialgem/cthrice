@@ -5,10 +5,9 @@
 #define CTHRICE_LEXER
 
 #include "error.c"
+#include "scalar.c"
 #include "string.c"
 
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 
 typedef enum {
@@ -27,7 +26,7 @@ typedef enum {
     CTHRICE_TOKEN_END_OF_FILE
 } Cthrice_Token_Type;
 
-const char* cthrice_token_name(Cthrice_Token_Type typ)
+ichr* cthrice_token_name(Cthrice_Token_Type typ)
 {
     switch (typ) {
         case CTHRICE_TOKEN_SEMICOLON:
