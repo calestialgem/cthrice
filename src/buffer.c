@@ -48,9 +48,9 @@ size_t thriceBufferSpace(const thr_buf buf)
     return buf.lst - buf.end;
 }
 
-thr_str thriceBufferView(thr_buf buf)
+Cthrice_String thriceBufferView(thr_buf buf)
 {
-    return (thr_str){.beg = buf.beg, .end = buf.end};
+    return (Cthrice_String){.bgn = buf.beg, .end = buf.end};
 }
 
 thr_buf thriceBufferClear(thr_buf buf)
@@ -98,7 +98,7 @@ thr_buf thriceBufferAppendU64(thr_buf buf, uint64_t u64)
     return buf;
 }
 
-thr_buf thriceBufferAppendString(thr_buf des, thr_str src)
+thr_buf thriceBufferAppendString(thr_buf des, Cthrice_String src)
 {
     const size_t spc = thriceBufferSpace(des);
     const size_t len = thriceStringLength(src);
@@ -106,7 +106,7 @@ thr_buf thriceBufferAppendString(thr_buf des, thr_str src)
         des = thriceBufferGrow(des, len - spc);
     }
 
-    memcpy(des.end, src.beg, len);
+    memcpy(des.end, src.bgn, len);
     return des;
 }
 

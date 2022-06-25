@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef THRICE_STRING
-#define THRICE_STRING
+#ifndef CTHRICE_STRING
+#define CTHRICE_STRING
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -10,92 +10,95 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-bool thriceWhitespace(const uint8_t chr)
+bool cthrice_whitespace(const uint8_t chr)
 {
     return chr == '\n' || chr == '\r' || chr == '\t' || chr == ' ';
 }
 
-bool thriceLetter(const uint8_t chr)
+bool cthrice_letter(const uint8_t chr)
 {
     return ('A' <= chr && 'Z' >= chr) || ('a' <= chr && 'z' >= chr);
 }
 
-bool thriceDigit(const uint8_t chr)
+bool cthrice_digit(const uint8_t chr)
 {
     return '0' <= chr && '9' >= chr;
 }
 
-bool thriceDigitBin(const uint8_t chr)
+bool cthrice_digit_bin(const uint8_t chr)
 {
     return '0' <= chr && '1' >= chr;
 }
 
-bool thriceDigitOct(const uint8_t chr)
+bool cthrice_digit_oct(const uint8_t chr)
 {
     return '0' <= chr && '7' >= chr;
 }
 
-bool thriceDigitHex(const uint8_t chr)
+bool cthrice_digit_hex(const uint8_t chr)
 {
     return ('0' <= chr && '9' >= chr) || ('A' <= chr && 'F' >= chr) ||
            ('a' <= chr && 'f' >= chr);
 }
 
 typedef struct {
-    const uint8_t* beg;
+    const uint8_t* bgn;
     const uint8_t* end;
-} thr_str;
+} Cthrice_String;
 
-thr_str thriceStringStatic(const char* cstr)
+Cthrice_String cthrice_string_static(const char* cstr)
 {
-    thr_str str = {.beg = (const uint8_t*)cstr, .end = (const uint8_t*)cstr};
+    Cthrice_String str = {
+        .bgn = (const uint8_t*)cstr,
+        .end = (const uint8_t*)cstr};
     while (*str.end) {
         str.end++;
     }
     return str;
 }
 
-const uint8_t* thriceStringFirstPosChr(const thr_str str, const uint8_t chr)
+const uint8_t*
+cthrice_string_first_pos_chr(const Cthrice_String str, const uint8_t chr)
 {
-    const uint8_t* pos = str.beg;
+    const uint8_t* pos = str.bgn;
     while (pos < str.end && *pos != chr) {
         pos++;
     }
     return pos;
 }
 
-size_t thriceStringLength(const thr_str str)
+size_t cthrice_string_length(const Cthrice_String str)
 {
-    return str.end - str.beg;
+    return str.end - str.bgn;
 }
 
-bool thriceStringEquals(const thr_str lhs, const thr_str rhs)
+bool cthrice_string_equals(const Cthrice_String lhs, const Cthrice_String rhs)
 {
-    size_t len = thriceStringLength(lhs);
-    if (len != thriceStringLength(rhs)) {
+    size_t len = cthrice_string_length(lhs);
+    if (len != cthrice_string_length(rhs)) {
         return false;
     }
     for (size_t i = 0; i < len; i++) {
-        if (*(lhs.beg + i) != *(rhs.beg + i)) {
+        if (*(lhs.bgn + i) != *(rhs.bgn + i)) {
             return false;
         }
     }
     return true;
 }
 
-thr_str thriceStringTrim(thr_str str)
+Cthrice_String cthrice_string_trim(Cthrice_String str)
 {
-    while (str.beg < str.end && thriceWhitespace(*str.beg)) {
-        str.beg++;
+    while (str.bgn < str.end && cthrice_whitespace(*str.bgn)) {
+        str.bgn++;
     }
     return str;
 }
 
-thr_str thriceStringFirstWord(thr_str str)
+Cthrice_String cthrice_string_first_word(Cthrice_String str)
 {
-    const uint8_t* end = str.beg;
+    const uint8_t* end = str.bgn;
 
-    while (end < str.end && !thriceWhitespace(*end)) {
+    while (end < str.end && !cthrice_whitespace(*end)) {
         end++;
     }
 
@@ -103,24 +106,25 @@ thr_str thriceStringFirstWord(thr_str str)
     return str;
 }
 
-thr_str thriceStringPart(thr_str str, const size_t boff, const size_t eoff)
+Cthrice_String
+cthrice_string_part(Cthrice_String str, const size_t boff, const size_t eoff)
 {
-    str.end = str.beg + eoff;
-    str.beg += boff;
+    str.end = str.bgn + eoff;
+    str.bgn += boff;
     return str;
 }
 
-thr_str thriceStringSkip(thr_str str, const size_t amt)
+Cthrice_String cthrice_string_skip(Cthrice_String str, const size_t amt)
 {
-    str.beg += amt;
+    str.bgn += amt;
     return str;
 }
 
-uint64_t thriceStringParseU64(thr_str str)
+uint64_t cthrice_string_parse_u64(Cthrice_String str)
 {
     uint64_t res = 0;
 
-    for (const uint8_t* i = str.beg; i < str.end; i++) {
+    for (const uint8_t* i = str.bgn; i < str.end; i++) {
         const uint64_t base = 10;
         res *= base;
         res += *i - '0';
@@ -129,4 +133,4 @@ uint64_t thriceStringParseU64(thr_str str)
     return res;
 }
 
-#endif // THRICE_STRING
+#endif // CTHRICE_STRING
