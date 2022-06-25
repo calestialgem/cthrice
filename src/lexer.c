@@ -114,14 +114,14 @@ Cthrice_Lexed_Token cthrice_lexer_create(
 Cthrice_Lexed_Token
 cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
 {
-    size_t len = cthrice_string_length(word);
+    uptr len = cthrice_string_length(word);
 
     if (len == 1) {
         return cthrice_lexer_create(CTHRICE_TOKEN_INTEGER, word, src);
     }
 
-    bool (*digit)(uint8_t) = &cthrice_digit;
-    const uint8_t* end     = word.bgn + 1;
+    bool (*digit)(uchr) = &cthrice_digit;
+    uchr* end           = word.bgn + 1;
 
     if ('0' == *word.bgn) {
         switch (*end) {
@@ -163,7 +163,7 @@ cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
         src);
 }
 
-bool cthrice_lexer_id_char(uint8_t chr)
+bool cthrice_lexer_id_char(uchr chr)
 {
     return chr == '_' || cthrice_letter(chr);
 }
@@ -178,7 +178,7 @@ Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
 
     { // Check for punctuation.
         Cthrice_String puncs = cthrice_string_static(";()[]{}");
-        const uint8_t* pos   = cthrice_string_first_pos_chr(puncs, *word.bgn);
+        uchr*          pos   = cthrice_string_first_pos_chr(puncs, *word.bgn);
 
         if (pos < puncs.end) {
             return cthrice_lexer_create(
@@ -195,7 +195,7 @@ Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
 
     // Check for identifier or keyword.
     if (cthrice_lexer_id_char(*word.bgn)) {
-        const uint8_t* end = word.bgn + 1;
+        uchr* end = word.bgn + 1;
         while (end < word.end &&
                (cthrice_lexer_id_char(*end) || cthrice_digit(*end))) {
             end++;
@@ -207,7 +207,7 @@ Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
             cthrice_string_static("str"),
             cthrice_string_static("return"),
         };
-        for (size_t i = 0; i < CTHRICE_LEXER_KEYWORD_COUNT; i++) {
+        for (uptr i = 0; i < CTHRICE_LEXER_KEYWORD_COUNT; i++) {
             if (cthrice_string_equals(keywords[i], val)) {
                 return cthrice_lexer_create(
                     CTHRICE_TOKEN_KEYWORD_SIZE + i,
