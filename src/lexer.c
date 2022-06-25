@@ -97,8 +97,8 @@ typedef struct {
 
 Cthrice_String thriceLexerWord(const Cthrice_String src)
 {
-    const Cthrice_String trm = thriceStringTrim(src);
-    return thriceStringFirstWord(trm);
+    const Cthrice_String trm = cthrice_string_trim(src);
+    return cthrice_string_first_word(trm);
 }
 
 thr_lxd_tkn thriceLexerCreate(
@@ -115,7 +115,7 @@ thr_lxd_tkn thriceLexerCreate(
 thr_lxd_tkn
 thriceLexerNumber(const Cthrice_String word, const Cthrice_String src)
 {
-    const size_t len = thriceStringLength(word);
+    const size_t len = cthrice_string_length(word);
 
     if (len == 1) {
         return thriceLexerCreate(THR_TOKEN_INTEGER, word, src);
@@ -140,7 +140,7 @@ thriceLexerNumber(const Cthrice_String word, const Cthrice_String src)
             default:
                 return thriceLexerCreate(
                     THR_TOKEN_INTEGER,
-                    thriceStringPart(word, 0, 1),
+                    cthrice_string_part(word, 0, 1),
                     src);
         }
 
@@ -173,18 +173,18 @@ thr_lxd_tkn thriceLex(const Cthrice_String src)
 {
     const Cthrice_String word = thriceLexerWord(src);
 
-    if (!thriceStringLength(word)) {
+    if (!cthrice_string_length(word)) {
         return thriceLexerCreate(THR_TOKEN_END_OF_FILE, word, src);
     }
 
     { // Check for punctuation.
-        const Cthrice_String puncs = thriceStringStatic(";()[]{}");
-        const uint8_t*       pos   = thriceStringFirstPosChr(puncs, *word.bgn);
+        const Cthrice_String puncs = cthrice_string_static(";()[]{}");
+        const uint8_t* pos = cthrice_string_first_pos_chr(puncs, *word.bgn);
 
         if (pos < puncs.end) {
             return thriceLexerCreate(
                 THR_TOKEN_SEMICOLON + (pos - puncs.bgn),
-                thriceStringPart(word, 0, 1),
+                cthrice_string_part(word, 0, 1),
                 src);
         }
     }
@@ -204,19 +204,19 @@ thr_lxd_tkn thriceLex(const Cthrice_String src)
         const Cthrice_String val = {.bgn = word.bgn, .end = end};
 #define THR_LEXER_KEYWORD_COUNT 3
         const Cthrice_String keywords[THR_LEXER_KEYWORD_COUNT] = {
-            thriceStringStatic("sz"),
-            thriceStringStatic("str"),
-            thriceStringStatic("return"),
+            cthrice_string_static("sz"),
+            cthrice_string_static("str"),
+            cthrice_string_static("return"),
         };
         for (size_t i = 0; i < THR_LEXER_KEYWORD_COUNT; i++) {
-            if (thriceStringEquals(keywords[i], val)) {
+            if (cthrice_string_equals(keywords[i], val)) {
                 return thriceLexerCreate(THR_TOKEN_KEYWORD_SIZE + i, val, src);
             }
         }
         return thriceLexerCreate(THR_TOKEN_IDENTIFIER, val, src);
     }
 
-    const Cthrice_String val = thriceStringPart(word, 0, 1);
+    const Cthrice_String val = cthrice_string_part(word, 0, 1);
     return thriceLexerCreate(-1, val, src);
 }
 

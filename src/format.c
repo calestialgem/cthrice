@@ -31,7 +31,7 @@ typedef union {
 
 typedef struct {
     va_list           arp;
-    thr_buf           buf;
+    Cthrice_Buffer    buf;
     Cthrice_String    fmt;
     const uint8_t*    crt;
     ThriceFormatFlags flg;
@@ -49,7 +49,7 @@ ThriceFormatContext thriceFormatConsume(ThriceFormatContext ctx)
 ThriceFormatContext thriceFormatSkip(ThriceFormatContext ctx)
 {
     ctx.crt = cthrice_string_first_pos_chr(ctx.fmt, THRICE_FORMAT_INTRODUCTORY);
-    ctx.buf = thriceBufferAppendString(
+    ctx.buf = cthrice_buffer_append_string(
         ctx.buf,
         (Cthrice_String){.bgn = ctx.fmt.bgn, .end = ctx.crt});
     return ctx;
@@ -63,7 +63,7 @@ ThriceFormatContext thriceFormatEscape(ThriceFormatContext ctx)
     ctx.crt++;
     ctx = thriceFormatConsume(ctx);
     if (*ctx.crt == THRICE_FORMAT_INTRODUCTORY) {
-        ctx.buf = thriceBufferAppendU8(ctx.buf, THRICE_FORMAT_INTRODUCTORY);
+        ctx.buf = cthrice_buffer_append_u8(ctx.buf, THRICE_FORMAT_INTRODUCTORY);
         ctx.crt++;
     }
     return ctx;
@@ -161,14 +161,14 @@ ThriceFormatContext thriceFormatChr(ThriceFormatContext ctx)
     }
     const uint8_t chr = (uint8_t)va_arg(ctx.arp, int);
     if (ctx.flg.left) {
-        ctx.buf = thriceBufferAppendU8(ctx.buf, chr);
+        ctx.buf = cthrice_buffer_append_u8(ctx.buf, chr);
     }
     uint32_t wid = ctx.wid;
     while (--wid) {
-        ctx.buf = thriceBufferAppendU8(ctx.buf, ' ');
+        ctx.buf = cthrice_buffer_append_u8(ctx.buf, ' ');
     }
     if (!ctx.flg.left) {
-        ctx.buf = thriceBufferAppendU8(ctx.buf, chr);
+        ctx.buf = cthrice_buffer_append_u8(ctx.buf, chr);
     }
 
     return ctx;
@@ -181,20 +181,21 @@ ThriceFormatContext thriceFormatString(ThriceFormatContext ctx)
     }
     const Cthrice_String str = va_arg(ctx.arp, Cthrice_String);
     if (ctx.flg.left) {
-        ctx.buf = thriceBufferAppendString(ctx.buf, str);
+        ctx.buf = cthrice_buffer_append_string(ctx.buf, str);
     }
     uint32_t wid = ctx.wid;
     while (--wid) {
-        ctx.buf = thriceBufferAppendU8(ctx.buf, ' ');
+        ctx.buf = cthrice_buffer_append_u8(ctx.buf, ' ');
     }
     if (!ctx.flg.left) {
-        ctx.buf = thriceBufferAppendString(ctx.buf, str);
+        ctx.buf = cthrice_buffer_append_string(ctx.buf, str);
     }
 
     return ctx;
 }
 
-thr_buf thriceFormatAppend(thr_buf buf000, Cthrice_String fmt000, ...)
+Cthrice_Buffer
+thriceFormatAppend(Cthrice_Buffer buf000, Cthrice_String fmt000, ...)
 {
     ThriceFormatContext ctx = {.buf = buf000, .fmt = fmt000};
     va_start(ctx.arp, fmt000);
