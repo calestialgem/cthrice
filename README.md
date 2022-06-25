@@ -12,6 +12,7 @@ This is the C transpiler for the Thrice language, written in C.
  * CTHRICE_CONSTANT
  * CTHRICE_MACRO_CONSTANT
  * CTHRICE_ENUM_CONSTANT
+ * LOCAL_CONSTANT
  * Cthrice_Type
  * cthrice_Global
  * cthrice_function
