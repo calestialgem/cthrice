@@ -83,7 +83,7 @@ bool cthrice_string_equals(Cthrice_String lhs, Cthrice_String rhs)
 
 void cthrice_string_println(Cthrice_String str)
 {
-    printf("%*.s\n", (int)cthrice_string_length(str), str.bgn);
+    printf("%.*s\n", (int)cthrice_string_length(str), str.bgn);
 }
 
 Cthrice_String cthrice_string_trim(Cthrice_String str)

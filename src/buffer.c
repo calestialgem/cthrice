@@ -59,28 +59,29 @@ Cthrice_Buffer cthrice_buffer_clear(Cthrice_Buffer bfr)
     return bfr;
 }
 
-Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, uptr cap)
+Cthrice_Buffer cthrice_buffer_recap(Cthrice_Buffer bfr, uptr cap)
 {
-    if (!cap) {
-        cap = 1;
+    if (cap) {
+        return cthrice_buffer_destroy(bfr);
+    }
+    if (bfr.bgn) {
+        return cthrice_buffer_create(cap);
     }
     unt8* restrict mem = realloc(bfr.bgn, cap);
     if (!mem) {
         cthrice_error_alloc();
     }
-    if (!bfr.bgn && mem != bfr.bgn) {
-        memcpy(mem, bfr.bgn, cthrice_buffer_size(bfr));
-        free(bfr.bgn);
-        bfr.bgn = mem;
-    }
     bfr.lst = mem + cap;
+    bfr.end = mem + min(cap, cthrice_buffer_size(bfr));
+    bfr.bgn = mem;
     return bfr;
 }
 
 Cthrice_Buffer cthrice_buffer_append_unt8(Cthrice_Buffer bfr, unt8 chr)
 {
     if (cthrice_buffer_space(bfr) < 1) {
-        bfr = cthrice_buffer_grow(bfr, 2 * cthrice_buffer_capacity(bfr));
+        uptr cap = cthrice_buffer_capacity(bfr);
+        bfr      = cthrice_buffer_recap(bfr, max(1, 2 * cap));
     }
 
     *(bfr.end) = chr;
@@ -112,7 +113,8 @@ cthrice_buffer_append_string(Cthrice_Buffer bfr, Cthrice_String str)
     uptr spc = cthrice_buffer_space(bfr);
     uptr len = cthrice_string_length(str);
     if (spc < len) {
-        bfr = cthrice_buffer_grow(bfr, len - spc);
+        uptr cap = cthrice_buffer_capacity(bfr);
+        bfr      = cthrice_buffer_recap(bfr, cap + len - spc);
     }
 
     memcpy(bfr.end, str.bgn, len);
@@ -132,7 +134,7 @@ Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, ichr* name)
     do {
         uptr spc = cthrice_buffer_space(bfr);
         if (spc < CHUNK) {
-            bfr = cthrice_buffer_grow(bfr, CHUNK - spc);
+            bfr = cthrice_buffer_recap(bfr, CHUNK - spc);
         }
         wrt = fread(bfr.end, 1, CHUNK, file);
         bfr.end += wrt;
