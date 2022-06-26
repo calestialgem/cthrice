@@ -58,11 +58,6 @@ Cthrice_Format_Context cthrice_format_skip(Cthrice_Format_Context ctx)
 
 Cthrice_Format_Context cthrice_format_escape(Cthrice_Format_Context ctx)
 {
-    if (cthrice_string_length(ctx.fmt) < 2) {
-        cthrice_error("1 No format conversion specifier!");
-    }
-    ctx.crt++;
-    ctx = cthrice_format_consume(ctx);
     if (*ctx.crt == CTHRICE_FORMAT_INTRODUCTORY) {
         ctx.bfr =
             cthrice_buffer_append_unt8(ctx.bfr, CTHRICE_FORMAT_INTRODUCTORY);
@@ -82,10 +77,6 @@ Cthrice_Format_Context cthrice_format_flags(Cthrice_Format_Context ctx)
         ctx.flg.dat[pos - flags.bgn] = true;
     }
 
-    if (ctx.crt == ctx.fmt.end) {
-        cthrice_error("2 No format conversion specifier!");
-    }
-
     return ctx;
 }
 
@@ -103,10 +94,6 @@ cthrice_format_number(Cthrice_Format_Context ctx, bool wid)
         num = cthrice_string_parse_u64(
             (Cthrice_String){.bgn = ctx.fmt.bgn, .end = ctx.crt});
     }
-    if (ctx.crt == ctx.fmt.end) {
-        cthrice_error("3 No format conversion specifier!");
-    }
-
     if (wid) {
         ctx.wid = num;
     } else {
@@ -127,10 +114,6 @@ Cthrice_Format_Context cthrice_format_modifier(Cthrice_Format_Context ctx)
     }
 
     Cthrice_String mod = {.bgn = ctx.fmt.bgn, .end = ctx.crt};
-
-    if (ctx.crt == ctx.fmt.end) {
-        cthrice_error("4 No format conversion specifier!");
-    }
 
 #define CTHRICE_FORMAT_MOD_COUNT 9
     Cthrice_String mods[CTHRICE_FORMAT_MOD_COUNT] = {
@@ -200,30 +183,59 @@ Cthrice_Format_Context cthrice_format_string(Cthrice_Format_Context ctx)
 Cthrice_Format_Context cthrice_format_context(Cthrice_Format_Context ctx)
 {
     while (cthrice_string_length(ctx.fmt)) {
+        // Skip upto the introductory character.
         ctx = cthrice_format_skip(ctx);
         if (ctx.fmt.bgn != ctx.crt) {
             ctx = cthrice_format_consume(ctx);
             continue;
         }
 
+        // Consume introductory character.
+        ctx.crt++;
+        ctx = cthrice_format_consume(ctx);
+        if (!cthrice_string_length(ctx.fmt)) {
+            cthrice_error(
+                "No format conversion specifier after introductory character!");
+        }
+
+        // Escape introductory character if it is repeated.
         ctx = cthrice_format_escape(ctx);
         if (ctx.fmt.bgn != ctx.crt) {
             ctx = cthrice_format_consume(ctx);
             continue;
         }
 
+        // Read and consume format flags.
         ctx = cthrice_format_flags(ctx);
         ctx = cthrice_format_consume(ctx);
+        if (!cthrice_string_length(ctx.fmt)) {
+            cthrice_error("No format conversion specifier after format flags!");
+        }
 
+        // Read and consume format width.
         ctx = cthrice_format_number(ctx, true);
         ctx = cthrice_format_consume(ctx);
+        if (!cthrice_string_length(ctx.fmt)) {
+            cthrice_error("No format conversion specifier after format width!");
+        }
 
+        // Read and consume format precision.
         ctx = cthrice_format_number(ctx, false);
         ctx = cthrice_format_consume(ctx);
+        if (!cthrice_string_length(ctx.fmt)) {
+            cthrice_error(
+                "No format conversion specifier after format precision!");
+        }
 
+        // Read and consume length modifier.
         ctx = cthrice_format_modifier(ctx);
         ctx = cthrice_format_consume(ctx);
+        if (!cthrice_string_length(ctx.fmt)) {
+            cthrice_error(
+                "No format conversion specifier after length modifiers!");
+        }
 
+        // Read conversion specifier and format value.
         switch (*ctx.crt) {
             case 'c':
                 ctx = cthrice_format_chr(ctx);
@@ -272,6 +284,10 @@ Cthrice_Format_Context cthrice_format_context(Cthrice_Format_Context ctx)
             default:
                 cthrice_error("Unkown format conversion specifier!");
         }
+
+        // Consume conversion specifier.
+        ctx.crt++;
+        ctx = cthrice_format_consume(ctx);
     }
     return ctx;
 }
