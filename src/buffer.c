@@ -64,7 +64,7 @@ Cthrice_Buffer cthrice_buffer_recap(Cthrice_Buffer bfr, uptr cap)
     if (!cap) {
         return cthrice_buffer_destroy(bfr);
     }
-    if (bfr.bgn) {
+    if (!bfr.bgn) {
         return cthrice_buffer_create(cap);
     }
     unt8* restrict mem = realloc(bfr.bgn, cap);
