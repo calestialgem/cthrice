@@ -61,7 +61,7 @@ Cthrice_Buffer cthrice_buffer_clear(Cthrice_Buffer bfr)
 
 Cthrice_Buffer cthrice_buffer_recap(Cthrice_Buffer bfr, uptr cap)
 {
-    if (cap) {
+    if (!cap) {
         return cthrice_buffer_destroy(bfr);
     }
     if (bfr.bgn) {
@@ -118,6 +118,7 @@ cthrice_buffer_append_string(Cthrice_Buffer bfr, Cthrice_String str)
     }
 
     memcpy(bfr.end, str.bgn, len);
+    bfr.end += len;
     return bfr;
 }
 

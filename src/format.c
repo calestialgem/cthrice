@@ -51,9 +51,8 @@ Cthrice_Format_Context cthrice_format_skip(Cthrice_Format_Context ctx)
 {
     ctx.crt =
         cthrice_string_first_pos_chr(ctx.fmt, CTHRICE_FORMAT_INTRODUCTORY);
-    ctx.bfr = cthrice_buffer_append_string(
-        ctx.bfr,
-        (Cthrice_String){.bgn = ctx.fmt.bgn, .end = ctx.crt});
+    Cthrice_String skp = {.bgn = ctx.fmt.bgn, .end = ctx.crt};
+    ctx.bfr            = cthrice_buffer_append_string(ctx.bfr, skp);
     return ctx;
 }
 
