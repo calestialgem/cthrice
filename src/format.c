@@ -198,11 +198,8 @@ Cthrice_Format_Context cthrice_format_string(Cthrice_Format_Context ctx)
     return ctx;
 }
 
-Cthrice_Buffer cthrice_format(Cthrice_Buffer bfr, Cthrice_String fmt, ...)
+Cthrice_Format_Context cthrice_format_context(Cthrice_Format_Context ctx)
 {
-    Cthrice_Format_Context ctx = {.bfr = bfr, .fmt = fmt};
-    va_start(ctx.arp, fmt);
-
     while (cthrice_string_length(ctx.fmt)) {
         ctx = cthrice_format_skip(ctx);
         if (ctx.fmt.bgn != ctx.crt) {
@@ -277,9 +274,26 @@ Cthrice_Buffer cthrice_format(Cthrice_Buffer bfr, Cthrice_String fmt, ...)
                 cthrice_error("Unkown format conversion specifier!");
         }
     }
+    return ctx;
+}
 
+Cthrice_Buffer cthrice_format(Cthrice_Buffer bfr, Cthrice_String fmt, ...)
+{
+    Cthrice_Format_Context ctx = {.bfr = bfr, .fmt = fmt};
+    va_start(ctx.arp, fmt);
+    ctx = cthrice_format_context(ctx);
     va_end(ctx.arp);
     return ctx.bfr;
+}
+
+void cthrice_format_println(ichr* fmt, ...)
+{
+    Cthrice_Format_Context ctx = {.fmt = cthrice_string_static(fmt)};
+    va_start(ctx.arp, fmt);
+    ctx = cthrice_format_context(ctx);
+    va_end(ctx.arp);
+    cthrice_string_println(cthrice_buffer_view(ctx.bfr));
+    cthrice_buffer_destroy(ctx.bfr);
 }
 
 #endif // CTHRICE_FORMAT

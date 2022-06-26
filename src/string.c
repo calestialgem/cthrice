@@ -6,6 +6,8 @@
 
 #include "scalar.c"
 
+#include <stdio.h>
+
 bool cthrice_whitespace(uchr chr)
 {
     return chr == '\n' || chr == '\r' || chr == '\t' || chr == ' ';
@@ -77,6 +79,11 @@ bool cthrice_string_equals(Cthrice_String lhs, Cthrice_String rhs)
         }
     }
     return true;
+}
+
+void cthrice_string_println(Cthrice_String str)
+{
+    printf("%*.s\n", (int)cthrice_string_length(str), str.bgn);
 }
 
 Cthrice_String cthrice_string_trim(Cthrice_String str)

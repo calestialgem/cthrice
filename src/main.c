@@ -18,13 +18,8 @@ int main(int argc, char** argv)
     Cthrice_Buffer buf       = cthrice_buffer_create(CAPPACITY);
 
     for (int i = 1; i < argc; i++) {
-        buf                 = cthrice_buffer_clear(buf);
         Cthrice_String name = cthrice_string_static(argv[i]);
-        buf                 = cthrice_format(
-            buf,
-            cthrice_string_static("Name of the file: %s\n"),
-            name);
-        printf("%*s\n", (int)cthrice_buffer_size(buf), buf.bgn);
+        cthrice_format_println("Name of the file: %s", name);
 
         buf = cthrice_buffer_clear(buf);
         buf = cthrice_buffer_append_file(buf, argv[i]);

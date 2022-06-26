@@ -68,7 +68,7 @@ Cthrice_Buffer cthrice_buffer_grow(Cthrice_Buffer bfr, uptr cap)
     if (!mem) {
         cthrice_error_alloc();
     }
-    if (mem != bfr.bgn) {
+    if (!bfr.bgn && mem != bfr.bgn) {
         memcpy(mem, bfr.bgn, cthrice_buffer_size(bfr));
         free(bfr.bgn);
         bfr.bgn = mem;
