@@ -12,7 +12,7 @@
 int main(int argc, char** argv)
 {
     if (argc < 2) {
-        printf("Provide a Thrice file!");
+        cthrice_error("Provide a Thrice file!");
     }
     const uptr     CAPPACITY = 1024;
     Cthrice_Buffer buf       = cthrice_buffer_create(CAPPACITY);
