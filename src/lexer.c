@@ -4,7 +4,9 @@
 #ifndef CTHRICE_LEXER
 #define CTHRICE_LEXER
 
+#include "buffer.c"
 #include "error.c"
+#include "format.c"
 #include "scalar.c"
 #include "string.c"
 
@@ -19,14 +21,34 @@ typedef enum {
     CTHRICE_TOKEN_OPENING_CURLY_BRACKET,
     CTHRICE_TOKEN_CLOSING_CURLY_BRACKET,
     CTHRICE_TOKEN_INTEGER,
-    CTHRICE_TOKEN_KEYWORD_SIZE,
-    CTHRICE_TOKEN_KEYWORD_STRING,
+    CTHRICE_TOKEN_KEYWORD_INT8,
+    CTHRICE_TOKEN_KEYWORD_INT16,
+    CTHRICE_TOKEN_KEYWORD_INT32,
+    CTHRICE_TOKEN_KEYWORD_INT64,
+    CTHRICE_TOKEN_KEYWORD_UNT8,
+    CTHRICE_TOKEN_KEYWORD_UNT16,
+    CTHRICE_TOKEN_KEYWORD_UNT32,
+    CTHRICE_TOKEN_KEYWORD_UNT64,
+    CTHRICE_TOKEN_KEYWORD_STR,
     CTHRICE_TOKEN_KEYWORD_RETURN,
     CTHRICE_TOKEN_IDENTIFIER,
     CTHRICE_TOKEN_END_OF_FILE
 } Cthrice_Token_Type;
 
-ichr* cthrice_token_name(Cthrice_Token_Type typ)
+#define CTHRICE_KEYWORD_COUNT 10
+ichr* const CTHRICE_KEYWORDS[CTHRICE_KEYWORD_COUNT] = {
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "unt8",
+    "unt16",
+    "unt32",
+    "unt64",
+    "str",
+    "return"};
+
+ichr* cthrice_token_static_name(Cthrice_Token_Type typ)
 {
     switch (typ) {
         case CTHRICE_TOKEN_SEMICOLON:
@@ -45,12 +67,17 @@ ichr* cthrice_token_name(Cthrice_Token_Type typ)
             return "closing-curly-bracket";
         case CTHRICE_TOKEN_INTEGER:
             return "integer";
-        case CTHRICE_TOKEN_KEYWORD_SIZE:
-            return "sz keyword";
-        case CTHRICE_TOKEN_KEYWORD_STRING:
-            return "str keyword";
+        case CTHRICE_TOKEN_KEYWORD_INT8:
+        case CTHRICE_TOKEN_KEYWORD_INT16:
+        case CTHRICE_TOKEN_KEYWORD_INT32:
+        case CTHRICE_TOKEN_KEYWORD_INT64:
+        case CTHRICE_TOKEN_KEYWORD_UNT8:
+        case CTHRICE_TOKEN_KEYWORD_UNT16:
+        case CTHRICE_TOKEN_KEYWORD_UNT32:
+        case CTHRICE_TOKEN_KEYWORD_UNT64:
+        case CTHRICE_TOKEN_KEYWORD_STR:
         case CTHRICE_TOKEN_KEYWORD_RETURN:
-            return "return keyword";
+            return CTHRICE_KEYWORDS[typ - CTHRICE_TOKEN_KEYWORD_INT8];
         case CTHRICE_TOKEN_IDENTIFIER:
             return "identifier";
         case CTHRICE_TOKEN_END_OF_FILE:
@@ -60,6 +87,11 @@ ichr* cthrice_token_name(Cthrice_Token_Type typ)
     }
 }
 
+Cthrice_String cthrice_token_name(Cthrice_Token_Type typ)
+{
+    return cthrice_string_static(cthrice_token_static_name(typ));
+}
+
 typedef struct {
     Cthrice_Token_Type typ;
     Cthrice_String     val;
@@ -67,7 +99,8 @@ typedef struct {
 
 void cthrice_token_print(Cthrice_Token tkn)
 {
-    printf("%s", cthrice_token_name(tkn.typ));
+    Cthrice_Buffer bfr = {};
+    bfr = cthrice_format_append(bfr, "%s", cthrice_token_name(tkn.typ));
     switch (tkn.typ) {
         case CTHRICE_TOKEN_SEMICOLON:
         case CTHRICE_TOKEN_OPENING_BRACKET:
@@ -76,17 +109,25 @@ void cthrice_token_print(Cthrice_Token tkn)
         case CTHRICE_TOKEN_CLOSING_SQUARE_BRACKET:
         case CTHRICE_TOKEN_OPENING_CURLY_BRACKET:
         case CTHRICE_TOKEN_CLOSING_CURLY_BRACKET:
-        case CTHRICE_TOKEN_KEYWORD_SIZE:
-        case CTHRICE_TOKEN_KEYWORD_STRING:
+        case CTHRICE_TOKEN_KEYWORD_INT8:
+        case CTHRICE_TOKEN_KEYWORD_INT16:
+        case CTHRICE_TOKEN_KEYWORD_INT32:
+        case CTHRICE_TOKEN_KEYWORD_INT64:
+        case CTHRICE_TOKEN_KEYWORD_UNT8:
+        case CTHRICE_TOKEN_KEYWORD_UNT16:
+        case CTHRICE_TOKEN_KEYWORD_UNT32:
+        case CTHRICE_TOKEN_KEYWORD_UNT64:
+        case CTHRICE_TOKEN_KEYWORD_STR:
         case CTHRICE_TOKEN_KEYWORD_RETURN:
         case CTHRICE_TOKEN_END_OF_FILE:
             break;
         case CTHRICE_TOKEN_INTEGER:
         case CTHRICE_TOKEN_IDENTIFIER:
         default:
-            printf(" {%.*s}", (int)cthrice_string_length(tkn.val), tkn.val.bgn);
+            bfr = cthrice_format_append(bfr, " {%s}", tkn.val);
     }
-    printf("\n");
+    cthrice_string_println(cthrice_buffer_view(bfr));
+    bfr = cthrice_buffer_destroy(bfr);
 }
 
 typedef struct {
@@ -201,16 +242,13 @@ Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
             end++;
         }
         Cthrice_String val = {.bgn = word.bgn, .end = end};
-#define CTHRICE_LEXER_KEYWORD_COUNT 3
-        Cthrice_String keywords[CTHRICE_LEXER_KEYWORD_COUNT] = {
-            cthrice_string_static("sz"),
-            cthrice_string_static("str"),
-            cthrice_string_static("return"),
-        };
-        for (uptr i = 0; i < CTHRICE_LEXER_KEYWORD_COUNT; i++) {
-            if (cthrice_string_equals(keywords[i], val)) {
+
+        for (uptr i = 0; i < CTHRICE_KEYWORD_COUNT; i++) {
+            if (cthrice_string_equals(
+                    cthrice_string_static(CTHRICE_KEYWORDS[i]),
+                    val)) {
                 return cthrice_lexer_create(
-                    CTHRICE_TOKEN_KEYWORD_SIZE + i,
+                    CTHRICE_TOKEN_KEYWORD_INT8 + i,
                     val,
                     src);
             }

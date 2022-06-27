@@ -292,9 +292,11 @@ Cthrice_Format_Context cthrice_format_context(Cthrice_Format_Context ctx)
     return ctx;
 }
 
-Cthrice_Buffer cthrice_format(Cthrice_Buffer bfr, Cthrice_String fmt, ...)
+Cthrice_Buffer cthrice_format_append(Cthrice_Buffer bfr, ichr* fmt, ...)
 {
-    Cthrice_Format_Context ctx = {.bfr = bfr, .fmt = fmt};
+    Cthrice_Format_Context ctx = {
+        .bfr = bfr,
+        .fmt = cthrice_string_static(fmt)};
     va_start(ctx.arp, fmt);
     ctx = cthrice_format_context(ctx);
     va_end(ctx.arp);
