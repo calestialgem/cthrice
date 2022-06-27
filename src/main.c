@@ -307,7 +307,7 @@ uchr CTHRICE_FORMAT_INTRODUCTORY     = '%';
 uchr CTHRICE_FORMAT_WIDTH            = '*';
 uchr CTHRICE_FORMAT_PRECISION        = '.';
 ichr CTHRICE_FORMAT_FLAGS[]          = "-+ #0";
-ichr CTHRICE_FORMAT_SPECIFICATIONS[] = "csdioxXufFeEaAgGnP";
+ichr CTHRICE_FORMAT_SPECIFICATIONS[] = "cs";
 
 typedef union {
 #define CTHRICE_FORMAT_FLAG_COUNT 5
@@ -329,7 +329,6 @@ typedef struct {
     Cthrice_Format_Flags flg;
     unt32                wid;
     unt32                pre;
-    uptr                 mod;
 } Cthrice_Format_Context;
 
 Cthrice_Format_Context cthrice_format_consume(Cthrice_Format_Context ctx)
@@ -393,55 +392,13 @@ cthrice_format_number(Cthrice_Format_Context ctx, bool wid)
     return ctx;
 }
 
-Cthrice_Format_Context cthrice_format_modifier(Cthrice_Format_Context ctx)
-{
-    Cthrice_String specifiers =
-        cthrice_string_static(CTHRICE_FORMAT_SPECIFICATIONS);
-    uchr* pos = cthrice_string_first_pos_chr(specifiers, *ctx.crt);
-
-    while (ctx.crt < ctx.fmt.end && pos == specifiers.end) {
-        pos = cthrice_string_first_pos_chr(specifiers, *ctx.crt);
-        ctx.crt++;
-    }
-
-    Cthrice_String mod = {.bgn = ctx.fmt.bgn, .end = ctx.crt};
-
-#define CTHRICE_FORMAT_MOD_COUNT 9
-    Cthrice_String mods[CTHRICE_FORMAT_MOD_COUNT] = {
-        cthrice_string_static(""),
-        cthrice_string_static("hh"),
-        cthrice_string_static("h"),
-        cthrice_string_static("l"),
-        cthrice_string_static("ll"),
-        cthrice_string_static("j"),
-        cthrice_string_static("z"),
-        cthrice_string_static("t"),
-        cthrice_string_static("L")};
-    ctx.mod = -1;
-    for (uptr i = 0; i < CTHRICE_FORMAT_MOD_COUNT; i++) {
-        if (cthrice_string_equals(mods[i], mod)) {
-            ctx.mod = i;
-            break;
-        }
-    }
-    if (ctx.mod == -1) {
-        cthrice_error("Unkown length modifier!");
-    }
-
-    return ctx;
-}
-
 Cthrice_Format_Context cthrice_format_chr(Cthrice_Format_Context ctx)
 {
-    if (ctx.mod != 0) {
-        cthrice_error("Unsupported length modifier for formatting a char!");
-    }
     uchr chr = (uchr)va_arg(ctx.arp, int);
     if (ctx.flg.left) {
         ctx.bfr = cthrice_buffer_append_unt8(ctx.bfr, chr);
     }
-    unt32 wid = ctx.wid;
-    while (wid--) {
+    for (unt32 appended = 1; appended < ctx.wid; appended++) {
         ctx.bfr = cthrice_buffer_append_unt8(ctx.bfr, ' ');
     }
     if (!ctx.flg.left) {
@@ -453,15 +410,12 @@ Cthrice_Format_Context cthrice_format_chr(Cthrice_Format_Context ctx)
 
 Cthrice_Format_Context cthrice_format_string(Cthrice_Format_Context ctx)
 {
-    if (ctx.mod != 0) {
-        cthrice_error("Unsupported length modifier for formatting a string!");
-    }
     Cthrice_String str = va_arg(ctx.arp, Cthrice_String);
     if (ctx.flg.left) {
         ctx.bfr = cthrice_buffer_append_string(ctx.bfr, str);
     }
-    unt32 wid = ctx.wid;
-    while (wid--) {
+    for (unt32 appended = cthrice_string_length(str); appended < ctx.wid;
+         appended++) {
         ctx.bfr = cthrice_buffer_append_unt8(ctx.bfr, ' ');
     }
     if (!ctx.flg.left) {
@@ -470,6 +424,9 @@ Cthrice_Format_Context cthrice_format_string(Cthrice_Format_Context ctx)
 
     return ctx;
 }
+
+Cthrice_Format_Context (*const CTHRICE_FORMAT_FUNCTIONS[])(
+    Cthrice_Format_Context) = {&cthrice_format_chr, &cthrice_format_string};
 
 Cthrice_Format_Context cthrice_format_context(Cthrice_Format_Context ctx)
 {
@@ -518,63 +475,16 @@ Cthrice_Format_Context cthrice_format_context(Cthrice_Format_Context ctx)
                 "No format conversion specifier after format precision!");
         }
 
-        // Read and consume length modifier.
-        ctx = cthrice_format_modifier(ctx);
-        ctx = cthrice_format_consume(ctx);
-        if (!cthrice_string_length(ctx.fmt)) {
-            cthrice_error(
-                "No format conversion specifier after length modifiers!");
+        // Read conversion specifier.
+        Cthrice_String spec =
+            cthrice_string_static(CTHRICE_FORMAT_SPECIFICATIONS);
+        uchr* pos = cthrice_string_first_pos_chr(spec, *ctx.crt);
+        if (pos == spec.end) {
+            cthrice_error("Unkown format conversion specifier!");
         }
 
-        // Read conversion specifier and format value.
-        switch (*ctx.crt) {
-            case 'c':
-                ctx = cthrice_format_chr(ctx);
-                break;
-            case 's':
-                ctx = cthrice_format_string(ctx);
-                break;
-            case 'd':
-            case 'i':
-                // ctx = cthrice_format_signed(ctx);
-                // break;
-            case 'o':
-                // ctx = cthrice_format_oct(ctx);
-                // break;
-            case 'x':
-            case 'X':
-                // ctx = cthrice_format_hex(ctx);
-                // break;
-            case 'u':
-                // ctx = cthrice_format_unsigned(ctx);
-                // break;
-            case 'f':
-            case 'F':
-                // ctx = cthrice_format_float(ctx);
-                // break;
-            case 'e':
-            case 'E':
-                // ctx = cthrice_format_float_e(ctx);
-                // break;
-            case 'a':
-            case 'A':
-                // ctx = cthrice_format_float_a(ctx);
-                // break;
-            case 'g':
-            case 'G':
-                // ctx = cthrice_format_float_g(ctx);
-                // break;
-            case 'n':
-                // ctx = cthrice_format_count(ctx);
-                // break;
-            case 'p':
-                // ctx = cthrice_format_pointer(ctx);
-                // break;
-                cthrice_error("Unsupported format conversion specifier!");
-                break;
-            default:
-                cthrice_error("Unkown format conversion specifier!");
-        }
+        // Format the value.
+        ctx = CTHRICE_FORMAT_FUNCTIONS[pos - spec.bgn](ctx);
 
         // Consume conversion specifier.
         ctx.crt++;
