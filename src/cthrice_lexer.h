@@ -4,25 +4,8 @@
 #ifndef CTHRICE_LEXER_H
 #define CTHRICE_LEXER_H 1
 
-#include "cthrice_buffer.h"
 #include "cthrice_string.h"
 #include "cthrice_token.h"
-#include "cthrice_types.h"
-
-typedef struct {
-    Cthrice_Token  lst;
-    Cthrice_String src;
-} Cthrice_Lexer;
-
-Cthrice_String cthrice_lexer_word(Cthrice_String src);
-Cthrice_Lexer  cthrice_lexer_create(
-     Cthrice_Token_Type typ,
-     Cthrice_String     val,
-     Cthrice_String     src);
-
-Cthrice_Lexer cthrice_lexer_number(Cthrice_String word, Cthrice_String src);
-bool          cthrice_lexer_id_char(uchr chr);
-Cthrice_Lexer cthrice_lexer_next(Cthrice_String src);
 
 typedef struct {
     Cthrice_Token* restrict bgn;

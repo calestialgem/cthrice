@@ -3,33 +3,38 @@
 
 #include "cthrice_lexer.h"
 
+#include "cthrice_buffer.h"
 #include "cthrice_error.h"
+#include "cthrice_types.h"
 
+#include <stdlib.h>
 #include <string.h>
 
-Cthrice_String cthrice_lexer_word(Cthrice_String src)
+typedef struct {
+    Cthrice_Token  lst;
+    Cthrice_String src;
+} Lexer;
+
+Cthrice_String word(Cthrice_String src)
 {
     Cthrice_String trm = cthrice_string_trim(src);
     return cthrice_string_first_word(trm);
 }
 
-Cthrice_Lexer cthrice_lexer_create(
-    Cthrice_Token_Type typ,
-    Cthrice_String     val,
-    Cthrice_String     src)
+Lexer create(Cthrice_Token_Type typ, Cthrice_String val, Cthrice_String src)
 {
-    return (Cthrice_Lexer){
+    return (Lexer){
         .lst = {    .typ = typ,     .val = val},
         .src = {.bgn = val.end, .end = src.end}
     };
 }
 
-Cthrice_Lexer cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
+Lexer number(Cthrice_String word, Cthrice_String src)
 {
     uptr len = cthrice_string_length(word);
 
     if (len == 1) {
-        return cthrice_lexer_create(CTHRICE_TOKEN_INTEGER, word, src);
+        return create(CTHRICE_TOKEN_INTEGER, word, src);
     }
 
     bool (*digit)(uchr) = &cthrice_digit;
@@ -49,7 +54,7 @@ Cthrice_Lexer cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
             case '_':
                 break;
             default:
-                return cthrice_lexer_create(
+                return create(
                     CTHRICE_TOKEN_INTEGER,
                     cthrice_string_part(word, 0, 1),
                     src);
@@ -69,78 +74,74 @@ Cthrice_Lexer cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
         end--;
     }
 
-    return cthrice_lexer_create(
+    return create(
         CTHRICE_TOKEN_INTEGER,
         (Cthrice_String){.bgn = word.bgn, .end = end},
         src);
 }
 
-bool cthrice_lexer_id_char(uchr chr)
+bool id_char(uchr chr)
 {
     return chr == '_' || cthrice_letter(chr);
 }
 
-Cthrice_Lexer cthrice_lexer_next(Cthrice_String src)
+Lexer next(Cthrice_String src)
 {
-    Cthrice_String word = cthrice_lexer_word(src);
+    Cthrice_String wrd = word(src);
 
-    if (!cthrice_string_length(word)) {
-        return cthrice_lexer_create(CTHRICE_TOKEN_END_OF_FILE, word, src);
+    if (!cthrice_string_length(wrd)) {
+        return create(CTHRICE_TOKEN_END_OF_FILE, wrd, src);
     }
 
     { // Check for punctuation.
         Cthrice_String puncs = cthrice_string_static(";()[]{}");
-        uchr*          pos   = cthrice_string_first_pos_chr(puncs, *word.bgn);
+        uchr*          pos   = cthrice_string_first_pos_chr(puncs, *wrd.bgn);
 
         if (pos < puncs.end) {
-            return cthrice_lexer_create(
+            return create(
                 CTHRICE_TOKEN_SEMICOLON + (pos - puncs.bgn),
-                cthrice_string_part(word, 0, 1),
+                cthrice_string_part(wrd, 0, 1),
                 src);
         }
     }
 
     // Check for number.
-    if (cthrice_digit(*word.bgn)) {
-        return cthrice_lexer_number(word, src);
+    if (cthrice_digit(*wrd.bgn)) {
+        return number(wrd, src);
     }
 
     // Check for identifier or keyword.
-    if (cthrice_lexer_id_char(*word.bgn)) {
-        uchr* end = word.bgn + 1;
-        while (end < word.end &&
-               (cthrice_lexer_id_char(*end) || cthrice_digit(*end))) {
+    if (id_char(*wrd.bgn)) {
+        uchr* end = wrd.bgn + 1;
+        while (end < wrd.end && (id_char(*end) || cthrice_digit(*end))) {
             end++;
         }
-        Cthrice_String val = {.bgn = word.bgn, .end = end};
+        Cthrice_String val = {.bgn = wrd.bgn, .end = end};
 
         for (uptr i = 0; i < CTHRICE_KEYWORD_COUNT; i++) {
             if (cthrice_string_equals(
                     cthrice_string_static(CTHRICE_KEYWORDS[i]),
                     val)) {
-                return cthrice_lexer_create(
-                    CTHRICE_TOKEN_KEYWORD_INT8 + i,
-                    val,
-                    src);
+                return create(CTHRICE_TOKEN_KEYWORD_INT8 + i, val, src);
             }
         }
-        return cthrice_lexer_create(CTHRICE_TOKEN_IDENTIFIER, val, src);
+        return create(CTHRICE_TOKEN_IDENTIFIER, val, src);
     }
 
-    Cthrice_String val = cthrice_string_part(word, 0, 1);
-    return cthrice_lexer_create(-1, val, src);
+    Cthrice_String val = cthrice_string_part(wrd, 0, 1);
+    return create(-1, val, src);
 }
 
 Cthrice_Lex cthrice_lex(Cthrice_String src)
 {
     // Create a buffer.
-    Cthrice_Buffer bfr   = {};
-    Cthrice_Lexer  lexer = {};
+    Cthrice_Buffer bfr   = {0};
+    Lexer          lexer = {0};
 
     // Append all the tokens to the buffer.
     do {
         // Lex the next token.
-        lexer = cthrice_lexer_next(src);
+        lexer = next(src);
         src   = lexer.src;
 
         // Append the token.
