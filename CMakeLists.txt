@@ -8,7 +8,16 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 project(cthrice)
 
-add_executable(${PROJECT_NAME} src/main.c)
+add_executable(${PROJECT_NAME}
+    src/cthrice_buffer.c
+    src/cthrice_character.c
+    src/cthrice_error.c
+    src/cthrice_format.c
+    src/cthrice_lexer.c
+    src/cthrice_string.c
+    src/cthrice_token.c
+    src/main.c
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
