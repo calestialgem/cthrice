@@ -115,9 +115,9 @@ cthrice_buffer_append_string(Cthrice_Buffer bfr, Cthrice_String str)
 
 Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, ichr* name)
 {
-    FILE* file = fopen(name, "r");
-    if (!file) {
-        cthrice_error("Could not open file!");
+    FILE* file = 0;
+    if (fopen_s(&file, name, "r")) {
+        cthrice_error("Could not open the file!");
     }
 
     const uptr CHUNK = 1024;
@@ -136,6 +136,9 @@ Cthrice_Buffer cthrice_buffer_append_file(Cthrice_Buffer bfr, ichr* name)
         cthrice_error("Problem while reading!");
     }
 
-    fclose(file);
+    if (fclose(file) == -1) {
+        cthrice_error("Could not close the file!");
+    }
+
     return bfr;
 }
