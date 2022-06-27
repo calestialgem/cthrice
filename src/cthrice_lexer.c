@@ -15,13 +15,14 @@ typedef struct {
     Cthrice_String src;
 } Lexer;
 
-Cthrice_String word(Cthrice_String src)
+static Cthrice_String word(Cthrice_String src)
 {
     Cthrice_String trm = cthrice_string_trim(src);
     return cthrice_string_first_word(trm);
 }
 
-Lexer create(Cthrice_Token_Type typ, Cthrice_String val, Cthrice_String src)
+static Lexer
+create(Cthrice_Token_Type typ, Cthrice_String val, Cthrice_String src)
 {
     return (Lexer){
         .lst = {    .typ = typ,     .val = val},
@@ -29,7 +30,7 @@ Lexer create(Cthrice_Token_Type typ, Cthrice_String val, Cthrice_String src)
     };
 }
 
-Lexer number(Cthrice_String word, Cthrice_String src)
+static Lexer number(Cthrice_String word, Cthrice_String src)
 {
     uptr len = cthrice_string_length(word);
 
@@ -80,12 +81,12 @@ Lexer number(Cthrice_String word, Cthrice_String src)
         src);
 }
 
-bool id_char(uchr chr)
+static bool id_char(uchr chr)
 {
     return chr == '_' || cthrice_letter(chr);
 }
 
-Lexer next(Cthrice_String src)
+static Lexer next(Cthrice_String src)
 {
     Cthrice_String wrd = word(src);
 
