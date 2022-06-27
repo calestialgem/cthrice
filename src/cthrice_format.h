@@ -5,8 +5,6 @@
 #define CTHRICE_FORMAT_H 1
 
 #include "cthrice_buffer.h"
-#include "cthrice_character.h"
-#include "cthrice_string.h"
 #include "cthrice_types.h"
 
 Cthrice_Buffer cthrice_format_append(Cthrice_Buffer bfr, ichr* fmt, ...);
