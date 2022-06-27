@@ -17,7 +17,7 @@ ichr* const CTHRICE_KEYWORDS[CTHRICE_KEYWORD_COUNT] = {
     "str",
     "return"};
 
-ichr* cthrice_token_static_name(Cthrice_Token_Type typ)
+static ichr* static_name(Cthrice_Token_Type typ)
 {
     switch (typ) {
         case CTHRICE_TOKEN_SEMICOLON:
@@ -56,15 +56,15 @@ ichr* cthrice_token_static_name(Cthrice_Token_Type typ)
     }
 }
 
-Cthrice_String cthrice_token_name(Cthrice_Token_Type typ)
+static Cthrice_String name(Cthrice_Token_Type typ)
 {
-    return cthrice_string_static(cthrice_token_static_name(typ));
+    return cthrice_string_static(static_name(typ));
 }
 
 void cthrice_token_print(Cthrice_Token tkn)
 {
-    Cthrice_Buffer bfr = {};
-    bfr = cthrice_format_append(bfr, "%s", cthrice_token_name(tkn.typ));
+    Cthrice_Buffer bfr = {0};
+    bfr                = cthrice_format_append(bfr, "%s", name(tkn.typ));
     switch (tkn.typ) {
         case CTHRICE_TOKEN_SEMICOLON:
         case CTHRICE_TOKEN_OPENING_BRACKET:

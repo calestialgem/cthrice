@@ -39,8 +39,6 @@ typedef struct {
     Cthrice_String     val;
 } Cthrice_Token;
 
-ichr*          cthrice_token_static_name(Cthrice_Token_Type typ);
-Cthrice_String cthrice_token_name(Cthrice_Token_Type typ);
-void           cthrice_token_print(Cthrice_Token tkn);
+void cthrice_token_print(Cthrice_Token tkn);
 
 #endif // CTHRICE_TOKEN_H
