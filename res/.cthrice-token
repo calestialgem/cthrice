@@ -1,0 +1,65 @@
+// SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/*
+ * x: 'a'       -> x is the character a
+ * x: 'a-b'     -> x is any character in range [a, b]
+ * x: 'a|b'     -> x is the character a or the character b
+ * x: "abc"     -> x is the string abc
+ * x: a b       -> x is a then b
+ * x: a
+ *    b         -> x is a then b
+ * x: a | b     -> x is a or b
+ * x: [a]       -> x is a or nothing
+ * x: {a}       -> x is 0 or more a
+ * x: (a)       -> x is 1 or more a
+ * f<a, b>:     -> f is a template taking a and b as parameters
+ * x: f<a, b>   -> x is result of template f using a and b as arguments
+ * x@:          -> x is a token
+ */
+
+/** Integers and floats. */
+number:
+    /** Number optionally separated for readability. */
+    separated<digit>: (digit) {'_' (digit)}
+
+    /** Whole number. */
+    integer<digit>: ['+|-'] separated<digit>
+
+    /** Floating point number. */
+    float<digit, exponent>: ['+|-'] separated<digit> '.' separated<digit>
+        [exponent integer<'0-9'>]
+
+    /** Floating point base 2 exponent character. */
+    binary-exponent: 'p|P'
+
+    /** Indicator for numbers with different base than 10. */
+    special<base>: '0' base
+
+    /** Base 2 numbers. */
+    binary:
+        base: 'b|B'
+        digit: '0-1'
+        integer@: special<base> integer<digit>
+        float@: special<base> float<digit, binary-exponent>
+
+    /** Base 8 numbers. */
+    octal:
+        base: 'o|O'
+        digit: '0-7'
+        integer@: special<base> integer<digit>
+        float@: special<base> float<digit, binary-exponent>
+
+    /** Base 10 numbers. */
+    decimal:
+        digit: '0-9'
+        exponent: 'e|E'
+        integer@: integer<digit>
+        float@: float<digit, exponent>
+
+    /** Base 16 numbers. */
+    hexadecimal:
+        base: 'x|X'
+        digit: '0-9' | 'A-F' | 'a-f'
+        integer@: special<base> integer<digit>
+        float@: special<base> float<digit, binary-exponent>
