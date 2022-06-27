@@ -633,9 +633,9 @@ void cthrice_token_print(Cthrice_Token tkn)
 }
 
 typedef struct {
-    Cthrice_Token  tkn;
+    Cthrice_Token  lst;
     Cthrice_String src;
-} Cthrice_Lexed_Token;
+} Cthrice_Lexer;
 
 Cthrice_String cthrice_lexer_word(Cthrice_String src)
 {
@@ -643,19 +643,18 @@ Cthrice_String cthrice_lexer_word(Cthrice_String src)
     return cthrice_string_first_word(trm);
 }
 
-Cthrice_Lexed_Token cthrice_lexer_create(
+Cthrice_Lexer cthrice_lexer_create(
     Cthrice_Token_Type typ,
     Cthrice_String     val,
     Cthrice_String     src)
 {
-    return (Cthrice_Lexed_Token){
-        .tkn = {    .typ = typ,     .val = val},
+    return (Cthrice_Lexer){
+        .lst = {    .typ = typ,     .val = val},
         .src = {.bgn = val.end, .end = src.end}
     };
 }
 
-Cthrice_Lexed_Token
-cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
+Cthrice_Lexer cthrice_lexer_number(Cthrice_String word, Cthrice_String src)
 {
     uptr len = cthrice_string_length(word);
 
@@ -711,7 +710,7 @@ bool cthrice_lexer_id_char(uchr chr)
     return chr == '_' || cthrice_letter(chr);
 }
 
-Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
+Cthrice_Lexer cthrice_lexer_next(Cthrice_String src)
 {
     Cthrice_String word = cthrice_lexer_word(src);
 
@@ -762,6 +761,50 @@ Cthrice_Lexed_Token cthrice_lex(Cthrice_String src)
     return cthrice_lexer_create(-1, val, src);
 }
 
+typedef struct {
+    Cthrice_Token* restrict bgn;
+    Cthrice_Token* restrict end;
+} Cthrice_Lex;
+
+Cthrice_Lex cthrice_lex(Cthrice_String src)
+{
+    // Create a buffer.
+    Cthrice_Buffer bfr   = {};
+    Cthrice_Lexer  lexer = {};
+
+    // Append all the tokens to the buffer.
+    do {
+        // Lex the next token.
+        lexer = cthrice_lexer_next(src);
+        src   = lexer.src;
+
+        // Append the token.
+        Cthrice_String str = {
+            .bgn = (uchr*)&lexer.lst,
+            .end = (uchr*)&lexer.lst + sizeof(lexer.lst)};
+        bfr = cthrice_buffer_append_string(bfr, str);
+
+        // Continue until the end of the file is reached.
+    } while (lexer.lst.typ != CTHRICE_TOKEN_END_OF_FILE);
+
+    // Create an array for all the tokens.
+    uptr size                   = cthrice_buffer_size(bfr);
+    Cthrice_Token* restrict mem = malloc(size);
+
+    // Copy the tokens from the buffer to the new memory.
+    memcpy(mem, bfr.bgn, size);
+    cthrice_buffer_destroy(bfr);
+
+    uptr len = size / sizeof(Cthrice_Token);
+    return (Cthrice_Lex){.bgn = mem, .end = mem + len};
+}
+
+Cthrice_Lex cthrice_lex_destory(Cthrice_Lex lex)
+{
+    free(lex.bgn);
+    return (Cthrice_Lex){.bgn = 0, .end = 0};
+}
+
 int main(int argc, char** argv)
 {
     if (argc < 2) {
@@ -777,13 +820,14 @@ int main(int argc, char** argv)
         buf = cthrice_buffer_clear(buf);
         buf = cthrice_buffer_append_file(buf, argv[i]);
 
-        Cthrice_String      src = cthrice_buffer_view(buf);
-        Cthrice_Lexed_Token lex = cthrice_lex(src);
+        Cthrice_String src = cthrice_buffer_view(buf);
+        Cthrice_Lex    lex = cthrice_lex(src);
 
-        while (lex.tkn.typ != CTHRICE_TOKEN_END_OF_FILE) {
-            cthrice_token_print(lex.tkn);
-            lex = cthrice_lex(lex.src);
+        for (const Cthrice_Token* i = lex.bgn; i < lex.end; i++) {
+            cthrice_token_print(*i);
         }
+
+        cthrice_lex_destory(lex);
     }
 
     cthrice_buffer_destroy(buf);
