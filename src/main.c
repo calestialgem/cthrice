@@ -10,6 +10,7 @@
 #include "cthrice_types.h"
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 int main(int argc, char** argv)

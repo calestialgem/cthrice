@@ -5,7 +5,9 @@
 
 #include "cthrice_error.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Cthrice_Buffer cthrice_buffer_create(uptr cap)
 {

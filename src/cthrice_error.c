@@ -3,14 +3,20 @@
 
 #include "cthrice_error.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#define ERROR_LOGIC 1
+#define ERROR_ALLOC 2
+
 void cthrice_error(ichr* msg)
 {
     fprintf(stderr, "ERROR: %s\n", msg);
-    exit(CTHRICE_ERROR_LOGIC);
+    exit(ERROR_LOGIC);
 }
 
 void cthrice_error_alloc(void)
 {
     fprintf(stderr, "ERROR: Could not allocate memory!\n");
-    exit(CTHRICE_ERROR_ALLOC);
+    exit(ERROR_ALLOC);
 }

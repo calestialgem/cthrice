@@ -6,12 +6,6 @@
 
 #include "cthrice_types.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#define CTHRICE_ERROR_LOGIC 1
-#define CTHRICE_ERROR_ALLOC 2
-
 void cthrice_error(ichr* msg);
 void cthrice_error_alloc(void);
 
