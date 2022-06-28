@@ -84,6 +84,7 @@ void cthrice_buffer_append_string(Cthrice_String str)
 
 Cthrice_String cthrice_buffer_append_unt(uint64_t unt)
 {
+    const char*    stt  = End;
     const uint64_t BASE = 10;
     uint64_t       plc  = BASE;
 
@@ -96,11 +97,14 @@ Cthrice_String cthrice_buffer_append_unt(uint64_t unt)
         cthrice_buffer_append_chr((char)('0' + unt / plc));
         unt %= plc;
     }
+
+    return (Cthrice_String){.bgn = stt, .end = End};
 }
 
 Cthrice_String cthrice_buffer_append_file(const char* pth)
 {
-    FILE* file = 0;
+    const char* stt  = End;
+    FILE*       file = 0;
     cthrice_check(fopen_s(&file, pth, "r"), "Could not open the file!");
 
     const size_t CHUNK = 1024;
@@ -114,4 +118,6 @@ Cthrice_String cthrice_buffer_append_file(const char* pth)
 
     cthrice_check(!feof(file), "Problem while reading!");
     cthrice_check(fclose(file) == -1, "Could not close the file!");
+
+    return (Cthrice_String){.bgn = stt, .end = End};
 }
