@@ -4,6 +4,7 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H 1
 
+#include "cthrice_buffer.h"
 #include "cthrice_types.h"
 
 /** Token rule node over a single character. */
@@ -11,7 +12,6 @@ typedef enum {
     UNARY_OPTIONAL,
     UNARY_ZERO_OR_MORE,
     UNARY_ONE_OR_MORE,
-    UNARY_TOKEN
 } Node_Unary;
 
 /** Token rule node over two characters. */
@@ -40,5 +40,17 @@ typedef struct {
         uptr        rle;
     };
 } Node;
+
+/** Token rule: a tree. */
+typedef struct {
+    const Node* restrict bgn;
+    const Node* restrict end;
+} Rule;
+
+/** Definition of the lexer. */
+struct Cthrice_Lexer {
+    const Rule* restrict bgn;
+    const Rule* restrict end;
+};
 
 #endif // INTERNAL_H
