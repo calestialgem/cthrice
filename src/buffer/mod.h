@@ -22,11 +22,12 @@ const char* cthrice_buffer_skip(size_t ali);
 
 /** Append a character to the buffer. */
 void cthrice_buffer_append_chr(char chr);
-/** Append an unsigned integer to the buffer. */
-void cthrice_buffer_append_unt(uint64_t unt);
 /** Append a string to the buffer. */
 void cthrice_buffer_append_string(Cthrice_String str);
-/** Append a file to the buffer. */
-void cthrice_buffer_append_file(const char* pth);
+
+/** Append an unsigned integer to the buffer. Returns the resulting string. */
+Cthrice_String cthrice_buffer_append_unt(uint64_t unt);
+/** Append a file to the buffer. Returns the resulting string. */
+Cthrice_String cthrice_buffer_append_file(const char* pth);
 
 #endif // CTHRICE_BUFFER_H
