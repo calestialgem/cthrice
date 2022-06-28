@@ -7,6 +7,7 @@
 #include "string/mod.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 /** Token pattern over a single character. */
 typedef enum {
@@ -22,16 +23,24 @@ typedef enum {
     BINARY_OR,
 } Pattern_Binary;
 
+/** Function call in the pattern. */
+typedef struct {
+    Cthrice_String nme;
+    uint8_t        arg;
+} Pattern_Function;
+
 /** Compound token pattern, which is a tree and it is stored as an array of
  * patterns. */
 typedef struct Rule Rule;
 
-/** Type of a token pattern. It could a character, a unary pattern, a binary
- * pattern, or a rule, which is just a compound pattern. */
+/** Type of a token pattern. It could be a character, a unary pattern, a binary
+ * pattern, a call to another function, a parameter to the current function, or
+ * a rule, which is just a compound pattern. */
 typedef enum {
     PATTERN_CHARACTER,
     PATTERN_UNARY,
     PATTERN_BINARY,
+    PATTERN_FUNCTION,
     PATTERN_RULE
 } Pattern_Type;
 
@@ -39,10 +48,11 @@ typedef enum {
 typedef struct {
     Pattern_Type typ;
     union {
-        char           chr;
-        Pattern_Unary  unr;
-        Pattern_Binary bir;
-        Rule*          rle;
+        char             chr;
+        Pattern_Unary    unr;
+        Pattern_Binary   bir;
+        Pattern_Function fnc;
+        Cthrice_String   rle;
     };
 } Pattern;
 
