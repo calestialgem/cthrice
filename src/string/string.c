@@ -32,13 +32,11 @@ bool cthrice_string_equals(Cthrice_String lhs, Cthrice_String rhs)
 uint64_t cthrice_string_parse_u64(Cthrice_String str)
 {
     uint64_t res = 0;
-
     for (const char* i = str.bgn; i < str.end; i++) {
         const uint64_t BASE = 10;
         res *= BASE;
         res += *i - '0';
     }
-
     return res;
 }
 
@@ -84,11 +82,9 @@ const char* cthrice_string_first_pos_chr(Cthrice_String str, char chr)
 Cthrice_String cthrice_string_first_word(Cthrice_String str)
 {
     const char* end = str.bgn;
-
     while (end < str.end && !cthrice_whitespace(*end)) {
         end++;
     }
-
     str.end = end;
     return str;
 }
