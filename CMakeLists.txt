@@ -23,6 +23,8 @@ add_executable(${PROJECT_NAME}
 
     src/string/character.c
     src/string/string.c
+
+    src/buffer/buffer.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
