@@ -4,7 +4,6 @@
 /*
  * x: 'a'       -> x is the character a
  * x: 'a' - 'b' -> x is any character in range [a, b]
- * x: "abc"     -> x is the string abc
  * x: a b       -> x is a then b
  * x: a
  *    b         -> x is a then b
