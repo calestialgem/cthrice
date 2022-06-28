@@ -4,8 +4,7 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H 1
 
-#include "cthrice_buffer.h"
-#include "cthrice_types.h"
+#include <stddef.h>
 
 /** Token rule node over a single character. */
 typedef enum {
@@ -36,8 +35,8 @@ typedef struct {
     union {
         Node_Unary  unr;
         Node_Binary bir;
-        uchr        chr;
-        uptr        rle;
+        char        chr;
+        size_t      rle;
     };
 } Node;
 

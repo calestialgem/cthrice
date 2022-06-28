@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "internal.h"
-#include "lexer.h"
+#include "mod.h"
 
 Cthrice_Lex cthrice_lex_create(const Cthrice_Lexer* lxr, Cthrice_String src) {}
 

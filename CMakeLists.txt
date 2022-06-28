@@ -14,13 +14,15 @@ add_executable(${PROJECT_NAME}
     src/cthrice_error.c
     src/cthrice_format.c
     src/cthrice_lexer.c
-    src/cthrice_string.c
     src/cthrice_token.c
 
     src/main.c
 
     src/lexer/lex.c
-    src/lexer/lexer.c
+    src/lexer/token.c
+
+    src/string/character.c
+    src/string/string.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
