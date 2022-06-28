@@ -6,45 +6,49 @@
 
 #include <stddef.h>
 
-/** Token rule node over a single character. */
+/** Token pattern over a single character. */
 typedef enum {
     UNARY_OPTIONAL,
     UNARY_ZERO_OR_MORE,
     UNARY_ONE_OR_MORE,
-} Node_Unary;
+} Pattern_Unary;
 
-/** Token rule node over two characters. */
+/** Token pattern over two characters. */
 typedef enum {
     BINARY_RANGE,
     BINARY_AND,
     BINARY_OR,
-} Node_Binary;
+} Pattern_Binary;
 
-/** Type of a token rule node. */
+/** Compound token pattern, which is a tree and it is stored as an array of
+ * patterns. */
+typedef struct Rule Rule;
+
+/** Type of a token pattern. It could a character, a unary pattern, a binary
+ * pattern, or a rule, which is just a compound pattern. */
 typedef enum {
-    NODE_UNARY,
-    NODE_BINARY,
-    NODE_CHARACTER,
-    NODE_RULE
-} Node_Type;
+    PATTERN_CHARACTER,
+    PATTERN_UNARY,
+    PATTERN_BINARY,
+    PATTERN_RULE
+} Pattern_Type;
 
-/** Node in the rule tree that can hold a unary rule, a binary rule, a character
- * or another rule. */
+/** Token pattern. */
 typedef struct {
-    Node_Type typ;
+    Pattern_Type typ;
     union {
-        Node_Unary  unr;
-        Node_Binary bir;
-        char        chr;
-        size_t      rle;
+        char           chr;
+        Pattern_Unary  unr;
+        Pattern_Binary bir;
+        Rule*          rle;
     };
-} Node;
+} Pattern;
 
-/** Token rule: a tree. */
-typedef struct {
-    const Node* bgn;
-    const Node* end;
-} Rule;
+/** Definition of the rule. */
+struct Rule {
+    const Pattern* bgn;
+    const Pattern* end;
+};
 
 /** Definition of the lexer. */
 struct Cthrice_Lexer {
