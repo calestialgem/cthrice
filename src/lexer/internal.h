@@ -4,6 +4,8 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H 1
 
+#include "string/mod.h"
+
 #include <stddef.h>
 
 /** Token pattern over a single character. */
@@ -46,6 +48,7 @@ typedef struct {
 
 /** Definition of the rule. */
 struct Rule {
+    Cthrice_String nme;
     const Pattern* bgn;
     const Pattern* end;
 };
