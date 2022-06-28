@@ -16,7 +16,11 @@ add_executable(${PROJECT_NAME}
     src/cthrice_lexer.c
     src/cthrice_string.c
     src/cthrice_token.c
+
     src/main.c
+
+    src/lexer/loader.c
+    src/lexer/ruler.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
