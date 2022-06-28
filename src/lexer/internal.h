@@ -42,14 +42,14 @@ typedef struct {
 
 /** Token rule: a tree. */
 typedef struct {
-    const Node* restrict bgn;
-    const Node* restrict end;
+    const Node* bgn;
+    const Node* end;
 } Rule;
 
 /** Definition of the lexer. */
 struct Cthrice_Lexer {
-    const Rule* restrict bgn;
-    const Rule* restrict end;
+    const Rule* bgn;
+    const Rule* end;
 };
 
 #endif // INTERNAL_H
