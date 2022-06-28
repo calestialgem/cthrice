@@ -6,6 +6,7 @@
 #include "string/mod.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -58,6 +59,13 @@ static void ensure_space(size_t spc)
         End   = mem + sze;
         Last  = mem + nwc;
     }
+}
+
+const char* cthrice_buffer_skip(size_t ali)
+{
+    size_t skp = (uintptr_t)End % ali;
+    ensure_space(skp);
+    return End + skp;
 }
 
 void cthrice_buffer_append_chr(char chr)
