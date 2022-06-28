@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "internal.h"
-#include "lexer.h"
+#include "mod.h"
 
-const Cthrice_Lexer* cthrice_lexer_create(ichr* path) {}
+const Cthrice_Lexer* cthrice_lexer_create(const char* pth) {}
 
 void cthrice_lexer_destroy(const Cthrice_Lexer* lxr) {}

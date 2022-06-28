@@ -10,7 +10,7 @@
 typedef struct Cthrice_Lexer Cthrice_Lexer;
 
 /** Load a lexer from the rules file at the given path. */
-const Cthrice_Lexer* cthrice_lexer_create(const char* path);
+const Cthrice_Lexer* cthrice_lexer_create(const char* pth);
 /** Free the memory allocated by the lexer. */
 void cthrice_lexer_destroy(const Cthrice_Lexer* lxr);
 
