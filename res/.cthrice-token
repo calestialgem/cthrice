@@ -10,8 +10,8 @@
 // x [a]       -> x is a or nothing
 // x {a}       -> x is 0 or more a
 // x (a)       -> x is 1 or more a
-// f<a, b>     -> f is a template taking a and b as parameters
-// x f<a, b>   -> x is result of template f using a and b as arguments
+// f<a, b>     -> f is a function taking a and b as parameters
+// x f<a, b>   -> x is result of function f using a and b as arguments
 // @x          -> x is a token
 
 // Integers and floats.
