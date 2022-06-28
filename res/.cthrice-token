@@ -3,8 +3,7 @@
 
 /*
  * x: 'a'       -> x is the character a
- * x: 'a-b'     -> x is any character in range [a, b]
- * x: 'a|b'     -> x is the character a or the character b
+ * x: 'a' - 'b' -> x is any character in range [a, b]
  * x: "abc"     -> x is the string abc
  * x: a b       -> x is a then b
  * x: a
@@ -19,47 +18,46 @@
  */
 
 /** Integers and floats. */
-number:
+n:
     /** Number optionally separated for readability. */
-    separated<digit>: (digit) {'_' (digit)}
+    s<d>: (d) {'_' (d)}
 
     /** Whole number. */
-    integer<digit>: ['+|-'] separated<digit>
+    i<d>: ['+' | '-'] s<d>
 
     /** Floating point number. */
-    float<digit, exponent>: ['+|-'] separated<digit> '.' separated<digit>
-        [exponent integer<'0-9'>]
+    f<d, e>: ['+' | '-'] s<d> '.' s<d> [e i<'0' - '9'>]
 
     /** Floating point base 2 exponent character. */
-    binary-exponent: 'p|P'
+    p: 'p' | 'P'
 
     /** Indicator for numbers with different base than 10. */
-    special<base>: '0' base
+    z<b>: '0' b
 
     /** Base 2 numbers. */
-    binary:
-        base: 'b|B'
-        digit: '0-1'
-        integer@: special<base> integer<digit>
-        float@: special<base> float<digit, binary-exponent>
+    b:
+        b: 'b' | 'B'
+        d: '0' - '1'
+        i@: z<b> i<d>
+        f@: z<b> f<d, p>
 
     /** Base 8 numbers. */
-    octal:
-        base: 'o|O'
-        digit: '0-7'
-        integer@: special<base> integer<digit>
-        float@: special<base> float<digit, binary-exponent>
+    o:
+        b: 'o' | 'O'
+        d: '0' - '7'
+        i@: z<b> i<d>
+        f@: z<b> f<d, p>
 
     /** Base 10 numbers. */
-    decimal:
-        digit: '0-9'
-        exponent: 'e|E'
-        integer@: integer<digit>
-        float@: float<digit, exponent>
+    d:
+        d: '0' - '9'
+        e: 'e' | 'E'
+        i@: i<d>
+        f@: f<d, e>
 
     /** Base 16 numbers. */
-    hexadecimal:
-        base: 'x|X'
-        digit: '0-9' | 'A-F' | 'a-f'
-        integer@: special<base> integer<digit>
-        float@: special<base> float<digit, binary-exponent>
+    x:
+        b: 'x' | 'X'
+        d: '0' - '9' | 'A' - 'F' | 'a' - 'f'
+        i@: z<b> i<d>
+        f@: z<b> f<d, p>
