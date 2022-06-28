@@ -19,8 +19,8 @@ add_executable(${PROJECT_NAME}
 
     src/main.c
 
-    src/lexer/loader.c
-    src/lexer/ruler.c
+    src/lexer/lex.c
+    src/lexer/lexer.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
