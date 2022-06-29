@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
+# SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.0.0)
@@ -35,4 +35,3 @@ if(MSVC)
 else(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif(MSVC)
-
