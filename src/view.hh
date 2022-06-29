@@ -17,7 +17,7 @@ namespace cthrice
         const T* end;
     };
 
-    /** Get the amount of bytes. */
+    /** Get the amount of elements. */
     template<typename T>
     size_t size(View<T> view)
     {
