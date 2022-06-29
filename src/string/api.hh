@@ -4,18 +4,30 @@
 #ifndef CTHRICE_STRING_HH
 #define CTHRICE_STRING_HH 1
 
+#include "buffer.hh"
 #include "view.hh"
+
+#include <cstdint>
 
 namespace cthrice
 {
+    /** An immutable view of characters. */
+    using String = View<char>;
+
     /** Convert a static, null-terminated, C string. */
-    View<char> cstr(const char* str);
+    String cstr(const char* str);
 
     /** Parse the string to an unsigned integer. */
-    uint64_t parse(View<char> str);
+    uint64_t parse(String str);
 
     /** Print the string before a new line. */
-    void println(View<char> str);
+    void println(String str);
+
+    /** Append an integer to a character buffer. */
+    [[nodiscard]] Buffer<char> append(Buffer<char> bfr, uint64_t uint);
+
+    /** Append the contents of a file to a character buffer. */
+    [[nodiscard]] Buffer<char> append(Buffer<char> bfr, String path);
 } // namespace cthrice
 
 #endif // CTHRICE_STRING_HH

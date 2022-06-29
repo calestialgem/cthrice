@@ -58,11 +58,19 @@ namespace cthrice
         return bfr;
     }
 
-    /** Get a immutable view of the buffer. */
+    /** Get a immutable view of all the buffer. */
     template<typename T>
     View<T> view(Buffer<T> bfr)
     {
         return {bfr.bgn, bfr.end};
+    }
+
+    /** Get a immutable view of a portion of the buffer at the end starting from
+     * the given offset. */
+    template<typename T>
+    View<T> view(Buffer<T> bfr, size_t off)
+    {
+        return {bfr.bgn + off, bfr.end};
     }
 
     /** Ensure that the buffer has at least the given amount of space. If it is
