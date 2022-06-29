@@ -11,7 +11,7 @@ project(cthrice)
 add_executable(${PROJECT_NAME}
     src/main.cc
 
-    src/view/view.cc
+    src/string/string.cc
 
     src/buffer/buffer.cc
 )
