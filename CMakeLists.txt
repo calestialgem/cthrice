@@ -3,28 +3,13 @@
 
 cmake_minimum_required(VERSION 3.0.0)
 
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 project(cthrice)
 
 add_executable(${PROJECT_NAME}
-    src/cthrice_buffer.c
-    src/cthrice_character.c
-    src/cthrice_error.c
-    src/cthrice_format.c
-    src/cthrice_lexer.c
-    src/cthrice_token.c
-
-    src/main.c
-
-    src/lexer/lex.c
-    src/lexer/token.c
-
-    src/string/character.c
-    src/string/string.c
-
-    src/buffer/buffer.c
+    src/main.cc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
