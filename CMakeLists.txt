@@ -12,8 +12,6 @@ add_executable(${PROJECT_NAME}
     src/main.cc
 
     src/string/string.cc
-
-    src/buffer/buffer.cc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
