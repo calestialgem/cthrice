@@ -1,36 +1,39 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
-
 {
-	// Use IntelliSense to learn about possible attributes.
-	// Hover to view descriptions of existing attributes.
-	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "(Linux) Launch",
-			"type": "cppdbg",
-			"request": "launch",
-			"program": "${workspaceFolder}/build/cthrice",
-			"args": ["main.thr"],
-			"stopAtEntry": false,
-			"cwd": "${workspaceFolder}/res",
-			"environment": [],
-			"externalConsole": false,
-			"MIMode": "gdb",
-			"preLaunchTask": "${defaultBuildTask}"
-		},
-		{
-			"name": "(Windows) Launch",
-			"type": "cppvsdbg",
-			"request": "launch",
-			"program": "${workspaceFolder}/build/cthrice.exe",
-			"args": ["main.thr"],
-			"stopAtEntry": false,
-			"cwd": "${workspaceFolder}/res",
-			"environment": [],
-			"console": "integratedTerminal",
-			"preLaunchTask": "${defaultBuildTask}"
-		}
-	]
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(Linux) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/cthrice",
+            "args": [
+                "main.thr"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/res",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "${defaultBuildTask}"
+        },
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/cthrice.exe",
+            "args": [
+                "main.thr"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/res",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "${defaultBuildTask}"
+        }
+    ]
 }

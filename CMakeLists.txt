@@ -10,6 +10,10 @@ project(cthrice)
 
 add_executable(${PROJECT_NAME}
     src/main.cc
+
+    src/view/view.cc
+
+    src/buffer/buffer.cc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
