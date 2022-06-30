@@ -17,7 +17,7 @@ namespace cthrice
     struct Pattern {
         /** Type of the pattern. */
         enum Type {
-            /** Edge in the tree that checks a character. Invalid character
+            /** Edge in the tree that checks a character. Free character
              * means move to the vertex pointed by this edge without checking
              * and consuming a character. */
             EDGE,
@@ -32,7 +32,7 @@ namespace cthrice
         /** Data of the pattern. */
         union Data {
             struct Edge {
-                static constexpr int64_t INVALID = -1;
+                static constexpr int64_t FREE = -1;
                 int64_t                  literal;
             };
             struct Vertex {
