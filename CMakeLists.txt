@@ -11,6 +11,9 @@ project(cthrice)
 add_executable(${PROJECT_NAME}
     src/main.cc
 
+    src/pattern/matcher.cc
+    src/pattern/parser.cc
+
     src/string/string.cc
 )
 
