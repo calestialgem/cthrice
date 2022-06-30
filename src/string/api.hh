@@ -5,29 +5,26 @@
 #define CTHRICE_STRING_HH 1
 
 #include "buffer.hh"
-#include "view.hh"
+#include "range.hh"
 
 #include <cstdint>
 
 namespace cthrice
 {
-    /** An immutable view of characters. */
-    using String = View<char>;
+    /** Convert a static, null-terminated, C string to a character range. */
+    Range<char> cstr(const char* str);
 
-    /** Convert a static, null-terminated, C string. */
-    String cstr(const char* str);
+    /** Parse the character range to an unsigned integer. */
+    uint64_t parse(Range<char> str);
 
-    /** Parse the string to an unsigned integer. */
-    uint64_t parse(String str);
+    /** Print the character range before a new line. */
+    void println(Range<char> str);
 
-    /** Print the string before a new line. */
-    void println(String str);
-
-    /** Append an integer to a character buffer. */
+    /** Append the integer to the character buffer. */
     [[nodiscard]] Buffer<char> append(Buffer<char> bfr, uint64_t uint);
 
-    /** Append the contents of a file to a character buffer. */
-    [[nodiscard]] Buffer<char> append(Buffer<char> bfr, String path);
+    /** Append the contents of the file to the character buffer. */
+    [[nodiscard]] Buffer<char> append(Buffer<char> bfr, Range<char> path);
 } // namespace cthrice
 
 #endif // CTHRICE_STRING_HH

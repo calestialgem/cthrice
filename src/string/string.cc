@@ -12,16 +12,16 @@
 
 namespace cthrice
 {
-    String cstr(const char* str)
+    Range<char> cstr(const char* str)
     {
-        String res = {.bgn = str, .end = str};
+        Range<char> res = {.bgn = str, .end = str};
         while (*res.end != 0) {
             res.end++;
         }
         return res;
     }
 
-    uint64_t parse(String str)
+    uint64_t parse(Range<char> str)
     {
         uint64_t res = 0;
         for (const char* i = str.bgn; i < str.end; i++) {
@@ -32,7 +32,7 @@ namespace cthrice
         return res;
     }
 
-    void println(String str)
+    void println(Range<char> str)
     {
         printf("%.*s\n", (int)size(str), str.bgn);
     }
@@ -55,7 +55,7 @@ namespace cthrice
         return bfr;
     }
 
-    Buffer<char> append(Buffer<char> bfr, String path)
+    Buffer<char> append(Buffer<char> bfr, Range<char> path)
     {
         std::ifstream file;
         file.open(path.bgn, std::ios::in);

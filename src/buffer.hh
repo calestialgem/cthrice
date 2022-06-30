@@ -5,7 +5,7 @@
 #define CTHRICE_BUFFER_HH 1
 
 #include "error.hh"
-#include "view.hh"
+#include "range.hh"
 
 #include <cmath>
 #include <cstddef>
@@ -60,7 +60,7 @@ namespace cthrice
 
     /** Get a immutable view of all the buffer. */
     template<typename T>
-    View<T> view(Buffer<T> bfr)
+    Range<T> view(Buffer<T> bfr)
     {
         return {bfr.bgn, bfr.end};
     }
@@ -68,7 +68,7 @@ namespace cthrice
     /** Get a immutable view of a portion of the buffer at the end starting from
      * the given offset. */
     template<typename T>
-    View<T> view(Buffer<T> bfr, size_t off)
+    Range<T> view(Buffer<T> bfr, size_t off)
     {
         return {bfr.bgn + off, bfr.end};
     }
@@ -107,7 +107,7 @@ namespace cthrice
 
     /** Put a view's contents to the buffer. Grows the buffer if necessary. */
     template<typename T>
-    [[nodiscard]] Buffer<T> put(Buffer<T> bfr, View<T> view)
+    [[nodiscard]] Buffer<T> put(Buffer<T> bfr, Range<T> view)
     {
         size_t n = size(view);
         bfr      = ensure_space(bfr, n);

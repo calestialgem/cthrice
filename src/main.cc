@@ -3,8 +3,8 @@
 
 #include "buffer.hh"
 #include "error.hh"
+#include "range.hh"
 #include "string/api.hh"
-#include "view.hh"
 
 #include <cstdio>
 
