@@ -11,20 +11,23 @@
 
 namespace cthrice
 {
-    /** Convert a static, null-terminated, C string to a character range. */
-    Range<char> cstr(const char* str);
+    /** Range of characters. */
+    using String = Range<char>;
 
-    /** Parse the character range to an unsigned integer. */
-    uint64_t parse(Range<char> str);
+    /** Convert a static, null-terminated, C string to a string. */
+    String cstr(const char* str);
 
-    /** Print the character range before a new line. */
-    void println(Range<char> str);
+    /** Parse the string to an unsigned integer. */
+    uint64_t parse(String str);
+
+    /** Print the string before a new line. */
+    void println(String str);
 
     /** Append the integer to the character buffer. */
     [[nodiscard]] Buffer<char> append(Buffer<char> bfr, uint64_t uint);
 
     /** Append the contents of the file to the character buffer. */
-    [[nodiscard]] Buffer<char> append(Buffer<char> bfr, Range<char> path);
+    [[nodiscard]] Buffer<char> append(Buffer<char> bfr, String path);
 } // namespace cthrice
 
 #endif // CTHRICE_STRING_HH

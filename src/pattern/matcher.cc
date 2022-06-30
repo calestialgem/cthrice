@@ -3,10 +3,11 @@
 
 #include "api.hh"
 #include "internal.hh"
+#include "string/api.hh"
 
 namespace cthrice
 {
-    Range<char> match(Range<Pattern> rgn, Range<char> str)
+    String match(Range<Pattern> rgn, String str)
     {
         return {};
     }

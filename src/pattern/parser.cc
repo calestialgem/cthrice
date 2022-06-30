@@ -4,11 +4,11 @@
 #include "api.hh"
 #include "buffer.hh"
 #include "internal.hh"
+#include "string/api.hh"
 
 namespace cthrice
 {
-    Buffer<Pattern>
-    parse(Buffer<Pattern> bfr, Range<char> name, Range<char> ptrn)
+    Buffer<Pattern> parse(Buffer<Pattern> bfr, String name, String ptrn)
     {
         return put(bfr, {.name = name});
     }

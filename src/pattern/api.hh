@@ -6,6 +6,7 @@
 
 #include "buffer.hh"
 #include "range.hh"
+#include "string/api.hh"
 
 namespace cthrice
 {
@@ -15,11 +16,11 @@ namespace cthrice
     /** Parse the pattern by searching for references in the pattern in the
      * buffer. */
     [[nodiscard]] Buffer<Pattern>
-    parse(Buffer<Pattern> bfr, Range<char> name, Range<char> ptrn);
+    parse(Buffer<Pattern> bfr, String name, String ptrn);
 
     /** Match the string to the patterns in the range. Returns the name of the
      * maching pattern. Returns empty string if nothing matches. */
-    Range<char> match(Range<Pattern> rng, Range<char> str);
+    String match(Range<Pattern> rng, String str);
 } // namespace cthrice
 
 #endif // CTHRICE_PATTERN_HH

@@ -5,11 +5,12 @@
 #define INTERNAL_HH 1
 
 #include "range.hh"
+#include "string/api.hh"
 
 namespace cthrice
 {
     struct Pattern {
-        Range<char> name;
+        String name;
         // TODO: Implement compiled pattern.
     };
 } // namespace cthrice
