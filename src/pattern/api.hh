@@ -20,7 +20,7 @@ namespace cthrice
 
     /** Match the string to the patterns in the range. Returns the name of the
      * maching pattern. Returns empty string if nothing matches. */
-    String match(Range<Pattern> rng, String str);
+    String match(Range<Pattern> rnge, String str);
 } // namespace cthrice
 
 #endif // CTHRICE_PATTERN_HH
