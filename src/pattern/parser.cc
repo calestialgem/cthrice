@@ -10,6 +10,6 @@ namespace cthrice
 {
     Buffer<Pattern> parse(Buffer<Pattern> bfr, String name, String ptrn)
     {
-        return put(bfr, {.name = name});
+        return bfr;
     }
 } // namespace cthrice
