@@ -115,6 +115,15 @@ namespace cthrice
         bfr.end += n;
         return bfr;
     }
+
+    /** Remove the element from the buffer. Does not ensure the order of the
+     * elements in the buffer. */
+    template<typename T>
+    [[nodiscard]] Buffer<T> remove(Buffer<T> bfr, T* pos)
+    {
+        *pos = *(--bfr.end);
+        return bfr;
+    }
 } // namespace cthrice
 
 #endif // CTHRICE_BUFFER_HH
