@@ -33,15 +33,15 @@ namespace cthrice
 
         /** Data of the pattern. */
         union Data {
-            struct Edge {
-                static constexpr int64_t FREE = -1;
-                int64_t                  literal;
-                size_t                   target_offset;
+            static constexpr int64_t FREE = -1;
+            struct {
+                int64_t literal;
+                size_t  target_offset;
             } edge;
-            struct Vertex {
+            struct {
                 size_t edges;
             } vertex;
-            struct Marker {
+            struct {
                 String name;
                 bool   visible;
             } marker;
