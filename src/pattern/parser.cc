@@ -8,8 +8,46 @@
 #include "range.hh"
 #include "string/api.hh"
 
+#include <cstdio>
+
 namespace cthrice
 {
+    static void print(Range<Pattern> rnge)
+    {
+        printf("\nPatterns:\n---------\n");
+        for (const Pattern* i = rnge.bgn; i < rnge.end; i++) {
+            printf("[%05llu] { ", i - rnge.bgn);
+            switch (i->type) {
+                case Pattern::EDGE:
+                    printf("EDGE; ");
+                    if (i->data.edge.literal == Pattern::Data::FREE) {
+                        printf("FREE");
+                    } else {
+                        printf("{%c}", (char)i->data.edge.literal);
+                    }
+                    printf("; %05llu", i->data.edge.target_offset);
+                    break;
+                case Pattern::VERTEX:
+                    printf("VERTEX; %llu", i->data.vertex.edges);
+                    break;
+                case Pattern::MARKER:
+                    printf(
+                        "MARKER; {%.*s}; ",
+                        (int)size(i->data.marker.name),
+                        i->data.marker.name.bgn);
+                    if (i->data.marker.visible) {
+                        printf("Visible");
+                    } else {
+                        printf("Invisible");
+                    }
+                    break;
+                default:
+                    printf("UNKNOWN");
+            }
+            printf(" }\n");
+        }
+    }
+
     static Pattern create(int64_t literal, size_t target_offset)
     {
         return {
@@ -37,27 +75,36 @@ namespace cthrice
 
     [[nodiscard]] static ParseContext literal(ParseContext ctx)
     {
+        // Consume opening quotes.
         ctx.ptrn.bgn++;
         cthrice_check(
             size(ctx.ptrn) == 0,
             "No character literal in pattern after opening "
             "quotes!");
 
-        // Vertex that marks a character literal.
-        ctx.bfr = put(ctx.bfr, create(1));
-        ctx.bfr = put(ctx.bfr, create(*ctx.ptrn.bgn, size(ctx.bfr) + 1));
-        ctx.ptrn.bgn++;
+        while (*ctx.ptrn.bgn != '\'') {
+            // Escape using backslash.
+            if (*ctx.ptrn.bgn == '\\') {
+                cthrice_check(
+                    size(ctx.ptrn) == 0,
+                    "No escaped character literal in pattern after backslash!");
+                // Consume the escape character.
+                ctx.ptrn.bgn++;
+            }
 
-        cthrice_check(
-            size(ctx.ptrn) == 0,
-            "No closing quotes in pattern after character "
-            "literal!");
-        cthrice_check(
-            *ctx.ptrn.bgn != '\'',
-            "Unexpected character instead of closing quotes after character "
-            "literal!");
-        ctx.ptrn.bgn++;
+            // Vertex that marks a character literal.
+            ctx.bfr = put(ctx.bfr, create(1));
+            ctx.bfr = put(ctx.bfr, create(*ctx.ptrn.bgn, size(ctx.bfr) + 1));
+            ctx.ptrn.bgn++;
 
+            cthrice_check(
+                size(ctx.ptrn) == 0,
+                "No closing quotes in pattern after character "
+                "literal!");
+        }
+
+        // Consume closing quotes.
+        ctx.ptrn.bgn++;
         return ctx;
     }
 
@@ -87,6 +134,7 @@ namespace cthrice
 
         // Vertex that marks the match.
         ctx.bfr = put(ctx.bfr, create(0));
+        print(view(ctx.bfr));
         return ctx.bfr;
     }
 } // namespace cthrice

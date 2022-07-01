@@ -29,10 +29,11 @@ int main(int argc, char** argv)
     bfr = destory(bfr);
 
     Buffer<Pattern> patterns{};
-    patterns = parse(patterns, cstr("h@"), cstr("'h' 'e' 'l' 'l' 'o'"));
+    patterns = parse(patterns, cstr("h@"), cstr("'h' 'ell' 'o'"));
     patterns = parse(patterns, cstr("a@"), cstr("'a' 'a' 'a'"));
-    patterns = parse(patterns, cstr("cem@"), cstr("'C' 'e' 'm'"));
-    patterns = parse(patterns, cstr("cam"), cstr("'C' 'a' 'm'"));
+    patterns = parse(patterns, cstr("cem@"), cstr("'Cem'"));
+    patterns = parse(patterns, cstr("cam"), cstr("'Cam'"));
+    patterns = parse(patterns, cstr("escaped@"), cstr("'\\''"));
     cthrice_check(
         !equal(cstr("h@"), match(view(patterns), cstr("hello"))),
         "Matching failed!");
@@ -45,5 +46,8 @@ int main(int argc, char** argv)
     cthrice_check(
         !equal(cstr(""), match(view(patterns), cstr("Cam"))),
         "Not matching failed!");
+    cthrice_check(
+        !equal(cstr("escaped@"), match(view(patterns), cstr("'"))),
+        "Matching failed!");
     patterns = destory(patterns);
 }
