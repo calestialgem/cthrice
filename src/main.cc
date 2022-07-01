@@ -30,8 +30,20 @@ int main(int argc, char** argv)
 
     Buffer<Pattern> patterns{};
     patterns = parse(patterns, cstr("h@"), cstr("'h' 'e' 'l' 'l' 'o'"));
+    patterns = parse(patterns, cstr("a@"), cstr("'a' 'a' 'a'"));
+    patterns = parse(patterns, cstr("cem@"), cstr("'C' 'e' 'm'"));
+    patterns = parse(patterns, cstr("cam"), cstr("'C' 'a' 'm'"));
     cthrice_check(
         !equal(cstr("h@"), match(view(patterns), cstr("hello"))),
         "Matching failed!");
+    cthrice_check(
+        !equal(cstr("a@"), match(view(patterns), cstr("aaa"))),
+        "Matching failed!");
+    cthrice_check(
+        !equal(cstr("cem@"), match(view(patterns), cstr("Cem"))),
+        "Matching failed!");
+    cthrice_check(
+        !equal(cstr(""), match(view(patterns), cstr("Cam"))),
+        "Not matching failed!");
     patterns = destory(patterns);
 }
