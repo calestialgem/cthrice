@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     Buffer<Pattern> patterns{};
     patterns = parse(patterns, cstr("h@"), cstr("'h' 'e' 'l' 'l' 'o'"));
     cthrice_check(
-        equal(cstr("h@"), match(view(patterns), cstr("hello"))),
+        !equal(cstr("h@"), match(view(patterns), cstr("hello"))),
         "Matching failed!");
     patterns = destory(patterns);
 }

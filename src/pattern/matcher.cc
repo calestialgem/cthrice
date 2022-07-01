@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "api.hh"
+#include "buffer.hh"
 #include "error.hh"
 #include "internal.hh"
+#include "range.hh"
 #include "string/api.hh"
-
-#include <vector>
 
 namespace cthrice
 {
@@ -43,31 +43,19 @@ namespace cthrice
         return traversal;
     }
 
-    size_t undead(std::vector<Traversal> traversals)
-    {
-        size_t res = 0;
-        for (const Traversal& t : traversals) {
-            if (!t.dead) {
-                res++;
-            }
-        }
-        return res;
-    }
-
     bool match(Range<Pattern> rnge, String str, const Pattern* ptrn)
     {
         // Skip the marker.
         cthrice_check(++ptrn == rnge.end, "Pattern ends after the marker!");
 
-        // Traverse all the avalible paths.
-        std::vector<Traversal> traversals{};
-        traversals.push_back(
-            {.rnge = rnge, .str = str, .ptrn = ptrn, .dead = false});
+        Buffer<Traversal> bfr{};
+        bfr = put(bfr, {.rnge = rnge, .str = str, .ptrn = ptrn, .dead = false});
 
-        while (undead(traversals) != 0) {
-            for (auto i = traversals.begin(); i < traversals.end(); i++) {
+        // Traverse all the avalible paths.
+        while (size(bfr) != 0) {
+            for (Traversal* i = bfr.bgn; i < bfr.end; i++) {
                 if (i->dead) {
-                    // traversals.erase(i);
+                    bfr = remove(bfr, i--);
                     continue;
                 }
                 switch (i->ptrn->type) {
@@ -83,11 +71,13 @@ namespace cthrice
                         for (size_t j = 0; j < i->ptrn->data.vertex.edges;
                              j++) {
                             // Traverse all the edges in this vertex.
-                            traversals.push_back(traverse(
-                                {.rnge = i->rnge,
-                                 .str  = i->str,
-                                 .ptrn = i->ptrn + 1 + j,
-                                 .dead = false}));
+                            bfr =
+                                put(bfr,
+                                    traverse(
+                                        {.rnge = i->rnge,
+                                         .str  = i->str,
+                                         .ptrn = i->ptrn + 1 + j,
+                                         .dead = false}));
                         }
                         // The vertex is not important anymore.
                         i->dead = true;
