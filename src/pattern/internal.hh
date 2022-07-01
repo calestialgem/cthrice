@@ -34,6 +34,7 @@ namespace cthrice
             struct Edge {
                 static constexpr int64_t FREE = -1;
                 int64_t                  literal;
+                size_t                   target_offset;
             };
             struct Vertex {
                 size_t edges;
