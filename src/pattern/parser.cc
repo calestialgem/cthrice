@@ -66,6 +66,12 @@ namespace cthrice
 
         while (size(ptrn) != 0) {
             switch (*ptrn.bgn) {
+                case '\r':
+                case '\n':
+                case '\t':
+                case ' ':
+                    // Skip whitespace.
+                    break;
                 case '\'':
                     ctx = literal(ctx);
                     break;
