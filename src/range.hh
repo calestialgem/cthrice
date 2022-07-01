@@ -19,9 +19,9 @@ namespace cthrice
 
     /** Get the amount of elements. */
     template<typename T>
-    size_t size(Range<T> view)
+    size_t size(Range<T> rnge)
     {
-        return view.end - view.bgn;
+        return rnge.end - rnge.bgn;
     }
 
     /** Check if the data pointed by the ranges are the equal. */
@@ -43,14 +43,41 @@ namespace cthrice
     /** Find the first element that fits the given predicate. Returns the
      * position after the last element if not found. */
     template<typename T, typename P>
-    const T* find(Range<T> view, P pred)
+    const T* find(Range<T> rnge, P pred)
     {
-        for (const T* i = view.bgn; i < view.end; i++) {
+        for (const T* i = rnge.bgn; i < rnge.end; i++) {
             if (pred(*i)) {
                 return i;
             }
         }
-        return view.end;
+        return rnge.end;
+    }
+
+    /** Check whether the range contains any element that fits the given
+     * predicate. */
+    template<typename T, typename P>
+    bool contains(Range<T> rnge, P pred)
+    {
+        return find(rnge, pred) != rnge.end;
+    }
+
+    /** Find the first position of the given element. Returns the position after
+     * the last element if not found. */
+    template<typename T>
+    const T* find(Range<T> rnge, T look)
+    {
+        return find(rnge, [look](T elem) {
+            return elem == look;
+        });
+    }
+
+    /** Check whether the range contains the given element. */
+    template<typename T>
+    const T* contains(Range<T> rnge, T look)
+    {
+        return contains(rnge, [look](T elem) {
+            return elem == look;
+        });
     }
 } // namespace cthrice
 
