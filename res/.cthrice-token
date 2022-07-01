@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // x 'a'       -> x is the character a
+// x 'ab'      -> x is the characters a then b
 // x 'a' - 'b' -> x is any character in range [a, b]
 // x a b       -> x is a then b
 // x a
