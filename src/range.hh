@@ -73,7 +73,7 @@ namespace cthrice
 
     /** Check whether the range contains the given element. */
     template<typename T>
-    const T* contains(Range<T> rnge, T look)
+    bool contains(Range<T> rnge, T look)
     {
         return contains(rnge, [look](T elem) {
             return elem == look;
