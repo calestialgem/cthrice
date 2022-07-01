@@ -1,14 +1,16 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <stdint.h>
+#include <vcruntime.h>
 #ifndef INTERNAL_HH
-#define INTERNAL_HH 1
+#    define INTERNAL_HH 1
 
-#include "range.hh"
-#include "string/api.hh"
+#    include "range.hh"
+#    include "string/api.hh"
 
-#include <cstddef>
-#include <cstdint>
+#    include <cstddef>
+#    include <cstdint>
 
 namespace cthrice
 {
@@ -35,18 +37,40 @@ namespace cthrice
                 static constexpr int64_t FREE = -1;
                 int64_t                  literal;
                 size_t                   target_offset;
-            };
+            } edge;
             struct Vertex {
                 size_t edges;
-            };
+            } vertex;
             struct Marker {
                 String name;
                 bool   visible;
-            };
+            } marker;
         };
 
         Type type;
         Data data;
+
+        static Pattern create(int64_t literal, size_t target_offset)
+        {
+            return {
+                .type = EDGE,
+                .data = {
+                    .edge = {
+                        .literal       = literal,
+                        .target_offset = target_offset}}};
+        }
+
+        static Pattern create(size_t edges)
+        {
+            return {.type = VERTEX, .data = {.vertex = {.edges = edges}}};
+        }
+
+        static Pattern create(String name, bool visible)
+        {
+            return {
+                .type = MARKER,
+                .data = {.marker = {.name = name, .visible = visible}}};
+        }
     };
 } // namespace cthrice
 
