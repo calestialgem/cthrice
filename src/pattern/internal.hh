@@ -1,16 +1,14 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <stdint.h>
-#include <vcruntime.h>
 #ifndef INTERNAL_HH
-#    define INTERNAL_HH 1
+#define INTERNAL_HH 1
 
-#    include "range.hh"
-#    include "string/api.hh"
+#include "range.hh"
+#include "string/api.hh"
 
-#    include <cstddef>
-#    include <cstdint>
+#include <cstddef>
+#include <cstdint>
 
 namespace cthrice
 {
