@@ -13,24 +13,24 @@ namespace cthrice
     struct Traversal {
         Range<Pattern> rnge;
         String         str;
-        const Pattern* ptrn;
+        size_t         off;
         bool           dead;
     };
 
     [[nodiscard]] Traversal traverse(Traversal traversal)
     {
+        const Pattern* ptrn = traversal.rnge.bgn + traversal.off;
+
         cthrice_check(
-            traversal.ptrn->type != Pattern::EDGE,
+            ptrn->type != Pattern::EDGE,
             "Cannot traverse something that is not an edge!");
 
-        const Pattern* target =
-            traversal.rnge.bgn + traversal.ptrn->data.edge.target_offset;
         cthrice_check(
-            target >= traversal.rnge.end,
+            ptrn->data.edge.target_offset >= size(traversal.rnge),
             "Target of the edge is out of bounds!");
+        traversal.off = ptrn->data.edge.target_offset;
 
-        int64_t literal = traversal.ptrn->data.edge.literal;
-        traversal.ptrn  = target;
+        int64_t literal = ptrn->data.edge.literal;
 
         if (literal != Pattern::Data::FREE) {
             // Check the literal.
@@ -45,11 +45,19 @@ namespace cthrice
 
     bool match(Range<Pattern> rnge, String str, const Pattern* ptrn)
     {
+        // DEBUG: Print all the patterns.
+        print(rnge);
+
         // Skip the marker.
         cthrice_check(++ptrn == rnge.end, "Pattern ends after the marker!");
 
         Buffer<Traversal> bfr{};
-        bfr = put(bfr, {.rnge = rnge, .str = str, .ptrn = ptrn, .dead = false});
+        bfr =
+            put(bfr,
+                {.rnge = rnge,
+                 .str  = str,
+                 .off  = (size_t)(ptrn - rnge.bgn),
+                 .dead = false});
 
         // Traverse all the avalible paths.
         while (size(bfr) != 0) {
@@ -58,31 +66,33 @@ namespace cthrice
                     bfr = remove(bfr, i--);
                     continue;
                 }
-                switch (i->ptrn->type) {
+                const Pattern* ptrn = i->rnge.bgn + i->off;
+                switch (ptrn->type) {
                     case Pattern::VERTEX:
-                        if (i->ptrn->data.vertex.edges == 0) {
+                        if (ptrn->data.vertex.edges == 0) {
                             // A vertex with no edges represents a match.
+                            bfr = destory(bfr);
                             return true;
                         }
+                        // The vertex is not important anymore.
+                        i->dead = true;
                         cthrice_check(
-                            i->ptrn + i->ptrn->data.vertex.edges == rnge.end,
+                            ptrn + ptrn->data.vertex.edges == rnge.end,
                             "Some of the edges that are claimed by the vertex "
                             "do not exist!");
-                        for (size_t j = 0; j < i->ptrn->data.vertex.edges;
-                             j++) {
+                        for (size_t j = 0; j < ptrn->data.vertex.edges; j++) {
                             // Traverse all the edges in this vertex.
                             bfr =
                                 put(bfr,
                                     traverse(
                                         {.rnge = i->rnge,
                                          .str  = i->str,
-                                         .ptrn = i->ptrn + 1 + j,
+                                         .off  = i->off + 1 + j,
                                          .dead = false}));
                         }
-                        // The vertex is not important anymore.
-                        i->dead = true;
                         break;
                     default:
+                        print(ptrn);
                         cthrice_check(
                             true,
                             "Unexpected node is found in the pattern!");
@@ -90,6 +100,7 @@ namespace cthrice
             }
         }
 
+        bfr = destory(bfr);
         return false;
     }
 

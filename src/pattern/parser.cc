@@ -12,42 +12,6 @@
 
 namespace cthrice
 {
-    static void print(Range<Pattern> rnge)
-    {
-        printf("\nPatterns:\n---------\n");
-        for (const Pattern* i = rnge.bgn; i < rnge.end; i++) {
-            printf("[%05llu] { ", i - rnge.bgn);
-            switch (i->type) {
-                case Pattern::EDGE:
-                    printf("EDGE; ");
-                    if (i->data.edge.literal == Pattern::Data::FREE) {
-                        printf("FREE");
-                    } else {
-                        printf("{%c}", (char)i->data.edge.literal);
-                    }
-                    printf("; %05llu", i->data.edge.target_offset);
-                    break;
-                case Pattern::VERTEX:
-                    printf("VERTEX; %llu", i->data.vertex.edges);
-                    break;
-                case Pattern::MARKER:
-                    printf(
-                        "MARKER; {%.*s}; ",
-                        (int)size(i->data.marker.name),
-                        i->data.marker.name.bgn);
-                    if (i->data.marker.visible) {
-                        printf("Visible");
-                    } else {
-                        printf("Invisible");
-                    }
-                    break;
-                default:
-                    printf("UNKNOWN");
-            }
-            printf(" }\n");
-        }
-    }
-
     static Pattern create(int64_t literal, size_t target_offset)
     {
         return {
@@ -166,7 +130,6 @@ namespace cthrice
 
         // Vertex that marks the match.
         ctx.bfr = put(ctx.bfr, create(0));
-        print(view(ctx.bfr));
         return ctx.bfr;
     }
 } // namespace cthrice

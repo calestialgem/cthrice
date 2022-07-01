@@ -48,6 +48,48 @@ namespace cthrice
         Type type;
         Data data;
     };
+
+    inline void print(const Pattern* i)
+    {
+        printf("{ ");
+        switch (i->type) {
+            case Pattern::EDGE:
+                printf("EDGE; ");
+                if (i->data.edge.literal == Pattern::Data::FREE) {
+                    printf("FREE");
+                } else {
+                    printf("{%c}", (char)i->data.edge.literal);
+                }
+                printf("; %05llu", i->data.edge.target_offset);
+                break;
+            case Pattern::VERTEX:
+                printf("VERTEX; %llu", i->data.vertex.edges);
+                break;
+            case Pattern::MARKER:
+                printf(
+                    "MARKER; {%.*s}; ",
+                    (int)size(i->data.marker.name),
+                    i->data.marker.name.bgn);
+                if (i->data.marker.visible) {
+                    printf("Visible");
+                } else {
+                    printf("Invisible");
+                }
+                break;
+            default:
+                printf("UNKNOWN");
+        }
+        printf(" }\n");
+    }
+
+    inline void print(Range<Pattern> rnge)
+    {
+        printf("\nPatterns:\n---------\n");
+        for (const Pattern* i = rnge.bgn; i < rnge.end; i++) {
+            printf("[%05llu] ", i - rnge.bgn);
+            print(i);
+        }
+    }
 } // namespace cthrice
 
 #endif // INTERNAL_HH
