@@ -47,28 +47,6 @@ namespace cthrice
 
         Type type;
         Data data;
-
-        static Pattern create(int64_t literal, size_t target_offset)
-        {
-            return {
-                .type = EDGE,
-                .data = {
-                    .edge = {
-                        .literal       = literal,
-                        .target_offset = target_offset}}};
-        }
-
-        static Pattern create(size_t edges)
-        {
-            return {.type = VERTEX, .data = {.vertex = {.edges = edges}}};
-        }
-
-        static Pattern create(String name, bool visible)
-        {
-            return {
-                .type = MARKER,
-                .data = {.marker = {.name = name, .visible = visible}}};
-        }
     };
 } // namespace cthrice
 
