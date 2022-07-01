@@ -73,6 +73,36 @@ namespace cthrice
         String          ptrn;
     };
 
+    static char escape(char c)
+    {
+        switch (c) {
+            case 'a': // Alert.
+                return '\a';
+            case 'b': // Backspace.
+                return '\b';
+            case 'f': // Formfeed Page Break.
+                return '\f';
+            case 'n': // Newline.
+                return '\n';
+            case 'r': // Carriage Return.
+                return '\r';
+            case 't': // Horizontal Tab.
+                return '\t';
+            case 'v': // Vertical Tab.
+                return '\v';
+            case '\\': // Backslash.
+                return '\\';
+            case '\'': // Apostrophe.
+                return '\'';
+            case '"': // Double Quotation Mark.
+                return '"';
+            default:
+                cthrice_check(
+                    true,
+                    "Unknown escape sequence in character literal!");
+        }
+    }
+
     [[nodiscard]] static ParseContext literal(ParseContext ctx)
     {
         // Consume opening quotes.
@@ -83,18 +113,20 @@ namespace cthrice
             "quotes!");
 
         while (*ctx.ptrn.bgn != '\'') {
+            char c = *ctx.ptrn.bgn;
+
             // Escape using backslash.
-            if (*ctx.ptrn.bgn == '\\') {
+            if (c == '\\') {
                 cthrice_check(
                     size(ctx.ptrn) == 0,
                     "No escaped character literal in pattern after backslash!");
                 // Consume the escape character.
-                ctx.ptrn.bgn++;
+                c = escape(*(++ctx.ptrn.bgn));
             }
 
             // Vertex that marks a character literal.
             ctx.bfr = put(ctx.bfr, create(1));
-            ctx.bfr = put(ctx.bfr, create(*ctx.ptrn.bgn, size(ctx.bfr) + 1));
+            ctx.bfr = put(ctx.bfr, create(c, size(ctx.bfr) + 1));
             ctx.ptrn.bgn++;
 
             cthrice_check(

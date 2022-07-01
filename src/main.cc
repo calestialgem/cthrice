@@ -33,7 +33,8 @@ int main(int argc, char** argv)
     patterns = parse(patterns, cstr("a@"), cstr("'a' 'a' 'a'"));
     patterns = parse(patterns, cstr("cem@"), cstr("'Cem'"));
     patterns = parse(patterns, cstr("cam"), cstr("'Cam'"));
-    patterns = parse(patterns, cstr("escaped@"), cstr("'\\''"));
+    patterns = parse(patterns, cstr("escaped@"), cstr(R"('\'')"));
+    patterns = parse(patterns, cstr("other@"), cstr(R"('\\\n')"));
     cthrice_check(
         !equal(cstr("h@"), match(view(patterns), cstr("hello"))),
         "Matching failed!");
@@ -48,6 +49,10 @@ int main(int argc, char** argv)
         "Not matching failed!");
     cthrice_check(
         !equal(cstr("escaped@"), match(view(patterns), cstr("'"))),
+        "Matching failed!");
+    cthrice_check(
+        !equal(cstr("other@"), match(view(patterns), cstr(R"(\
+        )"))),
         "Matching failed!");
     patterns = destory(patterns);
 }
