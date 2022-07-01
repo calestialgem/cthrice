@@ -90,7 +90,7 @@ namespace cthrice
         size_t cap = capacity(bfr);
         size_t nwc = std::max(grw, cap / 2) + cap;
 
-        T* mem = (T*)std::realloc(bfr.bgn, nwc);
+        T* mem = (T*)std::realloc(bfr.bgn, sizeof(T) * nwc);
         cthrice_check(mem == nullptr, "Could not allocate buffer!");
 
         return {.bgn = mem, .end = mem + sze, .lst = mem + nwc};

@@ -49,8 +49,12 @@ namespace cthrice
         ctx.ptrn.bgn++;
 
         cthrice_check(
-            size(ctx.ptrn) < 2,
+            size(ctx.ptrn) == 0,
             "No closing quotes in pattern after character "
+            "literal!");
+        cthrice_check(
+            *ctx.ptrn.bgn != '\'',
+            "Unexpected character instead of closing quotes after character "
             "literal!");
         ctx.ptrn.bgn++;
 
@@ -64,12 +68,13 @@ namespace cthrice
 
         ParseContext ctx = {.bfr = bfr, .ptrn = ptrn};
 
-        while (size(ptrn) != 0) {
-            switch (*ptrn.bgn) {
+        while (size(ctx.ptrn) != 0) {
+            switch (*ctx.ptrn.bgn) {
                 case '\r':
                 case '\n':
                 case '\t':
                 case ' ':
+                    ctx.ptrn.bgn++;
                     // Skip whitespace.
                     break;
                 case '\'':
@@ -81,7 +86,7 @@ namespace cthrice
         }
 
         // Vertex that marks the match.
-        bfr = put(bfr, create(0));
-        return bfr;
+        ctx.bfr = put(ctx.bfr, create(0));
+        return ctx.bfr;
     }
 } // namespace cthrice

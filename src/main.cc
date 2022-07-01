@@ -3,6 +3,7 @@
 
 #include "buffer.hh"
 #include "error.hh"
+#include "pattern/api.hh"
 #include "range.hh"
 #include "string/api.hh"
 
@@ -26,4 +27,11 @@ int main(int argc, char** argv)
     println(view(bfr, off));
 
     bfr = destory(bfr);
+
+    Buffer<Pattern> patterns{};
+    patterns = parse(patterns, cstr("h@"), cstr("'h' 'e' 'l' 'l' 'o'"));
+    cthrice_check(
+        equal(cstr("h@"), match(view(patterns), cstr("hello"))),
+        "Matching failed!");
+    patterns = destory(patterns);
 }

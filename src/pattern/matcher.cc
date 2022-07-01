@@ -43,6 +43,17 @@ namespace cthrice
         return traversal;
     }
 
+    size_t undead(std::vector<Traversal> traversals)
+    {
+        size_t res = 0;
+        for (const Traversal& t : traversals) {
+            if (!t.dead) {
+                res++;
+            }
+        }
+        return res;
+    }
+
     bool match(Range<Pattern> rnge, String str, const Pattern* ptrn)
     {
         // Skip the marker.
@@ -53,10 +64,10 @@ namespace cthrice
         traversals.push_back(
             {.rnge = rnge, .str = str, .ptrn = ptrn, .dead = false});
 
-        while (size(traversals) != 0) {
+        while (undead(traversals) != 0) {
             for (auto i = traversals.begin(); i < traversals.end(); i++) {
                 if (i->dead) {
-                    traversals.erase(i);
+                    // traversals.erase(i);
                     continue;
                 }
                 switch (i->ptrn->type) {
