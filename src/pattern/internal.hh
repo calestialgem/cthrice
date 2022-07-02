@@ -17,9 +17,10 @@ namespace cthrice
     struct Pattern {
         /** Type of the pattern. */
         enum Type {
-            /** Edge in the tree that checks a character. Free character
-             * means move to the vertex pointed by this edge without checking
-             * and consuming a character. */
+            /** Edge in the tree that checks and consumes a character that
+             * equals a particular character or is in a character range. Free
+             * edge means move to the vertex pointed by this edge without
+             * checking and consuming a character. */
             EDGE,
             /** Vertex in the tree that records how many edges come after this
              * vertex. Zero edges means the matching finished with success. */
@@ -31,10 +32,10 @@ namespace cthrice
 
         /** Data of the pattern. */
         union Data {
-            static constexpr int64_t FREE = -1;
             struct {
-                int64_t literal;
-                size_t  target_offset;
+                size_t target_offset;
+                char   literal;
+                char   other;
             } edge;
             struct {
                 size_t edges;
@@ -48,48 +49,6 @@ namespace cthrice
         Type type;
         Data data;
     };
-
-    inline void print(const Pattern* i)
-    {
-        printf("{ ");
-        switch (i->type) {
-            case Pattern::EDGE:
-                printf("EDGE; ");
-                if (i->data.edge.literal == Pattern::Data::FREE) {
-                    printf("FREE");
-                } else {
-                    printf("{%c}", (char)i->data.edge.literal);
-                }
-                printf("; %05llu", i->data.edge.target_offset);
-                break;
-            case Pattern::VERTEX:
-                printf("VERTEX; %llu", i->data.vertex.edges);
-                break;
-            case Pattern::MARKER:
-                printf(
-                    "MARKER; {%.*s}; ",
-                    (int)size(i->data.marker.name),
-                    i->data.marker.name.bgn);
-                if (i->data.marker.visible) {
-                    printf("Visible");
-                } else {
-                    printf("Invisible");
-                }
-                break;
-            default:
-                printf("UNKNOWN");
-        }
-        printf(" }\n");
-    }
-
-    inline void print(Range<Pattern> rnge)
-    {
-        printf("\nPatterns:\n---------\n");
-        for (const Pattern* i = rnge.bgn; i < rnge.end; i++) {
-            printf("[%05llu] ", i - rnge.bgn);
-            print(i);
-        }
-    }
 } // namespace cthrice
 
 #endif // INTERNAL_HH

@@ -35,24 +35,37 @@ int main(int argc, char** argv)
     patterns = parse(patterns, cstr("cam"), cstr("'Cam'"));
     patterns = parse(patterns, cstr("escaped@"), cstr(R"('\'')"));
     patterns = parse(patterns, cstr("other@"), cstr(R"('\\\n')"));
+
     cthrice_check(
         !equal(cstr("h@"), match(view(patterns), cstr("hello"))),
         "Matching failed!");
+    printf("h@ matched!\n");
+
     cthrice_check(
         !equal(cstr("a@"), match(view(patterns), cstr("aaa"))),
         "Matching failed!");
+    printf("a@ matched!\n");
+
     cthrice_check(
         !equal(cstr("cem@"), match(view(patterns), cstr("Cem"))),
         "Matching failed!");
+    printf("cem@ matched!\n");
+
     cthrice_check(
         !equal(cstr(""), match(view(patterns), cstr("Cam"))),
         "Not matching failed!");
+    printf("cam@ did not match!\n");
+
     cthrice_check(
         !equal(cstr("escaped@"), match(view(patterns), cstr("'"))),
         "Matching failed!");
+    printf("escaped@ matched!\n");
+
     cthrice_check(
         !equal(cstr("other@"), match(view(patterns), cstr(R"(\
         )"))),
         "Matching failed!");
+    printf("other@ matched!\n");
+
     patterns = destory(patterns);
 }

@@ -12,12 +12,15 @@
 
 namespace cthrice
 {
-    static Pattern create(int64_t literal, size_t target_offset)
+    static Pattern create(size_t target_offset, char literal, char other)
     {
         return {
             .type = Pattern::EDGE,
             .data = {
-                .edge = {.literal = literal, .target_offset = target_offset}}};
+                .edge = {
+                    .target_offset = target_offset,
+                    .literal       = literal,
+                    .other         = other}}};
     }
 
     static Pattern create(size_t edges)
@@ -90,7 +93,7 @@ namespace cthrice
 
             // Vertex that marks a character literal.
             ctx.bfr = put(ctx.bfr, create(1));
-            ctx.bfr = put(ctx.bfr, create(c, size(ctx.bfr) + 1));
+            ctx.bfr = put(ctx.bfr, create(size(ctx.bfr) + 1, c, 0));
             ctx.ptrn.bgn++;
 
             cthrice_check(
