@@ -178,29 +178,29 @@ static struct ctx parse_literal(struct ctx ctx)
     // Consume opening quotes.
     ctx.ptrn.bgn++;
     CHECK(
-        size(ctx.ptrn) != 0,
+        str_size(ctx.ptrn) != 0,
         "No character literal in pattern after opening "
         "quotes!");
 
     while (*ctx.ptrn.bgn != '\'') {
-        byte c = *ctx.ptrn.bgn;
+        byte b = *ctx.ptrn.bgn;
 
         // Escape using backslash.
-        if (c == '\\') {
+        if (b == '\\') {
             CHECK(
-                size(ctx.ptrn) != 0,
+                str_size(ctx.ptrn) != 0,
                 "No escaped character literal in pattern after backslash!");
             // Consume the escape character.
-            c = escape(*(++ctx.ptrn.bgn));
+            b = escape(*(++ctx.ptrn.bgn));
         }
 
         // Vertex that marks a character literal.
-        ctx.ptrns = put(ctx.ptrns, create(1));
-        ctx.ptrns = put(ctx.ptrns, create(size(ctx.ptrns) + 1, c, 0));
+        ctx.ptrns = put(ctx.ptrns, create_vertex(1));
+        ctx.ptrns = put(ctx.ptrns, create_edge(size(ctx.ptrns) + 1, b, 0));
         ctx.ptrn.bgn++;
 
         CHECK(
-            size(ctx.ptrn) != 0,
+            str_size(ctx.ptrn) != 0,
             "No closing quotes in pattern after character "
             "literal!");
     }
@@ -214,6 +214,10 @@ struct ptrns parse(struct ptrns ptrns, struct str ptrn)
 {
     struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
     ctx            = parse_marker(ctx);
+
+    // Trim whitespace.
+    ctx.ptrn.bgn = str_find_pred(ctx.ptrn, &not_whitespace);
+    CHECK(str_size(ctx.ptrn) != 0, "There is no pattern after the name!");
 
     while (str_size(ctx.ptrn) != 0) {
         switch (*ctx.ptrn.bgn) {
@@ -233,6 +237,6 @@ struct ptrns parse(struct ptrns ptrns, struct str ptrn)
     }
 
     // Vertex that marks the match.
-    ctx.ptrns = put(ctx.ptrns, create(0));
+    ctx.ptrns = put(ctx.ptrns, create_vertex(0));
     return ctx.ptrns;
 }
