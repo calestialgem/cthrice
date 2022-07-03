@@ -22,8 +22,14 @@ ptr str_size(struct str);
 /* Check whether the strings are the equal. */
 bool str_equal(struct str, struct str);
 
-/** Find the position of the byte. Returns the pointer to the byte after the
- * last one if the byte does not exist. */
+/** Find the first position of a byte that passes the predicate. Returns the
+ * pointer to the byte after the last one if the byte does not exist. */
+const byte* str_find_pred(struct str, bool (*)(byte));
+/** Check whether a byte that passes the predicate exists in the string. */
+bool str_contains_pred(struct str, bool (*)(byte));
+
+/** Find the first position of the byte. Returns the pointer to the byte after
+ * the last one if the byte does not exist. */
 const byte* str_find(struct str, byte);
 /** Check whether the byte exists in the string. */
 bool str_contains(struct str, byte);

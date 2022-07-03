@@ -37,6 +37,21 @@ bool str_equal(struct str lhs, struct str rhs)
     return true;
 }
 
+const byte* str_find_pred(struct str str, bool (*pred)(byte))
+{
+    for (const byte* i = str.bgn; i < str.end; i++) {
+        if (pred(*i)) {
+            return i;
+        }
+    }
+    return str.end;
+}
+
+bool str_contains_pred(struct str str, bool (*pred)(byte))
+{
+    return str_find_pred(str, pred) != str.end;
+}
+
 const byte* str_find(struct str str, byte b)
 {
     for (const byte* i = str.bgn; i < str.end; i++) {
