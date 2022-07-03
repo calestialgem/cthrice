@@ -13,7 +13,7 @@
 typedef ptrdiff_t ptr;
 
 /* Pointer that does not point to anything. */
-const ptr null = 0;
+extern const ptr null;
 
 /* Signed 8-bit integer. */
 typedef int8_t i8;
@@ -42,10 +42,10 @@ typedef double f64;
 typedef _Bool bool;
 
 /* True boolean value; 1. */
-const bool true = 1;
+extern const bool true;
 
 /* False boolean value; 0. */
-const bool false = 0;
+extern const bool false;
 
 /* Smallest memory unit. */
 typedef char byte;

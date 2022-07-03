@@ -11,9 +11,10 @@ project(cthrice)
 add_executable(${PROJECT_NAME}
     src/buffer/buffer.c
     src/error/error.c
-    src/string/string.c
-    src/pattern/parser.c
     src/pattern/matcher.c
+    src/pattern/parser.c
+    src/string/string.c
+    src/types/types.c
     src/main.c
 )
 
