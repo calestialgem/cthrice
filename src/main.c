@@ -28,12 +28,12 @@ int main(int argc, char** argv)
     bfr = bfr_destroy(bfr);
 
     struct ptrns ptrns = {0};
-    ptrns              = ptrn_parse(ptrns, str_convert("h@ 'h' 'ell' 'o'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("a@ 'a' 'a' 'a'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("cem@ 'Cem'"));
+    ptrns              = ptrn_parse(ptrns, str_convert("@h 'h' 'ell' 'o'"));
+    ptrns              = ptrn_parse(ptrns, str_convert("@a 'a' 'a' 'a'"));
+    ptrns              = ptrn_parse(ptrns, str_convert("@cem 'Cem'"));
     ptrns              = ptrn_parse(ptrns, str_convert("cam 'Cam'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("escaped@ '\\''"));
-    ptrns              = ptrn_parse(ptrns, str_convert("other@ '\\\\\\n'"));
+    ptrns              = ptrn_parse(ptrns, str_convert("@escaped '\\''"));
+    ptrns              = ptrn_parse(ptrns, str_convert("@other '\\\\\\n'"));
 
     CHECK(
         !str_equal(str_convert("h"), ptrn_match(ptrns, str_convert("hello"))),
