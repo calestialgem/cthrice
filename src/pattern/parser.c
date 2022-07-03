@@ -101,7 +101,7 @@ static struct ctx literal(struct ctx ctx)
     return ctx;
 }
 
-Buffer<struct ptrn> parse(Buffer<struct ptrn> bfr, String name, String ptrn)
+struct ptrns parse(struct ptrns bfr, struct str ptrn)
 {
     // Vertex that marks the start of a pattern.
     bfr = put(bfr, create(name, contains(name, '@')));
