@@ -4,7 +4,6 @@
 #ifndef TYPES_H
 #define TYPES_H 1
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -12,6 +11,9 @@
  * unsigned type like size_t. If the pointer difference cannot fit this, it is
  * undefined behaviour any ways. */
 typedef ptrdiff_t ptr;
+
+/* Pointer that does not point to anything. */
+const ptr null = 0;
 
 /* Signed 8-bit integer. */
 typedef int8_t i8;
@@ -35,6 +37,15 @@ typedef uint64_t u64;
 typedef float f32;
 /* 64-bit floating point number. */
 typedef double f64;
+
+/* Integer that can be 1 or 0. */
+typedef _Bool bool;
+
+/* True boolean value; 1. */
+const bool true = 1;
+
+/* False boolean value; 0. */
+const bool false = 0;
 
 /* Smallest memory unit. */
 typedef char byte;
