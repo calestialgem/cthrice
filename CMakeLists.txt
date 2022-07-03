@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
     src/string/string.c
     src/pattern/parser.c
     src/pattern/matcher.c
+    src/main.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
