@@ -71,8 +71,8 @@ struct bfr bfr_ensure_space(struct bfr bfr, ptr spc)
 
 struct bfr bfr_put(struct bfr bfr, byte chr)
 {
-    bfr          = bfr_ensure_space(bfr, 1);
-    *(bfr.end++) = chr;
+    bfr        = bfr_ensure_space(bfr, 1);
+    *bfr.end++ = chr;
     return bfr;
 }
 

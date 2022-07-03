@@ -4,7 +4,10 @@
 #include "error/api.h"
 #include "pattern/api.h"
 #include "pattern/internal.h"
+#include "string/api.h"
 #include "types/api.h"
+
+#include <stdlib.h>
 
 static struct ptrn create_edge(ptr target_offset, byte literal, byte other)
 {
@@ -30,14 +33,58 @@ static struct ptrn create_marker(struct str name, bool visible)
     };
 }
 
+static ptr size(struct ptrns ptrns)
+{
+    ASSERT(ptrns.end >= ptrns.bgn, "Patterns do not have a positive size!");
+    return ptrns.end - ptrns.bgn;
+}
+
+static ptr capacity(struct ptrns ptrns)
+{
+    ASSERT(ptrns.lst >= ptrns.bgn, "Patterns do not have a positive capacity!");
+    return ptrns.lst - ptrns.bgn;
+}
+
+static ptr space(struct ptrns ptrns)
+{
+    ASSERT(ptrns.lst >= ptrns.end, "Patterns do not have a positive space!");
+    return ptrns.lst - ptrns.end;
+}
+
+static struct ptrns grow(struct ptrns ptrns)
+{
+    ptr cap  = capacity(ptrns);
+    ptr sze  = size(ptrns);
+    ptr grow = max(8, cap / 2);
+    ptr nwc  = grow + cap;
+
+    ASSERT(nwc > 0, "New patterns capacity is not positive!");
+    struct ptrn* mem = realloc(ptrns.bgn, nwc * sizeof(struct ptrn));
+    CHECK(mem != 0, "Could not allocate patterns!");
+
+    ptrns.bgn = mem;
+    ptrns.end = mem + sze;
+    ptrns.lst = mem + nwc;
+    return ptrns;
+}
+
+static struct ptrns put(struct ptrns ptrns, struct ptrn ptrn)
+{
+    if (space(ptrns) < 1) {
+        ptrns = grow(ptrns);
+    }
+    *ptrns.end++ = ptrn;
+    return ptrns;
+}
+
 struct ctx {
     struct ptrns ptrns;
     struct str   ptrn;
 };
 
-static byte escape(byte c)
+static byte escape(byte b)
 {
-    switch (c) {
+    switch (b) {
         case 'a': // Alert.
             return '\a';
         case 'b': // Backspace.
@@ -60,6 +107,7 @@ static byte escape(byte c)
             return '"';
         default:
             CHECK(false, "Unknown escape sequence in character literal!");
+            return 0; // For fixing the warning.
     }
 }
 
@@ -85,8 +133,8 @@ static struct ctx literal(struct ctx ctx)
         }
 
         // Vertex that marks a character literal.
-        ctx.bfr = put(ctx.bfr, create(1));
-        ctx.bfr = put(ctx.bfr, create(size(ctx.bfr) + 1, c, 0));
+        ctx.ptrns = put(ctx.ptrns, create(1));
+        ctx.ptrns = put(ctx.ptrns, create(size(ctx.ptrns) + 1, c, 0));
         ctx.ptrn.bgn++;
 
         CHECK(
@@ -100,14 +148,32 @@ static struct ctx literal(struct ctx ctx)
     return ctx;
 }
 
-struct ptrns parse(struct ptrns bfr, struct str ptrn)
+static bool whitespace(byte b)
 {
+    return b == '\n' || b == '\r' || b == '\t' || b == ' ';
+}
+
+static struct ctx parse_marker(struct ctx ctx)
+{
+    // Trim whitespace.
+    while (str_size(ctx.ptrn) > 0 && whitespace(*ctx.ptrn.bgn)) {
+        ctx.ptrn.bgn++;
+    }
+    CHECK(str_size(ctx.ptrn) != 0, "Pattern does not have a name!");
+
+    return ctx;
+}
+
+struct ptrns parse(struct ptrns ptrns, struct str ptrn)
+{
+    struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
+
+    ctx = parse_marker(ctx);
+
     // Vertex that marks the start of a pattern.
-    bfr = put(bfr, create(name, contains(name, '@')));
+    ptrns = put(ptrns, create(name, contains(name, '@')));
 
-    struct ctx ctx = {.bfr = bfr, .ptrn = ptrn};
-
-    while (size(ctx.ptrn) != 0) {
+    while (str_size(ctx.ptrn) != 0) {
         switch (*ctx.ptrn.bgn) {
             case '\r':
             case '\n':
@@ -125,6 +191,6 @@ struct ptrns parse(struct ptrns bfr, struct str ptrn)
     }
 
     // Vertex that marks the match.
-    ctx.bfr = put(ctx.bfr, create(0));
-    return ctx.bfr;
+    ctx.ptrns = put(ctx.ptrns, create(0));
+    return ctx.ptrns;
 }
