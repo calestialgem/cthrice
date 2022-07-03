@@ -19,6 +19,8 @@ struct str str_convert(const byte*);
 
 /* Get the amount of bytes in the string. */
 ptr str_size(struct str);
+/* Check whether there are any bytes in the string. */
+bool str_finite(struct str);
 /* Check whether the strings are the equal. */
 bool str_equal(struct str, struct str);
 

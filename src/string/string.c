@@ -21,6 +21,11 @@ ptr str_size(struct str str)
     return str.end - str.bgn;
 }
 
+bool str_finite(struct str str)
+{
+    return str_size(str) != 0;
+}
+
 bool str_equal(struct str lhs, struct str rhs)
 {
     ptr sze = str_size(lhs);

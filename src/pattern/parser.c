@@ -143,14 +143,14 @@ static struct ctx parse_marker(struct ctx ctx)
     struct str name = {
         .bgn = ctx.ptrn.bgn,
         .end = str_find_pred(ctx.ptrn, &whitespace)};
-    CHECK(str_size(name) != 0, "Pattern does not have a name!");
+    CHECK(str_finite(name), "Pattern does not have a name!");
 
     // Check for visibility, and consume the token if it is there.
     bool visible = *name.bgn == '@';
     if (visible) {
         name.bgn++;
         CHECK(
-            str_size(name) != 0,
+            str_finite(name),
             "Pattern does not have a name after the visibility token!");
     }
 
@@ -173,7 +173,7 @@ static struct ctx parse_literal(struct ctx ctx)
     // Consume opening quotes.
     ctx.ptrn.bgn++;
     CHECK(
-        str_size(ctx.ptrn) != 0,
+        str_finite(ctx.ptrn),
         "No character literal in pattern after opening "
         "quotes!");
 
@@ -183,7 +183,7 @@ static struct ctx parse_literal(struct ctx ctx)
         // Escape using backslash.
         if (b == '\\') {
             CHECK(
-                str_size(ctx.ptrn) != 0,
+                str_finite(ctx.ptrn),
                 "No escaped character literal in pattern after backslash!");
             // Consume the escape character.
             b = escape(*(++ctx.ptrn.bgn));
@@ -195,7 +195,7 @@ static struct ctx parse_literal(struct ctx ctx)
         ctx.ptrn.bgn++;
 
         CHECK(
-            str_size(ctx.ptrn) != 0,
+            str_finite(ctx.ptrn),
             "No closing quotes in pattern after character "
             "literal!");
     }
@@ -212,9 +212,9 @@ struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
 
     // Trim whitespace.
     ctx.ptrn.bgn = str_find_pred(ctx.ptrn, &not_whitespace);
-    CHECK(str_size(ctx.ptrn) != 0, "There is no pattern after the name!");
+    CHECK(str_finite(ctx.ptrn), "There is no pattern after the name!");
 
-    while (str_size(ctx.ptrn) != 0) {
+    while (str_finite(ctx.ptrn)) {
         switch (*ctx.ptrn.bgn) {
             case '\r':
             case '\n':
