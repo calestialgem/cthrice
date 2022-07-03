@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "api.h"
+#include "error/api.h"
 #include "internal.h"
 #include "string/api.h"
 #include "types/api.h"
@@ -10,52 +11,49 @@
 
 /* Check whether the pattern is a free edge. Does not check whether the
  * pattern is an edge! */
-static bool free(struct ptrn ptrn)
+static bool edge_free(struct ptrn ptrn)
 {
     // If the literal character of the edge is zero, this is an
     // unconditional edge.
-    return ptrn.data.literal == 0;
+    return ptrn.literal == 0;
 }
 
 /* Check whether the pattern is a range of characters. Does not check
  * whether the pattern is an edge! */
-static bool range(struct ptrn ptrn)
+static bool edge_range(struct ptrn ptrn)
 {
     // If the other character of the edge is nonzero, this is an
     // range of characters.
-    return ptrn.data.other != 0;
+    return ptrn.other != 0;
 }
 
 /* Check whether the character fits the literal or range pattern. Does not
  * check whether the pattern is an edge or free edge! */
-static bool check(struct ptrn ptrn, byte b)
+static bool edge_check(struct ptrn ptrn, byte b)
 {
-    if (range(ptrn)) {
-        return b >= ptrn.data.literal && b <= ptrn.data.other;
+    if (edge_range(ptrn)) {
+        return b >= ptrn.literal && b <= ptrn.other;
     }
-    return b == ptrn.data.literal;
+    return b == ptrn.literal;
 }
 
 static void print_edge(struct ptrn ptrn)
 {
     printf("EDGE; ");
-    if (free(ptrn)) {
+    if (edge_free(ptrn)) {
         printf("FREE");
-    } else if (range(ptrn)) {
-        printf("{%c-%c}", ptrn.data.literal, ptrn.data.other);
+    } else if (edge_range(ptrn)) {
+        printf("{%c-%c}", ptrn.literal, ptrn.other);
     } else {
-        printf("{%c}", ptrn.data.literal);
+        printf("{%c}", ptrn.literal);
     }
-    printf("; %05llu", ptrn.data.target_offset);
+    printf("; %05llu", ptrn.target_offset);
 }
 
 static void print_marker(struct ptrn ptrn)
 {
-    printf(
-        "MARKER; {%.*s}; ",
-        (int)str_size(ptrn.data.name),
-        ptrn.data.name.bgn);
-    if (ptrn.data.visible) {
+    printf("MARKER; {%.*s}; ", (int)str_size(ptrn.name), ptrn.name.bgn);
+    if (ptrn.visible) {
         printf("Visible");
     } else {
         printf("Invisible");
@@ -71,7 +69,7 @@ static void print_pattern(struct ptrn ptrn)
             print_edge(ptrn);
             break;
         case VERTEX:
-            printf("VERTEX; %llu", ptrn.data.edges);
+            printf("VERTEX; %llu", ptrn.edges);
             break;
         case MARKER:
             print_marker(ptrn);
@@ -92,108 +90,157 @@ static void print_patterns(struct ptrns ptrns)
     }
 }
 
-struct Traversal {
-    struct ptrns ptrns;
-    struct str   str;
-    size_t       off;
-    bool         dead;
+struct trvl {
+    struct str str;
+    ptr        off;
+    bool       dead;
 };
 
-struct Traversal traverse(struct Traversal traversal)
+static ptr ptrns_size(struct ptrns ptrns)
 {
-    struct ptrn ptrn = traversal.ptrns.bgn + traversal.off;
-
-    cthrice_check(
-        ptrn->type != EDGE,
-        "Cannot traverse something that is not an edge!");
-
-    cthrice_check(
-        ptrn->data.target_offset >= size(traversal.ptrns),
-        "Target of the edge is out of bounds!");
-    traversal.off = ptrn->data.target_offset;
-
-    if (!free(ptrn)) {
-        // Check and consume the current character.
-        traversal.dead = !check(ptrn, *traversal.str.bgn++);
-    }
-
-    return traversal;
+    ASSERT(ptrns.end >= ptrns.bgn, "Patterns has negative size!");
+    return ptrns.end - ptrns.bgn;
 }
 
-bool match(struct ptrns ptrns, struct str str, struct ptrn ptrn)
+struct trvl traverse_edge(struct ptrns ptrns, struct trvl trvl)
 {
-    // // DEBUG: Print all the patterns.
-    // print(ptrns);
+    struct ptrn ptrn = *(ptrns.bgn + trvl.off);
+    ASSERT(ptrn.type == EDGE, "Cannot traverse something that is not an edge!");
 
-    // Skip the marker.
-    cthrice_check(++ptrn == ptrns.end, "struct ptrn ends after the marker!");
+    ASSERT(
+        ptrn.target_offset >= ptrns_size(ptrns),
+        "Target of the edge is out of bounds!");
+    trvl.off = ptrn.target_offset;
 
-    Buffer<struct Traversal> bfr{};
-    bfr =
-        put(bfr,
-            {.ptrns = ptrns,
-             .str   = str,
-             .off   = (size_t)(ptrn - ptrns.bgn),
-             .dead  = false});
+    if (!edge_free(ptrn)) {
+        // Check and consume the current character.
+        trvl.dead = !edge_check(ptrn, *trvl.str.bgn++);
+    }
 
-    // Traverse all the avalible paths.
-    while (size(bfr) != 0) {
-        for (struct Traversal* i = bfr.bgn; i < bfr.end; i++) {
-            if (i->dead) {
-                bfr = remove(bfr, i--);
+    return trvl;
+}
+
+struct trvls {
+    struct trvl* bgn;
+    struct trvl* end;
+    struct trvl* lst;
+};
+
+static struct trvls put(struct trvls trvls, struct trvl trvl)
+{
+    CHECK(
+        trvls.lst - trvls.end > 0,
+        "No more space left to put the traversal!");
+    *trvls.end++ = trvl;
+    return trvls;
+}
+
+struct vrtx_trvl {
+    struct trvls trvls;
+    bool         matched;
+};
+
+static struct vrtx_trvl
+traverse_vertex(struct ptrns ptrns, struct trvls trvls, struct trvl trvl)
+{
+    ASSERT(trvl.off < ptrns_size(ptrns), "Current vertex is out of bounds!");
+    struct ptrn ptrn = *(ptrns.bgn + trvl.off);
+
+    switch (ptrn.type) {
+        case VERTEX:
+            if (ptrn.edges == 0) {
+                // A vertex with no edges represents a match.
+                return (struct vrtx_trvl){.trvls = trvls, .matched = true};
+            }
+            ASSERT(
+                trvl.off + ptrn.edges < ptrns_size(ptrns),
+                "Some of the edges that are claimed by the vertex do not "
+                "exist!");
+            for (ptr j = 0; j < ptrn.edges; j++) {
+                // Traverse all the edges in this vertex.
+                trvls =
+                    put(trvls,
+                        traverse_edge(
+                            ptrns,
+                            (struct trvl){
+                                .str  = trvl.str,
+                                .off  = trvl.off + 1 + j,
+                                .dead = false}));
+            }
+            break;
+        default:
+            printf("Unexpected: [%05llu] ", trvl.off);
+            print_patterns(ptrns);
+            CHECK(false, "Unexpected node is found in the pattern!");
+    }
+
+    return (struct vrtx_trvl){.trvls = trvls, .matched = false};
+}
+
+/* Traverse all the avalible paths. */
+static bool traverse_all_paths(struct ptrns ptrns, struct trvls trvls)
+{
+    while (trvls.end - trvls.bgn != 0) {
+        for (ptr i = 0; i < trvls.end - trvls.bgn; i++) {
+            // Remove the dead traversals.
+            struct trvl trvl = trvls.bgn[i];
+            if (trvl.dead) {
+                trvls.bgn[i--] = *--trvls.end;
                 continue;
             }
-            cthrice_check(
-                i->off >= size(i->ptrns),
-                "Current vertex is out of bounds!");
-            struct ptrn p = i->ptrns.bgn + i->off;
-            switch (p->type) {
-                case VERTEX:
-                    if (p.data.edges == 0) {
-                        // A vertex with no edges represents a match.
-                        bfr = destory(bfr);
-                        return true;
-                    }
-                    // The vertex is not important anymore.
-                    i->dead = true;
-                    cthrice_check(
-                        p + p.data.edges == ptrns.end,
-                        "Some of the edges that are claimed by the vertex "
-                        "do not exist!");
-                    for (size_t j = 0; j < p.data.edges; j++) {
-                        // Traverse all the edges in this vertex.
-                        bfr =
-                            put(bfr,
-                                traverse(
-                                    {.ptrns = i->ptrns,
-                                     .str   = i->str,
-                                     .off   = i->off + 1 + j,
-                                     .dead  = false}));
-                    }
-                    break;
-                default:
-                    printf("Unexpected: [%05llu] ", i->off);
-                    print_patterns(p);
-                    cthrice_check(
-                        true,
-                        "Unexpected node is found in the pattern!");
+            // Traverse the vertex, and return if matched.
+            struct vrtx_trvl res = traverse_vertex(ptrns, trvls, trvl);
+            if (res.matched) {
+                return true;
             }
+            trvls = res.trvls;
+
+            // Remove the traversed vertex.
+            trvls.bgn[i--] = *--trvls.end;
         }
     }
 
-    bfr = destory(bfr);
     return false;
 }
 
-struct str match(struct ptrns ptrns, struct str str)
+static bool match(struct ptrns ptrns, struct str str, const struct ptrn* ptrn)
 {
-    for (struct ptrn i = ptrns.bgn; i < ptrns.end; i++) {
-        if (i->type == MARKER && i->data.visible && match(ptrns, str, i)) {
+    // DEBUG: Print all the patterns.
+    print_patterns(ptrns);
+
+    // Skip the marker.
+    ptrn++;
+    ASSERT(ptrn < ptrns.end, "Pattern ends after the marker!");
+
+    // Use stack memory for traversals.
+#define TRAVERSAL_CAPACITY 32
+    struct trvl  memory[TRAVERSAL_CAPACITY];
+    struct trvls trvls = {
+        .bgn = memory,
+        .end = memory,
+        .lst = memory + TRAVERSAL_CAPACITY};
+
+    // Put initial traversal that comes after the marker.
+    trvls =
+        put(trvls,
+            (struct trvl){
+                .str  = str,
+                .off  = ptrn - ptrns.bgn,
+                .dead = false,
+            });
+
+    return traverse_all_paths(ptrns, trvls);
+}
+
+struct str ptrn_match(struct ptrns ptrns, struct str str)
+{
+    for (const struct ptrn* i = ptrns.bgn; i < ptrns.end; i++) {
+        if (i->type == MARKER && i->visible && match(ptrns, str, i)) {
             // If matches a visible pattern, return the name.
-            return i->data.name;
+            return i->name;
         }
     }
 
     // Return empty string if nothing matched.
-    return {};
+    return (struct str){0};
 }

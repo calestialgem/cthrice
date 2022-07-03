@@ -205,7 +205,7 @@ static struct ctx parse_literal(struct ctx ctx)
     return ctx;
 }
 
-struct ptrns parse(struct ptrns ptrns, struct str ptrn)
+struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
 {
     struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
     ctx            = parse_marker(ctx);
