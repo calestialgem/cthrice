@@ -3,18 +3,14 @@
 
 cmake_minimum_required(VERSION 3.0.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 project(cthrice)
 
 add_executable(${PROJECT_NAME}
-    src/main.cc
-
-    src/pattern/matcher.cc
-    src/pattern/parser.cc
-
-    src/string/string.cc
+    src/buffer/buffer.c
+    src/error/error.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
