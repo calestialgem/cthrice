@@ -11,7 +11,6 @@ static struct ptrn create_edge(ptr target_offset, byte literal, byte other)
     return (struct ptrn){
         .type = EDGE,
         .data = {
-
                  .target_offset = target_offset,
                  .literal       = literal,
                  .other         = other}
