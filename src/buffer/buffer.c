@@ -54,7 +54,7 @@ struct bfr bfr_ensure_space(struct bfr bfr, ptr spc)
     // Find the new capacity.
     ptr ned = spc - curspc;
     ptr cap = bfr_capacity(bfr);
-    ptr grw = min(ned, cap / 2);
+    ptr grw = max(ned, cap / 2);
     ptr nwc = cap + grw;
 
     ASSERT(nwc > 0, "New buffer capacity is not positive!");
