@@ -13,7 +13,7 @@
 typedef ptrdiff_t ptr;
 
 /* Pointer that does not point to anything. */
-extern const ptr null;
+extern void* const null;
 
 /* Signed 8-bit integer. */
 typedef int8_t i8;

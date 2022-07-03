@@ -3,7 +3,7 @@
 
 #include "api.h"
 
-const ptr null = 0;
+void* const null = 0;
 
 const bool true = 1;
 

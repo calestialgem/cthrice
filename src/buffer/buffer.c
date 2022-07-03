@@ -34,7 +34,7 @@ struct str bfr_view(struct bfr bfr)
 struct bfr bfr_destroy(struct bfr bfr)
 {
     free(bfr.bgn);
-    bfr.bgn = bfr.end = bfr.lst = 0;
+    bfr.bgn = bfr.end = bfr.lst = null;
     return bfr;
 }
 
@@ -60,7 +60,7 @@ struct bfr bfr_ensure_space(struct bfr bfr, ptr spc)
     ASSERT(nwc > 0, "New buffer capacity is not positive!");
 
     byte* mem = realloc(bfr.bgn, nwc);
-    CHECK(mem != 0, "Could not allocate buffer!");
+    CHECK(mem != null, "Could not allocate buffer!");
 
     // Recalculate pointers.
     bfr.bgn = mem;

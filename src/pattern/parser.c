@@ -56,7 +56,7 @@ static struct ptrns grow(struct ptrns ptrns)
 
     ASSERT(nwc > 0, "New patterns capacity is not positive!");
     struct ptrn* mem = realloc(ptrns.bgn, nwc * sizeof(struct ptrn));
-    CHECK(mem != 0, "Could not allocate patterns!");
+    CHECK(mem != null, "Could not allocate patterns!");
 
     ptrns.bgn = mem;
     ptrns.end = mem + sze;
@@ -234,4 +234,12 @@ struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
     // Vertex that marks the match.
     ctx.ptrns = put(ctx.ptrns, create_vertex(0));
     return ctx.ptrns;
+}
+
+struct ptrns ptrn_destory(struct ptrns ptrns)
+{
+    ptrns.bfr = bfr_destroy(ptrns.bfr);
+    free(ptrns.bgn);
+    ptrns.bgn = ptrns.end = ptrns.lst = null;
+    return ptrns;
 }
