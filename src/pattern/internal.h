@@ -9,9 +9,9 @@
 
 /** Implementation of the pattern. This is a graph where edges and verticies
  * are stored in an array. */
-struct Pattern {
+struct ptrn {
     /** Type of the pattern. */
-    enum Type {
+    enum {
         /** Edge in the tree that checks and consumes a character that
          * equals a particular character or is in a character range. Free
          * edge means move to the vertex pointed by this edge without
@@ -26,7 +26,7 @@ struct Pattern {
     } type;
 
     /** Data of the pattern. */
-    union Data {
+    union {
         struct {
             ptr  target_offset;
             char literal;
