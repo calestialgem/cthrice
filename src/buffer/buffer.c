@@ -3,8 +3,10 @@
 
 #include "api.h"
 #include "error/api.h"
+#include "string/api.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 ptr bfr_size(struct bfr bfr)
 {
@@ -66,5 +68,14 @@ struct bfr bfr_put(struct bfr bfr, byte chr)
 {
     bfr          = bfr_ensure_space(bfr, 1);
     *(bfr.end++) = chr;
+    return bfr;
+}
+
+struct bfr bfr_put_str(struct bfr bfr, struct str str)
+{
+    ptr sze = str_size(str);
+    bfr     = bfr_ensure_space(bfr, sze);
+    memcpy(bfr.end, str.bgn, sze);
+    bfr.end += sze;
     return bfr;
 }

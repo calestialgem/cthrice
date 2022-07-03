@@ -4,6 +4,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H 1
 
+#include "string/api.h"
 #include "types/api.h"
 
 /* Dynamic array of bytes. */
@@ -30,5 +31,7 @@ struct bfr bfr_destroy(struct bfr);
 struct bfr bfr_ensure_space(struct bfr, ptr);
 /* Put a byte at the end of the buffer. Grows the buffer if necessary. */
 struct bfr bfr_put(struct bfr, byte);
+/* Put a string at the end of the buffer. Grows the buffer if necessary. */
+struct bfr bfr_put_str(struct bfr, struct str);
 
 #endif // BUFFER_H
