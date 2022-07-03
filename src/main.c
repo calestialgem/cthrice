@@ -18,12 +18,12 @@ int main(int argc, char** argv)
     bfr = bfr_put_str(bfr, path);
     bfr = bfr_put_str(bfr, str_convert("\nContents of the file:\n"));
     struct str view = bfr_view(bfr);
-    printf("%.*s", (int)str_size(view), view.bgn);
+    printf("%.*s\n", (int)str_size(view), view.bgn);
 
     ptr off = bfr_size(bfr);
     bfr     = bfr_put_str(bfr, path);
     view    = bfr_view(bfr);
-    printf("%.*s", (int)(str_size(view) - off), view.bgn + off);
+    printf("%.*s\n", (int)(str_size(view) - off), view.bgn + off);
 
     bfr = bfr_destroy(bfr);
 
