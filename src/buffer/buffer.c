@@ -24,14 +24,14 @@ ptr bfr_space(struct bfr bfr)
     return bfr.lst - bfr.end;
 }
 
-[[nodiscard]] struct bfr bfr_destroy(struct bfr bfr)
+struct bfr bfr_destroy(struct bfr bfr)
 {
     free(bfr.bgn);
     bfr.bgn = bfr.end = bfr.lst = 0;
     return bfr;
 }
 
-[[nodiscard]] struct bfr bfr_ensure_space(struct bfr bfr, ptr spc)
+struct bfr bfr_ensure_space(struct bfr bfr, ptr spc)
 {
     ASSERT(spc >= 0, "Buffer space requested is negative!");
 
@@ -62,7 +62,7 @@ ptr bfr_space(struct bfr bfr)
     return bfr;
 }
 
-[[nodiscard]] struct bfr bfr_put(struct bfr bfr, byte chr)
+struct bfr bfr_put(struct bfr bfr, byte chr)
 {
     bfr          = bfr_ensure_space(bfr, 1);
     *(bfr.end++) = chr;

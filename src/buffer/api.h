@@ -8,11 +8,11 @@
 
 /* Dynamic array of bytes. */
 struct bfr {
-    /* Begging of the allocated bytes in the buffer. */
+    /* Pointer to the first allocated byte. */
     byte* bgn;
-    /* The byte after the last valid byte in the buffer. */
+    /* Pointer to the byte after the last valid one. */
     byte* end;
-    /* The byte after the allocated bytes in the buffer. */
+    /* Pointer to the byte after the last allocated one. */
     byte* lst;
 };
 
@@ -24,11 +24,11 @@ ptr bfr_capacity(struct bfr);
 ptr bfr_space(struct bfr);
 
 /* Deallocate the bytes in the buffer. */
-[[nodiscard]] struct bfr bfr_destroy(struct bfr);
+struct bfr bfr_destroy(struct bfr);
 /* Ensure that the buffer has at least the given amount of space. If it is
  * necessary, grows the buffer at least by the half of the capacity. */
-[[nodiscard]] struct bfr bfr_ensure_space(struct bfr, ptr);
+struct bfr bfr_ensure_space(struct bfr, ptr);
 /* Put a byte at the end of the buffer. Grows the buffer if necessary. */
-[[nodiscard]] struct bfr bfr_put(struct bfr, byte);
+struct bfr bfr_put(struct bfr, byte);
 
 #endif // BUFFER_H
