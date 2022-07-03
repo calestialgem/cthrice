@@ -85,10 +85,10 @@ struct copy_res {
 static struct copy_res copy_str(struct ptrns ptrns, struct str str)
 {
     // Store the previous end of the buffer.
-    struct str res = {.bgn = ptrns.bfr.end};
-    ptrns.bfr      = bfr_put_str(ptrns.bfr, str);
-    res.end        = ptrns.bfr.end;
-    return (struct copy_res){.ptrns = ptrns, .res = res};
+    ptr off   = bfr_size(ptrns.bfr);
+    ptrns.bfr = bfr_put_str(ptrns.bfr, str);
+    return (
+        struct copy_res){.ptrns = ptrns, .res = bfr_view_sub(ptrns.bfr, off)};
 }
 
 struct ctx {

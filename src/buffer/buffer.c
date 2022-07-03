@@ -26,9 +26,14 @@ ptr bfr_space(struct bfr bfr)
     return bfr.lst - bfr.end;
 }
 
+struct str bfr_view_sub(struct bfr bfr, ptr off)
+{
+    return (struct str){.bgn = bfr.bgn + off, .end = bfr.end};
+}
+
 struct str bfr_view(struct bfr bfr)
 {
-    return (struct str){.bgn = bfr.bgn, .end = bfr.end};
+    return bfr_view_sub(bfr, 0);
 }
 
 struct bfr bfr_destroy(struct bfr bfr)

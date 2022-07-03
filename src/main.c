@@ -22,8 +22,8 @@ int main(int argc, char** argv)
 
     ptr off = bfr_size(bfr);
     bfr     = bfr_put_str(bfr, path);
-    view    = bfr_view(bfr);
-    printf("%.*s\n", (int)(str_size(view) - off), view.bgn + off);
+    view    = bfr_view_sub(bfr, off);
+    printf("%.*s\n", (int)str_size(view), view.bgn);
 
     bfr = bfr_destroy(bfr);
 
