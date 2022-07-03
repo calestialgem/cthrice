@@ -8,6 +8,7 @@
 #include "string/api.h"
 #include "types/api.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 static struct ptrn create_edge(ptr target_offset, byte literal, byte other)
@@ -207,6 +208,9 @@ static struct ctx parse_literal(struct ctx ctx)
 
 struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
 {
+    // DEBUG: Print pattern string.
+    printf("Parsing Pattern {%.*s}\n", (int)str_size(ptrn), ptrn.bgn);
+
     struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
     ctx            = parse_marker(ctx);
 
