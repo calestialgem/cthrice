@@ -26,6 +26,11 @@ ptr bfr_space(struct bfr bfr)
     return bfr.lst - bfr.end;
 }
 
+struct str bfr_view(struct bfr bfr)
+{
+    return (struct str){.bgn = bfr.bgn, .end = bfr.end};
+}
+
 struct bfr bfr_destroy(struct bfr bfr)
 {
     free(bfr.bgn);

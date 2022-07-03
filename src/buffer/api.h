@@ -24,6 +24,9 @@ ptr bfr_capacity(struct bfr);
 /* Get the amount of unused bytes in the buffer. */
 ptr bfr_space(struct bfr);
 
+/* Create an immutable view of the buffer. */
+struct str bfr_view(struct bfr);
+
 /* Deallocate the bytes in the buffer. */
 struct bfr bfr_destroy(struct bfr);
 /* Ensure that the buffer has at least the given amount of space. If it is
