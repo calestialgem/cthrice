@@ -146,25 +146,48 @@ static struct ctx parse_marker(struct ctx ctx)
         .end = str_find_pred(ctx.ptrn, &whitespace)};
     CHECK(str_finite(name), "Pattern does not have a name!");
 
+    // DEBUG: Print pattern string.
+    printf("Raw Name {%.*s}\n", (int)str_size(name), name.bgn);
+
     // Check for visibility, and consume the token if it is there.
-    bool visible = *name.bgn == '@';
+    const byte* token   = str_find(name, '@');
+    bool        visible = token != name.end;
+
     if (visible) {
+        CHECK(
+            token == name.bgn,
+            "Visibility token in the pattern name must come before it!");
         name.bgn++;
         CHECK(
             str_finite(name),
             "Pattern does not have a name after the visibility token!");
     }
 
+    // DEBUG: Print pattern string.
+    printf("Name {%.*s}\n", (int)str_size(name), name.bgn);
+
     // Copy the name into the patterns buffer.
     struct copy_res copy_res = copy_str(ctx.ptrns, name);
     ctx.ptrns                = copy_res.ptrns;
     name                     = copy_res.res;
 
+    // DEBUG: Print pattern string.
+    printf("Name Copy {%.*s}\n", (int)str_size(name), name.bgn);
+
     // Create the vertex that marks the start of a pattern.
     ctx.ptrns = put(ctx.ptrns, create_marker(name, visible));
 
+    // DEBUG: Print pattern string.
+    printf(
+        "Unconsumed Pattern {%.*s}\n",
+        (int)str_size(ctx.ptrn),
+        ctx.ptrn.bgn);
+
     // Consume the name of the pattern and visiblity token.
     ctx.ptrn.bgn += str_size(name) + visible;
+
+    // DEBUG: Print pattern string.
+    printf("Consumed Pattern {%.*s}\n", (int)str_size(ctx.ptrn), ctx.ptrn.bgn);
 
     return ctx;
 }
@@ -213,6 +236,9 @@ struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
 
     struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
     ctx            = parse_marker(ctx);
+
+    // DEBUG: Print pattern string after the name is consumed.
+    printf("Consumed Name {%.*s}\n", (int)str_size(ctx.ptrn), ctx.ptrn.bgn);
 
     // Trim whitespace.
     ctx.ptrn.bgn = str_find_pred(ctx.ptrn, &not_whitespace);
