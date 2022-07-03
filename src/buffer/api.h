@@ -34,9 +34,12 @@ struct bfr bfr_destroy(struct bfr);
 /* Ensure that the buffer has at least the given amount of space. If it is
  * necessary, grows the buffer at least by the half of the capacity. */
 struct bfr bfr_ensure_space(struct bfr, ptr);
-/* Put a byte at the end of the buffer. Grows the buffer if necessary. */
+/* Put the byte to the end of the buffer. Grows the buffer if necessary. */
 struct bfr bfr_put(struct bfr, byte);
-/* Put a string at the end of the buffer. Grows the buffer if necessary. */
+/* Put the string to the end of the buffer. Grows the buffer if necessary. */
 struct bfr bfr_put_str(struct bfr, struct str);
+/* Put the contents of the file at the string to the end of the buffer. Grows
+ * the buffer if necessary. */
+struct bfr bfr_put_file(struct bfr, const byte*);
 
 #endif // BUFFER_H

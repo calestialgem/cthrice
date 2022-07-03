@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     printf("%.*s\n", (int)str_size(view), view.bgn);
 
     ptr off = bfr_size(bfr);
-    bfr     = bfr_put_str(bfr, path);
+    bfr     = bfr_put_file(bfr, path.bgn);
     view    = bfr_view_sub(bfr, off);
     printf("%.*s\n", (int)str_size(view), view.bgn);
 

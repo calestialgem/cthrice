@@ -5,6 +5,7 @@
 #include "error/api.h"
 #include "string/api.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -87,5 +88,25 @@ struct bfr bfr_put_str(struct bfr bfr, struct str str)
     bfr     = bfr_ensure_space(bfr, sze);
     memcpy(bfr.end, str.bgn, sze);
     bfr.end += sze;
+    return bfr;
+}
+
+struct bfr bfr_put_file(struct bfr bfr, const byte* path)
+{
+    FILE* file = 0;
+    CHECK(fopen_s(&file, path, "r") == 0, "Could not open the file!");
+
+    const ptr CHUNK = 1024;
+    ptr       wrt   = 0;
+
+    do {
+        bfr = bfr_ensure_space(bfr, CHUNK);
+        wrt = (ptr)fread(bfr.end, 1, CHUNK, file);
+        bfr.end += wrt;
+    } while (CHUNK == wrt);
+
+    CHECK(feof(file), "Problem while reading!");
+    CHECK(fclose(file) != -1, "Could not close the file!");
+
     return bfr;
 }
