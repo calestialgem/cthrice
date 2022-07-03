@@ -13,25 +13,20 @@
 static struct ptrn create_edge(ptr target_offset, byte literal, byte other)
 {
     return (struct ptrn){
-        .type = EDGE,
-        .data = {
-                 .target_offset = target_offset,
-                 .literal       = literal,
-                 .other         = other}
-    };
+        .type          = EDGE,
+        .target_offset = target_offset,
+        .literal       = literal,
+        .other         = other};
 }
 
 static struct ptrn create_vertex(ptr edges)
 {
-    return (struct ptrn){.type = VERTEX, .data = {.edges = edges}};
+    return (struct ptrn){.type = VERTEX, .edges = edges};
 }
 
 static struct ptrn create_marker(struct str name, bool visible)
 {
-    return (struct ptrn){
-        .type = MARKER,
-        .data = {.name = name, .visible = visible}
-    };
+    return (struct ptrn){.type = MARKER, .name = name, .visible = visible};
 }
 
 static ptr size(struct ptrns ptrns)

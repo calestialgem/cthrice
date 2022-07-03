@@ -39,7 +39,7 @@ struct ptrn {
             struct str name;
             bool       visible;
         };
-    } data;
+    };
 };
 
 #endif // INTERNAL_H
