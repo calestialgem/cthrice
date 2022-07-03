@@ -34,7 +34,4 @@ const byte* str_find(struct str, byte);
 /** Check whether the byte exists in the string. */
 bool str_contains(struct str, byte);
 
-/** Print the string before a new line. */
-void println(struct str);
-
 #endif // STRING_H

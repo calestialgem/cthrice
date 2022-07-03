@@ -66,8 +66,3 @@ bool str_contains(struct str str, byte b)
 {
     return str_find(str, b) != str.end;
 }
-
-void println(struct str str)
-{
-    printf("%.*s\n", (int)str_size(str), str.bgn);
-}
