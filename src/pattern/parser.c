@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "buffer/api.h"
 #include "error/api.h"
 #include "pattern/api.h"
 #include "pattern/internal.h"
@@ -77,6 +78,23 @@ static struct ptrns put(struct ptrns ptrns, struct ptrn ptrn)
     return ptrns;
 }
 
+/* Copy result together with the changed patterns. */
+struct copy_res {
+    struct ptrns ptrns;
+    struct str   res;
+};
+
+/* Copy the string to the buffer of ptrns, such that all the pattern memory is
+ * independent of the inputs. */
+static struct copy_res copy_str(struct ptrns ptrns, struct str str)
+{
+    // Store the previous end of the buffer.
+    struct str res = {.bgn = ptrns.bfr.end};
+    ptrns.bfr      = bfr_put_str(ptrns.bfr, str);
+    res.end        = ptrns.bfr.end;
+    return (struct copy_res){.ptrns = ptrns, .res = res};
+}
+
 struct ctx {
     struct ptrns ptrns;
     struct str   ptrn;
@@ -111,7 +129,51 @@ static byte escape(byte b)
     }
 }
 
-static struct ctx literal(struct ctx ctx)
+static bool whitespace(byte b)
+{
+    return b == '\n' || b == '\r' || b == '\t' || b == ' ';
+}
+
+static bool not_whitespace(byte b)
+{
+    return !whitespace(b);
+}
+
+static struct ctx parse_marker(struct ctx ctx)
+{
+    // Trim whitespace.
+    ctx.ptrn.bgn = str_find_pred(ctx.ptrn, &not_whitespace);
+
+    // The first word is the name.
+    struct str name = {
+        .bgn = ctx.ptrn.bgn,
+        .end = str_find_pred(ctx.ptrn, &whitespace)};
+    CHECK(str_size(name) != 0, "Pattern does not have a name!");
+
+    // Check for visibility, and consume the token if it is there.
+    bool visible = *name.bgn == '@';
+    if (visible) {
+        name.bgn++;
+        CHECK(
+            str_size(name) != 0,
+            "Pattern does not have a name after the visibility token!");
+    }
+
+    // Copy the name into the patterns buffer.
+    struct copy_res copy_res = copy_str(ctx.ptrns, name);
+    ctx.ptrns                = copy_res.ptrns;
+    name                     = copy_res.res;
+
+    // Create the vertex that marks the start of a pattern.
+    ctx.ptrns = put(ctx.ptrns, create_marker(name, visible));
+
+    // Consume the name of the pattern and visiblity token.
+    ctx.ptrn.bgn += str_size(name) + visible;
+
+    return ctx;
+}
+
+static struct ctx parse_literal(struct ctx ctx)
 {
     // Consume opening quotes.
     ctx.ptrn.bgn++;
@@ -148,30 +210,10 @@ static struct ctx literal(struct ctx ctx)
     return ctx;
 }
 
-static bool whitespace(byte b)
-{
-    return b == '\n' || b == '\r' || b == '\t' || b == ' ';
-}
-
-static struct ctx parse_marker(struct ctx ctx)
-{
-    // Trim whitespace.
-    while (str_size(ctx.ptrn) > 0 && whitespace(*ctx.ptrn.bgn)) {
-        ctx.ptrn.bgn++;
-    }
-    CHECK(str_size(ctx.ptrn) != 0, "Pattern does not have a name!");
-
-    return ctx;
-}
-
 struct ptrns parse(struct ptrns ptrns, struct str ptrn)
 {
     struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
-
-    ctx = parse_marker(ctx);
-
-    // Vertex that marks the start of a pattern.
-    ptrns = put(ptrns, create(name, contains(name, '@')));
+    ctx            = parse_marker(ctx);
 
     while (str_size(ctx.ptrn) != 0) {
         switch (*ctx.ptrn.bgn) {
@@ -179,11 +221,11 @@ struct ptrns parse(struct ptrns ptrns, struct str ptrn)
             case '\n':
             case '\t':
             case ' ':
-                ctx.ptrn.bgn++;
                 // Skip whitespace.
+                ctx.ptrn.bgn++;
                 break;
             case '\'':
-                ctx = literal(ctx);
+                ctx = parse_literal(ctx);
                 break;
             default:
                 CHECK(false, "Unexpected character in pattern!");
