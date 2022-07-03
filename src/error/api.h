@@ -4,15 +4,14 @@
 #ifndef ERROR_H
 #define ERROR_H 1
 
-#include <stdbool.h>
-#include <stddef.h>
+#include "types/api.h"
 
 /* Print the given message with the file and line number. */
-void message(const char* file, int line, const char* type, const char* msg);
+void message(const byte* file, i32 line, const byte* type, const byte* msg);
 
 /* Check whether the condition holds or not. Aborts if the condition is false.
  * Prints the error message with the file and line number. */
-void check(bool cnd, const char* file, int line, const char* msg);
+void check(bool cnd, const byte* file, i32 line, const byte* msg);
 
 /* Check the condition and abort if it is not true. Prints the error message
  * with the file and line number. */

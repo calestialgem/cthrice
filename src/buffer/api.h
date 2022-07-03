@@ -4,31 +4,31 @@
 #ifndef BUFFER_H
 #define BUFFER_H 1
 
-#include <stddef.h>
+#include "types/api.h"
 
-/* Dynamic array of characters. */
-typedef struct {
+/* Dynamic array of bytes. */
+struct bfr {
     /* Begging of the allocated bytes in the buffer. */
-    char* bgn;
+    byte* bgn;
     /* The byte after the last valid byte in the buffer. */
-    char* end;
+    byte* end;
     /* The byte after the allocated bytes in the buffer. */
-    char* lst;
-} cthrbfr;
+    byte* lst;
+};
 
 /* Get the amount of valid bytes in the buffer. */
-ptrdiff_t bfr_size(cthrbfr);
+ptr bfr_size(struct bfr);
 /* Get the amount of allocated bytes in the buffer. */
-ptrdiff_t bfr_capacity(cthrbfr);
+ptr bfr_capacity(struct bfr);
 /* Get the amount of unused bytes in the buffer. */
-ptrdiff_t bfr_space(cthrbfr);
+ptr bfr_space(struct bfr);
 
 /* Deallocate the bytes in the buffer. */
-[[nodiscard]] cthrbfr bfr_destroy(cthrbfr);
+[[nodiscard]] struct bfr bfr_destroy(struct bfr);
 /* Ensure that the buffer has at least the given amount of space. If it is
  * necessary, grows the buffer at least by the half of the capacity. */
-[[nodiscard]] cthrbfr bfr_ensure_space(cthrbfr, ptrdiff_t);
+[[nodiscard]] struct bfr bfr_ensure_space(struct bfr, ptr);
 /* Put a byte at the end of the buffer. Grows the buffer if necessary. */
-[[nodiscard]] cthrbfr bfr_put(cthrbfr, char);
+[[nodiscard]] struct bfr bfr_put(struct bfr, byte);
 
 #endif // BUFFER_H

@@ -6,12 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void message(const char* file, int line, const char* type, const char* msg)
+void message(const byte* file, i32 line, const byte* type, const byte* msg)
 {
     (void)fprintf(stderr, "%s:%d: %s: %s\n", file, line, type, msg);
 }
 
-void check(bool cnd, const char* file, int line, const char* msg)
+void check(bool cnd, const byte* file, i32 line, const byte* msg)
 {
     if (!cnd) {
         message(file, line, "error", msg);
