@@ -29,8 +29,8 @@ struct ptrn {
     union {
         struct {
             ptr  target_offset;
-            char literal;
-            char other;
+            byte literal;
+            byte other;
         };
         struct {
             ptr edges;
