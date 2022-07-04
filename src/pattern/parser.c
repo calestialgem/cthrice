@@ -119,6 +119,8 @@ static byte escape(byte b)
             return '\'';
         case '"': // Double Quotation Mark.
             return '"';
+        case '-': // Dash.
+            return '-';
         default:
             CHECK(false, "Unknown escape sequence in character literal!");
             return 0; // For fixing the warning.

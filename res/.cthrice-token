@@ -3,7 +3,7 @@
 
 // x 'a'       -> x is the character a
 // x 'ab'      -> x is the characters a then b
-// x 'a' - 'b' -> x is any character in range [a, b]
+// x 'a-b'     -> x is any character in range [a, b]
 // x a b       -> x is a then b
 // x a
 //   b         -> x is a then b
@@ -24,7 +24,7 @@ n
     i<d> ['+' | '-'] s<d>
 
     //  Floating point number.
-    f<d, e> ['+' | '-'] s<d> '.' s<d> [e i<'0' - '9'>]
+    f<d, e> ['+' | '-'] s<d> '.' s<d> [e i<'0-9'>]
 
     //  Floating point base 2 exponent character.
     p 'p' | 'P'
@@ -35,20 +35,20 @@ n
     //  Base 2 numbers.
     b
         b 'b' | 'B'
-        d '0' - '1'
+        d '0-1'
         @i z<b> i<d>
         @f z<b> f<d, p>
 
     //  Base 8 numbers.
     o
         b 'o' | 'O'
-        d '0' - '7'
+        d '0-7'
         @i z<b> i<d>
         @f z<b> f<d, p>
 
     //  Base 10 numbers.
     d
-        d '0' - '9'
+        d '0-9'
         e 'e' | 'E'
         @i i<d>
         @f f<d, e>
@@ -56,6 +56,6 @@ n
     //  Base 16 numbers.
     x
         b 'x' | 'X'
-        d '0' - '9' | 'A' - 'F' | 'a' - 'f'
+        d '0-9' | 'A-F' | 'a-f'
         @i z<b> i<d>
         @f z<b> f<d, p>
