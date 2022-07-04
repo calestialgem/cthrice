@@ -108,7 +108,7 @@ struct trvl traverse_edge(struct ptrns ptrns, struct trvl trvl)
     ASSERT(ptrn.type == EDGE, "Cannot traverse something that is not an edge!");
 
     ASSERT(
-        ptrn.target_offset >= ptrns_size(ptrns),
+        ptrn.target_offset < ptrns_size(ptrns),
         "Target of the edge is out of bounds!");
     trvl.off = ptrn.target_offset;
 
