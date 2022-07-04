@@ -119,8 +119,8 @@ static byte escape(byte b)
             return '\'';
         case '"': // Double Quotation Mark.
             return '"';
-        case '-': // Dash.
-            return '-';
+        case '~': // Tilde.
+            return '~';
         default:
             CHECK(false, "Unknown escape sequence in character literal!");
             return 0; // For fixing the warning.
@@ -187,6 +187,9 @@ static struct ctx parse_literal(struct ctx ctx)
 
     while (*ctx.ptrn.bgn != '\'') {
         byte b = *ctx.ptrn.bgn;
+
+        // Character range.
+        if (b == '~') {}
 
         // Escape using backslash.
         if (b == '\\') {
