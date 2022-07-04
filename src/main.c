@@ -34,6 +34,7 @@ int main(int argc, char** argv)
     ptrns              = ptrn_parse(ptrns, str_convert("cam 'Cam'"));
     ptrns              = ptrn_parse(ptrns, str_convert("@escaped '\\''"));
     ptrns              = ptrn_parse(ptrns, str_convert("@other '\\\\\\n'"));
+    ptrns              = ptrn_parse(ptrns, str_convert("@range 'a~z'"));
 
     CHECK(
         str_equal(str_convert("h"), ptrn_match(ptrns, str_convert("hello"))),
@@ -64,6 +65,31 @@ int main(int argc, char** argv)
         str_equal(str_convert("other"), ptrn_match(ptrns, str_convert("\\\n"))),
         "Matching failed!");
     printf("other matched!\n");
+
+    CHECK(
+        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("g"))),
+        "Matching failed!");
+    printf("range matched!\n");
+
+    CHECK(
+        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("j"))),
+        "Matching failed!");
+    printf("range matched!\n");
+
+    CHECK(
+        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("a"))),
+        "Matching failed!");
+    printf("range matched!\n");
+
+    CHECK(
+        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("z"))),
+        "Matching failed!");
+    printf("range matched!\n");
+
+    CHECK(
+        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("c"))),
+        "Matching failed!");
+    printf("range matched!\n");
 
     ptrns = ptrn_destory(ptrns);
 }

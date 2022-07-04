@@ -178,41 +178,69 @@ static struct ctx parse_marker(struct ctx ctx)
 
 static struct ctx parse_literal(struct ctx ctx)
 {
-    // Consume opening quotes.
-    ctx.ptrn.bgn++;
     CHECK(
         str_finite(ctx.ptrn),
         "No character literal in pattern after opening "
         "quotes!");
 
-    while (*ctx.ptrn.bgn != '\'') {
-        byte b = *ctx.ptrn.bgn;
+    ptr  len   = 0;
+    bool range = false;
 
-        // Character range.
-        if (b == '~') {}
+    while (str_finite(ctx.ptrn)) {
+        byte b = *ctx.ptrn.bgn++;
 
-        // Escape using backslash.
-        if (b == '\\') {
-            CHECK(
-                str_finite(ctx.ptrn),
-                "No escaped character literal in pattern after backslash!");
-            // Consume the escape character.
-            b = escape(*(++ctx.ptrn.bgn));
+        switch (b) {
+            case '\'': // End of the quote.
+                return ctx;
+            case '~': // Character range.
+                CHECK(
+                    range != true,
+                    "Misplaced character range token in pattern!");
+                CHECK(
+                    len == 1,
+                    "Incorrectly structured character range in pattern!");
+                range = true;
+                CHECK(
+                    str_finite(ctx.ptrn),
+                    "No end of the character range after character range token "
+                    "in pattern!");
+                // Consume the range token.
+                b = *ctx.ptrn.bgn++;
+                break;
+            case '\\': // Escape using backslash.
+                CHECK(
+                    str_finite(ctx.ptrn),
+                    "No escaped character literal after backslash in pattern!");
+                // Consume the escape character.
+                b = escape(*ctx.ptrn.bgn++);
+                break;
+            default:
+                break;
         }
 
-        // Vertex that marks a character literal.
-        ctx.ptrns = put(ctx.ptrns, create_vertex(1));
-        ctx.ptrns = put(ctx.ptrns, create_edge(size(ctx.ptrns) + 1, b, 0));
-        ctx.ptrn.bgn++;
+        if (!range) {
+            // Create an edge that marks a character literal.
+            ctx.ptrns = put(ctx.ptrns, create_vertex(1));
+            ctx.ptrns = put(ctx.ptrns, create_edge(size(ctx.ptrns) + 1, b, 0));
+            len++;
+        } else {
+            len++;
+            CHECK(
+                len == 2,
+                "Incorrectly structured character range in pattern!");
+            // Turn the previously created edge to a character range.
+            ASSERT(size(ctx.ptrns) > 0, "There is no previous pattern!");
+            struct ptrn* pre = ctx.ptrns.end - 1;
 
-        CHECK(
-            str_finite(ctx.ptrn),
-            "No closing quotes in pattern after character "
-            "literal!");
+            ASSERT(pre->type == EDGE, "Previous pattern is not an edge!");
+            pre->other = b;
+        }
     }
 
-    // Consume closing quotes.
-    ctx.ptrn.bgn++;
+    CHECK(
+        false,
+        "No closing quotes in pattern after character "
+        "literal!");
     return ctx;
 }
 
@@ -226,13 +254,12 @@ struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
     CHECK(str_finite(ctx.ptrn), "There is no pattern after the name!");
 
     while (str_finite(ctx.ptrn)) {
-        switch (*ctx.ptrn.bgn) {
+        switch (*ctx.ptrn.bgn++) {
             case '\r':
             case '\n':
             case '\t':
             case ' ':
                 // Skip whitespace.
-                ctx.ptrn.bgn++;
                 break;
             case '\'':
                 ctx = parse_literal(ctx);
