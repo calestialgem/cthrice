@@ -205,9 +205,6 @@ static bool traverse_all_paths(struct ptrns ptrns, struct trvls trvls)
 
 static bool match(struct ptrns ptrns, struct str str, const struct ptrn* ptrn)
 {
-    // DEBUG: Print all the patterns.
-    print_patterns(ptrns);
-
     // Skip the marker.
     ptrn++;
     ASSERT(ptrn < ptrns.end, "Pattern ends after the marker!");

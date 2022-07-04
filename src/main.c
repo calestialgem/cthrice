@@ -36,34 +36,32 @@ int main(int argc, char** argv)
     ptrns              = ptrn_parse(ptrns, str_convert("@other '\\\\\\n'"));
 
     CHECK(
-        !str_equal(str_convert("h"), ptrn_match(ptrns, str_convert("hello"))),
+        str_equal(str_convert("h"), ptrn_match(ptrns, str_convert("hello"))),
         "Matching failed!");
     printf("h matched!\n");
 
     CHECK(
-        !str_equal(str_convert("a"), ptrn_match(ptrns, str_convert("aaa"))),
+        str_equal(str_convert("a"), ptrn_match(ptrns, str_convert("aaa"))),
         "Matching failed!");
     printf("a matched!\n");
 
     CHECK(
-        !str_equal(str_convert("cem"), ptrn_match(ptrns, str_convert("Cem"))),
+        str_equal(str_convert("cem"), ptrn_match(ptrns, str_convert("Cem"))),
         "Matching failed!");
     printf("cem matched!\n");
 
     CHECK(
-        !str_equal(str_convert(""), ptrn_match(ptrns, str_convert("Cam"))),
+        str_equal(str_convert(""), ptrn_match(ptrns, str_convert("Cam"))),
         "Not matching failed!");
-    printf("cam did not ptrn_match!\n");
+    printf("cam did not match!\n");
 
     CHECK(
-        !str_equal(str_convert("escaped"), ptrn_match(ptrns, str_convert("'"))),
+        str_equal(str_convert("escaped"), ptrn_match(ptrns, str_convert("'"))),
         "Matching failed!");
     printf("escaped matched!\n");
 
     CHECK(
-        !str_equal(
-            str_convert("other"),
-            ptrn_match(ptrns, str_convert("\\\n"))),
+        str_equal(str_convert("other"), ptrn_match(ptrns, str_convert("\\\n"))),
         "Matching failed!");
     printf("other matched!\n");
 
