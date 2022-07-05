@@ -94,6 +94,7 @@ static struct copy_res copy_str(struct ptrns ptrns, struct str str)
 struct ctx {
     struct ptrns ptrns;
     struct str   ptrn;
+    bool         alter;
 };
 
 static byte escape(byte b)
@@ -219,8 +220,33 @@ static struct ctx parse_literal(struct ctx ctx)
         }
 
         if (!range) {
-            // Create an edge that marks a character literal.
-            ctx.ptrns = put(ctx.ptrns, create_vertex(1));
+            if (!ctx.alter) {
+                // Create an edge that marks a character literal.
+                ctx.ptrns = put(ctx.ptrns, create_vertex(1));
+            } else {
+                ctx.alter = false;
+                // This is the start of an alternative path; thus, rather than
+                // creating a new vertex, add the edge to the previous vertex.
+                struct ptrn* vrtx = null;
+                for (vrtx = ctx.ptrns.end - 1; vrtx >= ctx.ptrns.bgn; vrtx--) {
+                    switch (vrtx->type) {
+                        case EDGE:
+                            vrtx->target_offset++;
+                            break;
+                        case VERTEX:
+                            vrtx->edges++;
+                            goto after;
+                        case MARKER:
+                            CHECK(
+                                vrtx != null,
+                                "Alternative operator at the start of the "
+                                "pattern!");
+                        default:
+                            ASSERT(false, "Unknown node type!");
+                    }
+                }
+            }
+        after:
             ctx.ptrns = put(ctx.ptrns, create_edge(size(ctx.ptrns) + 1, b, 0));
             len++;
         } else {
@@ -263,6 +289,12 @@ struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
                 break;
             case '\'':
                 ctx = parse_literal(ctx);
+                break;
+            case '|':
+                CHECK(
+                    ctx.alter == false,
+                    "Repeating alternative operator in pattern!");
+                ctx.alter = true;
                 break;
             default:
                 CHECK(false, "Unexpected character in pattern!");
