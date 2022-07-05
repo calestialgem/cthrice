@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "types/api.h"
 #ifndef PATTERN_H
-#define PATTERN_H 1
+#    define PATTERN_H 1
 
-#include "buffer/api.h"
-#include "string/api.h"
+#    include "buffer/api.h"
+#    include "string/api.h"
 
 /* Compiled pattern byte code. */
 struct ptrncode;
@@ -23,12 +24,12 @@ struct ptrns {
     /* Buffer that holds the pattern names. */
     struct bfr bfr;
 
-    /* Fields related to pattern name hashes. */
+    /* Fields related to pattern name hash offsets. */
     struct {
-        /* Pointer to the first allocated hash. */
-        struct ptrn** bgn;
-        /* Pointer to the hash after the last valid and allocated one. */
-        struct ptrn** end;
+        /* Pointer to the first allocated hash offset. */
+        ptr* bgn;
+        /* Pointer to the hash offset after the last valid and allocated one. */
+        ptr* end;
     } hash;
 
     /* Fields related to pattern information. */
