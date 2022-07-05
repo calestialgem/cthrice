@@ -16,7 +16,7 @@ struct ptrn {
     /* Identifier. */
     struct str name;
     /* Start of the code. */
-    struct ptrncode* code;
+    ptr code;
 };
 
 /* Dynamic array of patterns. */
