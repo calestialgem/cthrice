@@ -9,123 +9,72 @@
 
 #include <stdio.h>
 
-/* Check whether the pattern is a free edge. Does not check whether the
- * pattern is an edge! */
-static bool edge_free(struct ptrn ptrn)
-{
-    // If the literal character of the edge is zero, this is an
-    // unconditional edge.
-    return ptrn.literal == 0;
-}
-
-/* Check whether the pattern is a range of characters. Does not check
- * whether the pattern is an edge! */
-static bool edge_range(struct ptrn ptrn)
-{
-    // If the other character of the edge is nonzero, this is an
-    // range of characters.
-    return ptrn.other != 0;
-}
-
-/* Check whether the character fits the literal or range pattern. Does not
- * check whether the pattern is an edge or free edge! */
-static bool edge_check(struct ptrn ptrn, byte b)
-{
-    if (edge_range(ptrn)) {
-        return b >= ptrn.literal && b <= ptrn.other;
-    }
-    return b == ptrn.literal;
-}
-
-static void print_edge(struct ptrn ptrn)
-{
-    printf("EDGE; ");
-    if (edge_free(ptrn)) {
-        printf("FREE");
-    } else if (edge_range(ptrn)) {
-        printf("{%c-%c}", ptrn.literal, ptrn.other);
-    } else {
-        printf("{%c}", ptrn.literal);
-    }
-    printf("; %05llu", ptrn.target_offset);
-}
-
-static void print_marker(struct ptrn ptrn)
-{
-    printf("MARKER; {%.*s}; ", (int)str_size(ptrn.name), ptrn.name.bgn);
-    if (ptrn.visible) {
-        printf("Visible");
-    } else {
-        printf("Invisible");
-    }
-}
-
-/* Print the pattern. */
-static void print_pattern(struct ptrn ptrn)
-{
-    printf("{ ");
-    switch (ptrn.type) {
-        case EDGE:
-            print_edge(ptrn);
-            break;
-        case VERTEX:
-            printf("VERTEX; %llu", ptrn.edges);
-            break;
-        case MARKER:
-            print_marker(ptrn);
-            break;
-        default:
-            printf("UNKNOWN");
-    }
-    printf(" }\n");
-}
-
-/* Print all the patterns in the range with their offset. */
-static void print_patterns(struct ptrns ptrns)
-{
-    printf("\nPatterns:\n---------\n");
-    for (const struct ptrn* i = ptrns.bgn; i < ptrns.end; i++) {
-        printf("[%05llu] ", i - ptrns.bgn);
-        print_pattern(*i);
-    }
-}
-
+/* Transition in state in the nondeterministic finite automaton. */
 struct trvl {
+    /* Remaining input. */
     struct str str;
-    ptr        off;
-    bool       dead;
+    /* Index of the current pattern code. */
+    ptr code;
+    /* Whether transition of the pattern code fails. */
+    bool dead;
 };
 
-static ptr ptrns_size(struct ptrns ptrns)
-{
-    ASSERT(ptrns.end >= ptrns.bgn, "Patterns has negative size!");
-    return ptrns.end - ptrns.bgn;
-}
+/* Dynamic array of all current traversals. */
+struct trvls {
+    /* Pointer to the first allocated traversal. */
+    struct trvl* bgn;
+    /* Pointer to the traversal after the last valid one. */
+    struct trvl* end;
+    /* Pointer to the traversal after the last allocated one. */
+    struct trvl* lst;
+};
 
-struct trvl traverse_edge(struct ptrns ptrns, struct trvl trvl)
+/* Do the transition in state. */
+struct trvl traverse(struct ptrns ptrns, struct trvl trvl)
 {
-    struct ptrn ptrn = *(ptrns.bgn + trvl.off);
-    ASSERT(ptrn.type == EDGE, "Cannot traverse something that is not an edge!");
-
+    ASSERT(trvl.dead == false, "Traversing dead path!");
+    ASSERT(trvl.code >= 0, "Index out of the pattern codes!");
     ASSERT(
-        ptrn.target_offset < ptrns_size(ptrns),
-        "Target of the edge is out of bounds!");
-    trvl.off = ptrn.target_offset;
+        trvl.code < ptrns.code.end - ptrns.code.bgn,
+        "Index out of the pattern codes!");
+    struct ptrncode code = *(ptrns.code.bgn + trvl.code);
 
-    if (!edge_free(ptrn)) {
-        // Check and consume the current character.
-        trvl.dead = !edge_check(ptrn, *trvl.str.bgn++);
+    switch (code.type) {
+        case EMPTY:
+            break;
+        case LITERAL:
+            // Check the next input and consume it.
+            trvl.dead = *trvl.str.bgn++ != code.ltrl;
+            break;
+        case RANGE:
+            // Consume the next input.
+            byte b = *trvl.str.bgn++;
+            // Check the input.
+            trvl.dead = b >= code.bgn && b <= code.end;
+            break;
+        case PATTERN:
+            ASSERT(false, "Pattern referencing is not implemented!");
+        case DIVERGE:
+            // DEBUG: Print the unexpected code.
+            print_code(code);
+            ASSERT(false, "Unexcepted pattern code type!");
+        default:
+            // DEBUG: Print the unknown code.
+            print_code(code);
+            ASSERT(false, "Unknown pattern code type!");
     }
+
+    // Move to the target code.
+    trvl.code += code.move;
+    ASSERT(trvl.code >= 0, "Moving to out of the pattern codes!");
+    ASSERT(
+        trvl.code < ptrns.code.end - ptrns.code.bgn,
+        "Moving to out of the pattern codes!");
 
     return trvl;
 }
 
-struct trvls {
-    struct trvl* bgn;
-    struct trvl* end;
-    struct trvl* lst;
-};
-
+/* Put a new transition in to the buffer. */
 static struct trvls put(struct trvls trvls, struct trvl trvl)
 {
     CHECK(
@@ -143,8 +92,11 @@ struct vrtx_trvl {
 static struct vrtx_trvl
 traverse_vertex(struct ptrns ptrns, struct trvls trvls, struct trvl trvl)
 {
-    ASSERT(trvl.off < ptrns_size(ptrns), "Current vertex is out of bounds!");
-    struct ptrn ptrn = *(ptrns.bgn + trvl.off);
+    ASSERT(trvl.code >= 0, "Moving to out of the pattern codes!");
+    ASSERT(
+        trvl.code < ptrns.code.end - ptrns.code.bgn,
+        "Moving to out of the pattern codes!");
+    struct ptrncode code = *(ptrns.code.bgn + trvl.code);
 
     switch (ptrn.type) {
         case VERTEX:
@@ -153,7 +105,7 @@ traverse_vertex(struct ptrns ptrns, struct trvls trvls, struct trvl trvl)
                 return (struct vrtx_trvl){.trvls = trvls, .matched = true};
             }
             ASSERT(
-                trvl.off + ptrn.edges < ptrns_size(ptrns),
+                trvl.code + ptrn.edges < ptrns_size(ptrns),
                 "Some of the edges that are claimed by the vertex do not "
                 "exist!");
             for (ptr j = 0; j < ptrn.edges; j++) {
@@ -164,12 +116,12 @@ traverse_vertex(struct ptrns ptrns, struct trvls trvls, struct trvl trvl)
                             ptrns,
                             (struct trvl){
                                 .str  = trvl.str,
-                                .off  = trvl.off + 1 + j,
+                                .code = trvl.code + 1 + j,
                                 .dead = false}));
             }
             break;
         default:
-            printf("Unexpected: [%05llu] ", trvl.off);
+            printf("Unexpected: [%05llu] ", trvl.code);
             print_patterns(ptrns);
             CHECK(false, "Unexpected node is found in the pattern!");
     }
