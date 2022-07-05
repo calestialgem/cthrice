@@ -35,7 +35,7 @@ struct ptrncode {
             /* End of the range. */
             byte end;
         };
-        /* Data of PATTERN type; offset of the referred pattern. */
+        /* Data of PATTERN type; offset of the reffered pattern. */
         ptr off;
     };
 };
