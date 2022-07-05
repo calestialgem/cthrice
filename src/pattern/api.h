@@ -15,7 +15,7 @@ struct ptrncode;
 struct ptrn {
     /* Identifier. */
     struct str name;
-    /* Start of the code. */
+    /* Index of the start of the pattern's code. */
     ptr code;
 };
 
@@ -24,11 +24,11 @@ struct ptrns {
     /* Buffer that holds the pattern names. */
     struct bfr bfr;
 
-    /* Fields related to pattern name hash offsets. */
+    /* Fields related to pattern name hash indicies. */
     struct {
-        /* Pointer to the first allocated hash offset. */
+        /* Pointer to the first allocated hash index. */
         ptr* bgn;
-        /* Pointer to the hash offset after the last valid and allocated one. */
+        /* Pointer to the hash index after the last valid and allocated one. */
         ptr* end;
     } hash;
 
