@@ -41,8 +41,8 @@ struct ptrncode {
             /* End of the range. */
             byte end;
         };
-        /* Data of PATTERN type; offset of the reffered pattern. */
-        ptr off;
+        /* Data of PATTERN type; index of the reffered pattern. */
+        ptr indx;
         /* Data of the DIVERGE type; amount of paths. */
         ptr amt;
     };
@@ -75,7 +75,7 @@ static void print_code(struct ptrncode code)
             printf("RANGE {%c~%c}", code.bgn, code.end);
             break;
         case PATTERN:
-            printf("PATTERN {%05lld}", code.off);
+            printf("PATTERN {%05lld}", code.indx);
             break;
         case DIVERGE:
             printf("DIVERGE {%lld}", code.amt);
