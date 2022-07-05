@@ -29,14 +29,21 @@ struct trvls {
     struct trvl* lst;
 };
 
+/* Returns the amount of code in the patterns. */
+static ptr code_size(struct ptrns ptrns)
+{
+    ASSERT(
+        ptrns.code.end >= ptrns.code.bgn,
+        "There are negative amount of codes in the pattern!");
+    return ptrns.code.end - ptrns.code.bgn;
+}
+
 /* Do the transition in state. */
-struct trvl traverse(struct ptrns ptrns, struct trvl trvl)
+static struct trvl transition(struct ptrns ptrns, struct trvl trvl)
 {
     ASSERT(trvl.dead == false, "Traversing dead path!");
     ASSERT(trvl.code >= 0, "Index out of the pattern codes!");
-    ASSERT(
-        trvl.code < ptrns.code.end - ptrns.code.bgn,
-        "Index out of the pattern codes!");
+    ASSERT(trvl.code < code_size(ptrns), "Index out of the pattern codes!");
     struct ptrncode code = *(ptrns.code.bgn + trvl.code);
 
     switch (code.type) {
@@ -44,17 +51,18 @@ struct trvl traverse(struct ptrns ptrns, struct trvl trvl)
             break;
         case LITERAL:
             // Check the next input and consume it.
-            trvl.dead = *trvl.str.bgn++ != code.ltrl;
+            trvl.dead = !str_finite(trvl.str) || *trvl.str.bgn++ != code.ltrl;
             break;
         case RANGE:
-            // Consume the next input.
-            byte b = *trvl.str.bgn++;
-            // Check the input.
-            trvl.dead = b >= code.bgn && b <= code.end;
+            // Check the next input and consume it.
+            trvl.dead =
+                !str_finite(trvl.str) ||
+                !(*trvl.str.bgn++ >= code.bgn && *trvl.str.bgn <= code.end);
             break;
         case PATTERN:
             ASSERT(false, "Pattern referencing is not implemented!");
         case DIVERGE:
+        case MATCH:
             // DEBUG: Print the unexpected code.
             print_code(code);
             ASSERT(false, "Unexcepted pattern code type!");
@@ -67,9 +75,7 @@ struct trvl traverse(struct ptrns ptrns, struct trvl trvl)
     // Move to the target code.
     trvl.code += code.move;
     ASSERT(trvl.code >= 0, "Moving to out of the pattern codes!");
-    ASSERT(
-        trvl.code < ptrns.code.end - ptrns.code.bgn,
-        "Moving to out of the pattern codes!");
+    ASSERT(trvl.code < code_size(ptrns), "Moving to out of the pattern codes!");
 
     return trvl;
 }
@@ -84,53 +90,43 @@ static struct trvls put(struct trvls trvls, struct trvl trvl)
     return trvls;
 }
 
-struct vrtx_trvl {
+struct stepres {
     struct trvls trvls;
     bool         matched;
 };
 
-static struct vrtx_trvl
-traverse_vertex(struct ptrns ptrns, struct trvls trvls, struct trvl trvl)
+/* Do all avalible transitions in the current state. */
+static struct stepres
+step(struct ptrns ptrns, struct trvls trvls, struct trvl trvl)
 {
     ASSERT(trvl.code >= 0, "Moving to out of the pattern codes!");
-    ASSERT(
-        trvl.code < ptrns.code.end - ptrns.code.bgn,
-        "Moving to out of the pattern codes!");
+    ASSERT(trvl.code < code_size(ptrns), "Moving to out of the pattern codes!");
     struct ptrncode code = *(ptrns.code.bgn + trvl.code);
 
-    switch (ptrn.type) {
-        case VERTEX:
-            if (ptrn.edges == 0) {
-                // A vertex with no edges represents a match.
-                return (struct vrtx_trvl){.trvls = trvls, .matched = true};
-            }
+    switch (code.type) {
+        case DIVERGE:
             ASSERT(
-                trvl.code + ptrn.edges < ptrns_size(ptrns),
-                "Some of the edges that are claimed by the vertex do not "
-                "exist!");
-            for (ptr j = 0; j < ptrn.edges; j++) {
-                // Traverse all the edges in this vertex.
-                trvls =
-                    put(trvls,
-                        traverse_edge(
-                            ptrns,
-                            (struct trvl){
-                                .str  = trvl.str,
-                                .code = trvl.code + 1 + j,
-                                .dead = false}));
+                code.amt > 0,
+                "The pattern does not diverge to positive amount of paths!");
+            ASSERT(
+                trvl.code + code.amt < code_size(ptrns),
+                "Some of the paths that are do not exist in the pattern!");
+            for (ptr j = 0; j < code.amt; j++) {
+                trvl.code++;
+                trvls = put(trvls, transition(ptrns, trvl));
             }
             break;
+        case MATCH:
+            return (struct stepres){.trvls = trvls, .matched = true};
         default:
-            printf("Unexpected: [%05llu] ", trvl.code);
-            print_patterns(ptrns);
-            CHECK(false, "Unexpected node is found in the pattern!");
+            trvls = put(trvls, transition(ptrns, trvl));
     }
 
-    return (struct vrtx_trvl){.trvls = trvls, .matched = false};
+    return (struct stepres){.trvls = trvls, .matched = false};
 }
 
-/* Traverse all the avalible paths. */
-static bool traverse_all_paths(struct ptrns ptrns, struct trvls trvls)
+/* Run the code for the given pattern. */
+static bool code_run(struct ptrns ptrns, struct trvls trvls)
 {
     while (trvls.end - trvls.bgn != 0) {
         for (ptr i = 0; i < trvls.end - trvls.bgn; i++) {
@@ -141,7 +137,7 @@ static bool traverse_all_paths(struct ptrns ptrns, struct trvls trvls)
                 continue;
             }
             // Traverse the vertex, and return if matched.
-            struct vrtx_trvl res = traverse_vertex(ptrns, trvls, trvl);
+            struct stepres res = step(ptrns, trvls, trvl);
             if (res.matched) {
                 return true;
             }
@@ -155,12 +151,8 @@ static bool traverse_all_paths(struct ptrns ptrns, struct trvls trvls)
     return false;
 }
 
-static bool match(struct ptrns ptrns, struct str str, const struct ptrn* ptrn)
+static bool match(struct ptrns ptrns, struct trvl trvl)
 {
-    // Skip the marker.
-    ptrn++;
-    ASSERT(ptrn < ptrns.end, "Pattern ends after the marker!");
-
     // Use stack memory for traversals.
 #define TRAVERSAL_CAPACITY 32
     struct trvl  memory[TRAVERSAL_CAPACITY];
@@ -169,27 +161,29 @@ static bool match(struct ptrns ptrns, struct str str, const struct ptrn* ptrn)
         .end = memory,
         .lst = memory + TRAVERSAL_CAPACITY};
 
-    // Put initial traversal that comes after the marker.
-    trvls =
-        put(trvls,
-            (struct trvl){
-                .str  = str,
-                .off  = ptrn - ptrns.bgn,
-                .dead = false,
-            });
-
-    return traverse_all_paths(ptrns, trvls);
+    // Put the initial state.
+    trvls = put(trvls, trvl);
+    return code_run(ptrns, trvls);
 }
 
 struct str ptrn_match(struct ptrns ptrns, struct str str)
 {
-    for (const struct ptrn* i = ptrns.bgn; i < ptrns.end; i++) {
-        if (i->type == MARKER && i->visible && match(ptrns, str, i)) {
-            // If matches a visible pattern, return the name.
-            return i->name;
+    for (const struct ptrn* i = ptrns.values.bgn; i < ptrns.values.end; i++) {
+        if (i->visible) {
+            struct trvl init = {.str = str, .code = i->code, .dead = false};
+            if (match(ptrns, init)) {
+                // If matches a visible pattern, return the name.
+                return i->name;
+            }
         }
     }
 
     // Return empty string if nothing matched.
     return (struct str){0};
+}
+
+bool ptrn_check(struct ptrns ptrns, struct str name, struct str str)
+{
+    // TODO: Use hashmap to access to the pattern code.
+    return false;
 }
