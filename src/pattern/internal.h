@@ -25,6 +25,8 @@ struct ptrncode {
         RANGE,
         /* Move if the reffered pattern matches. */
         PATTERN,
+        /* Represents alternative transition paths. */
+        DIVERGE,
         /* Pattern matches if it reached here. */
         MATCH
     } type;
@@ -41,6 +43,8 @@ struct ptrncode {
         };
         /* Data of PATTERN type; offset of the reffered pattern. */
         ptr off;
+        /* Data of the DIVERGE type; amount of paths. */
+        ptr amt;
     };
 };
 
@@ -72,6 +76,9 @@ static void print_code(struct ptrncode code)
             break;
         case PATTERN:
             printf("PATTERN {%05lld}", code.off);
+            break;
+        case DIVERGE:
+            printf("DIVERGE {%lld}", code.amt);
             break;
         case MATCH:
             printf("MATCH");
