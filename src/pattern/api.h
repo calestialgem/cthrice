@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "types/api.h"
 #ifndef PATTERN_H
-#    define PATTERN_H 1
+#define PATTERN_H 1
 
-#    include "buffer/api.h"
-#    include "string/api.h"
+#include "buffer/api.h"
+#include "string/api.h"
+#include "types/api.h"
 
 /* Compiled pattern byte code. */
 struct ptrncode;
 
 /* Pattern information. */
-struct ptrn {
+struct ptrninfo {
     /* Identifier. */
     struct str name;
     /* Index of the start of the pattern's code. */
@@ -21,8 +21,8 @@ struct ptrn {
     bool visible;
 };
 
-/* Dynamic array of patterns. */
-struct ptrns {
+/* All pattern related data. */
+struct ptrnctx {
     /* Buffer that holds the pattern names. */
     struct bfr bfr;
 
@@ -36,13 +36,13 @@ struct ptrns {
 
     /* Fields related to pattern information. */
     struct {
-        /* Pointer to the first allocated pattern. */
-        struct ptrn* bgn;
-        /* Pointer to the pattern after the last valid one. */
-        struct ptrn* end;
-        /* Pointer to the pattern after the last allocated one. */
-        struct ptrn* lst;
-    } values;
+        /* Pointer to the first allocated pattern information. */
+        struct ptrninfo* bgn;
+        /* Pointer to the pattern information after the last valid one. */
+        struct ptrninfo* end;
+        /* Pointer to the pattern information after the last allocated one. */
+        struct ptrninfo* lst;
+    } info;
 
     /* Fields related to compiled pattern code. */
     struct {
@@ -56,17 +56,17 @@ struct ptrns {
 };
 
 /* Parse the pattern by searching for references in the patterns. */
-struct ptrns ptrn_parse(struct ptrns, struct str);
+struct ptrnctx ptrn_parse(struct ptrnctx, struct str);
 
-/* Match the string to the patterns. Returns the name of a maching pattern.
- * Returns empty string if nothing matches. If the string matches to multiple
- * patterns the one returned is undeterministic. */
-struct str ptrn_match(struct ptrns, struct str);
+/* Match the string. Returns the name of a maching pattern. Returns empty string
+ * if nothing matches. If the string matches to multiple patterns the one
+ * returned is undeterministic. */
+struct str ptrn_match(struct ptrnctx, struct str);
 
 /* Check the string to the pattern with the give name. */
-bool ptrn_check(struct ptrns, struct str, struct str);
+bool ptrn_check(struct ptrnctx, struct str, struct str);
 
 /* Deallocate the patterns. */
-struct ptrns ptrn_destory(struct ptrns);
+struct ptrnctx ptrn_destory(struct ptrnctx);
 
 #endif // PATTERN_H

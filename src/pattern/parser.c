@@ -30,15 +30,17 @@ static struct ptrn create_marker(struct str name, bool visible)
     return (struct ptrn){.type = MARKER, .name = name, .visible = visible};
 }
 
-static ptr size(struct ptrns ptrns)
+static ptr size(struct ptrnctx ptrns)
 {
     ASSERT(ptrns.end >= ptrns.bgn, "Patterns do not have a positive size!");
     return ptrns.end - ptrns.bgn;
 }
 
-static ptr capacity(struct ptrns ptrns)
+static ptr capacity(struct ptrnctx ptrns)
 {
-    ASSERT(ptrns.lst >= ptrns.bgn, "Patterns do not have a positive capacity!");
+    ASSERT(
+        ptrns.lst >= ptrnctx.bgn,
+        "Patterns do not have a positive capacity!");
     return ptrns.lst - ptrns.bgn;
 }
 
@@ -48,7 +50,7 @@ static ptr space(struct ptrns ptrns)
     return ptrns.lst - ptrns.end;
 }
 
-static struct ptrns grow(struct ptrns ptrns)
+static struct ptrnctx grow(struct ptrnctx ptrns)
 {
     ptr cap  = capacity(ptrns);
     ptr sze  = size(ptrns);
@@ -65,7 +67,7 @@ static struct ptrns grow(struct ptrns ptrns)
     return ptrns;
 }
 
-static struct ptrns put(struct ptrns ptrns, struct ptrn ptrn)
+static struct ptrnctx put(struct ptrnctx ptrns, struct ptrn ptrn)
 {
     if (space(ptrns) < 1) {
         ptrns = grow(ptrns);
@@ -76,13 +78,13 @@ static struct ptrns put(struct ptrns ptrns, struct ptrn ptrn)
 
 /* Copy result together with the changed patterns. */
 struct copy_res {
-    struct ptrns ptrns;
-    struct str   res;
+    struct ptrnctx ptrns;
+    struct str     res;
 };
 
 /* Copy the string to the buffer of ptrns, such that all the pattern memory is
  * independent of the inputs. */
-static struct copy_res copy_str(struct ptrns ptrns, struct str str)
+static struct copy_res copy_str(struct ptrnctx ptrns, struct str str)
 {
     // Store the previous end of the buffer.
     ptr off   = bfr_size(ptrns.bfr);
@@ -92,9 +94,9 @@ static struct copy_res copy_str(struct ptrns ptrns, struct str str)
 }
 
 struct ctx {
-    struct ptrns ptrns;
-    struct str   ptrn;
-    bool         alter;
+    struct ptrnctx ptrns;
+    struct str     ptrn;
+    bool           alter;
 };
 
 static byte escape(byte b)
@@ -270,7 +272,7 @@ static struct ctx parse_literal(struct ctx ctx)
     return ctx;
 }
 
-struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
+struct ptrnctx ptrn_parse(struct ptrnctx ptrns, struct str ptrn)
 {
     struct ctx ctx = {.ptrns = ptrns, .ptrn = ptrn};
     ctx            = parse_marker(ctx);
@@ -306,7 +308,7 @@ struct ptrns ptrn_parse(struct ptrns ptrns, struct str ptrn)
     return ctx.ptrns;
 }
 
-struct ptrns ptrn_destory(struct ptrns ptrns)
+struct ptrnctx ptrn_destory(struct ptrnctx ptrns)
 {
     ptrns.bfr = bfr_destroy(ptrns.bfr);
     free(ptrns.bgn);

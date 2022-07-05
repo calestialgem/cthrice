@@ -48,11 +48,11 @@ struct ptrncode {
     };
 };
 
-/* Print the pattern information. */
-static void print_patterns(struct ptrns ptrns)
+/* Print the pattern information in the context. */
+static void print_infos(struct ptrnctx ctx)
 {
     printf("\n  PATTERNS\n============\n\n");
-    for (const struct ptrn* i = ptrns.values.bgn; i < ptrns.values.end; i++) {
+    for (const struct ptrninfo* i = ctx.info.bgn; i < ctx.info.end; i++) {
         printf(
             "Pattern {%.*s} [%05lld]\n",
             (int)str_size(i->name),
@@ -61,7 +61,7 @@ static void print_patterns(struct ptrns ptrns)
     }
 }
 
-/* Print the code with its type and data. */
+/* Print the pattern code with its type and data. */
 static void print_code(struct ptrncode code)
 {
     switch (code.type) {
@@ -87,12 +87,12 @@ static void print_code(struct ptrncode code)
     printf(" %+lld\n", code.move);
 }
 
-/* Print the codes in the pattern. */
-static void print_codes(struct ptrns ptrns)
+/* Print the pattern codes in the context. */
+static void print_codes(struct ptrnctx ctx)
 {
     printf("\n  PATTERN CODE\n================\n\n");
-    for (const struct ptrncode* i = ptrns.code.bgn; i < ptrns.code.end; i++) {
-        printf("[%05lld] ", i - ptrns.code.bgn);
+    for (const struct ptrncode* i = ctx.code.bgn; i < ctx.code.end; i++) {
+        printf("[%05lld] ", i - ctx.code.bgn);
         print_code(*i);
     }
 }

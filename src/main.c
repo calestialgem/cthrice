@@ -27,69 +27,73 @@ int main(int argc, char** argv)
 
     bfr = bfr_destroy(bfr);
 
-    struct ptrns ptrns = {0};
-    ptrns              = ptrn_parse(ptrns, str_convert("@h 'h' 'ell' 'o'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("@a 'a' 'a' 'a'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("@cem 'Cem'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("cam 'Cam'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("@escaped '\\''"));
-    ptrns              = ptrn_parse(ptrns, str_convert("@other '\\\\\\n'"));
-    ptrns              = ptrn_parse(ptrns, str_convert("@range 'a~z'"));
+    struct ptrnctx ptrnctx = {0};
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("@h 'h' 'ell' 'o'"));
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("@a 'a' 'a' 'a'"));
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("@cem 'Cem'"));
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("cam 'Cam'"));
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("@escaped '\\''"));
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("@other '\\\\\\n'"));
+    ptrnctx = ptrn_parse(ptrnctx, str_convert("@range 'a~z'"));
 
     CHECK(
-        str_equal(str_convert("h"), ptrn_match(ptrns, str_convert("hello"))),
+        str_equal(str_convert("h"), ptrn_match(ptrnctx, str_convert("hello"))),
         "Matching failed!");
     printf("h matched!\n");
 
     CHECK(
-        str_equal(str_convert("a"), ptrn_match(ptrns, str_convert("aaa"))),
+        str_equal(str_convert("a"), ptrn_match(ptrnctx, str_convert("aaa"))),
         "Matching failed!");
     printf("a matched!\n");
 
     CHECK(
-        str_equal(str_convert("cem"), ptrn_match(ptrns, str_convert("Cem"))),
+        str_equal(str_convert("cem"), ptrn_match(ptrnctx, str_convert("Cem"))),
         "Matching failed!");
     printf("cem matched!\n");
 
     CHECK(
-        str_equal(str_convert(""), ptrn_match(ptrns, str_convert("Cam"))),
+        str_equal(str_convert(""), ptrn_match(ptrnctx, str_convert("Cam"))),
         "Not matching failed!");
     printf("cam did not match!\n");
 
     CHECK(
-        str_equal(str_convert("escaped"), ptrn_match(ptrns, str_convert("'"))),
+        str_equal(
+            str_convert("escaped"),
+            ptrn_match(ptrnctx, str_convert("'"))),
         "Matching failed!");
     printf("escaped matched!\n");
 
     CHECK(
-        str_equal(str_convert("other"), ptrn_match(ptrns, str_convert("\\\n"))),
+        str_equal(
+            str_convert("other"),
+            ptrn_match(ptrnctx, str_convert("\\\n"))),
         "Matching failed!");
     printf("other matched!\n");
 
     CHECK(
-        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("g"))),
+        str_equal(str_convert("range"), ptrn_match(ptrnctx, str_convert("g"))),
         "Matching failed!");
     printf("range matched!\n");
 
     CHECK(
-        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("j"))),
+        str_equal(str_convert("range"), ptrn_match(ptrnctx, str_convert("j"))),
         "Matching failed!");
     printf("range matched!\n");
 
     CHECK(
-        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("a"))),
+        str_equal(str_convert("range"), ptrn_match(ptrnctx, str_convert("a"))),
         "Matching failed!");
     printf("range matched!\n");
 
     CHECK(
-        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("z"))),
+        str_equal(str_convert("range"), ptrn_match(ptrnctx, str_convert("z"))),
         "Matching failed!");
     printf("range matched!\n");
 
     CHECK(
-        str_equal(str_convert("range"), ptrn_match(ptrns, str_convert("c"))),
+        str_equal(str_convert("range"), ptrn_match(ptrnctx, str_convert("c"))),
         "Matching failed!");
     printf("range matched!\n");
 
-    ptrns = ptrn_destory(ptrns);
+    ptrnctx = ptrn_destory(ptrnctx);
 }
