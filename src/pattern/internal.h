@@ -4,41 +4,39 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H 1
 
-#include "string/api.h"
 #include "types/api.h"
 
-/** Implementation of the pattern. This is a graph where edges and verticies
- * are stored in an array. */
-struct ptrn {
-    /** Type of the pattern. */
+/** Implementation of the pattern code. These are the transitions in a
+ * nondeterministic finite automaton with empty moves. */
+struct ptrncode {
+    /* The amount of pattern code to move forward. Zero means a match. */
+    ptr move;
+    /* Type of the pattern code. */
     enum {
-        /** Edge in the tree that checks and consumes a character that
-         * equals a particular character or is in a character range. Free
-         * edge means move to the vertex pointed by this edge without
-         * checking and consuming a character. */
-        EDGE,
-        /** Vertex in the tree that records how many edges come after this
-         * vertex. Zero edges means the matching finished with success. */
-        VERTEX,
-        /** Marker is the start of a tree, stores the name and the
-         * visibility. The pattern can be matched only if it is visible. */
-        MARKER
+        /* Move regardless without consuming a character. */
+        EMPTY,
+        /* Move if the character equals to the literal. */
+        LITERAL,
+        /* Move if the character is in the range. */
+        RANGE,
+        /* Move if the reffered pattern matches. */
+        PATTERN,
+        /* Pattern matches if it reached here. */
+        MATCH
     } type;
-
-    /** Data of the pattern. */
+    /* Data of the pattern code. */
     union {
+        /* Data of LITERAL type; a single literal to match. */
+        byte ltrl;
+        /* Data of RANGE type. */
         struct {
-            ptr  target_offset;
-            byte literal;
-            byte other;
+            /* Beginin of the range. */
+            byte bgn;
+            /* End of the range. */
+            byte end;
         };
-        struct {
-            ptr edges;
-        };
-        struct {
-            struct str name;
-            bool       visible;
-        };
+        /* Data of PATTERN type; offset of the referred pattern. */
+        ptr off;
     };
 };
 
