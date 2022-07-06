@@ -8,6 +8,7 @@
 #include "types/api.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 /* The state of the nondeterministic finite automaton. */
 struct state {
@@ -17,16 +18,6 @@ struct state {
     ptr code;
     /* Whether the last transition failed. */
     bool dead;
-};
-
-/* Dynamic array of all alive states. */
-struct paths {
-    /* Pointer to the first allocated state. */
-    struct state* bgn;
-    /* Pointer to the state after the last valid one. */
-    struct state* end;
-    /* Pointer to the state after the last allocated one. */
-    struct state* lst;
 };
 
 /* Returns the amount of pattern code in the context. */
@@ -59,6 +50,7 @@ static struct state step(struct ptrnctx ctx, struct state state)
                                               *state.input.bgn <= code.end);
             break;
         case PATTERN:
+            // TODO: Implement referencing other patterns.
             ASSERT(false, "Not implemented!");
         case DIVERGE:
         case MATCH:
@@ -79,11 +71,45 @@ static struct state step(struct ptrnctx ctx, struct state state)
     return state;
 }
 
+/* Dynamic array of all alive states. */
+struct paths {
+    /* Pointer to the first allocated state. */
+    struct state* bgn;
+    /* Pointer to the state after the last valid one. */
+    struct state* end;
+    /* Pointer to the state after the last allocated one. */
+    struct state* lst;
+};
+
 /* Put the alternative state in to the paths. */
-static struct paths put(struct paths paths, struct state state)
+static struct paths path_put(struct paths paths, struct state state)
 {
-    CHECK(paths.lst - paths.end > 0, "Out of space!");
+    // Grow if the current avalible space is not enough.
+    if (paths.lst - paths.end < 1) {
+        // Store the current size to calculate the end pointer later.
+        ptr sze = paths.end - paths.bgn;
+
+        // Double the capacity.
+        ptr cap = paths.lst - paths.bgn;
+        ptr nwc = cap << 1;
+
+        struct state* mem = realloc(paths.bgn, nwc);
+        CHECK(mem != null, "Cannot allocate paths!");
+
+        paths.bgn = mem;
+        paths.end = mem + sze;
+        paths.lst = mem + nwc;
+    }
+
     *paths.end++ = state;
+    return paths;
+}
+
+/* Free the allocated memory. */
+static struct paths path_destroy(struct paths paths)
+{
+    free(paths.bgn);
+    paths.bgn = paths.end = paths.lst = null;
     return paths;
 }
 
@@ -95,7 +121,8 @@ struct stepres {
     bool matched;
 };
 
-/* Transition the states in all the paths. */
+/* Transition the states in all the paths. Returns early when a path is accepted
+ * by the automaton. */
 static struct stepres
 step_all(struct ptrnctx ctx, struct paths paths, struct state state)
 {
@@ -111,33 +138,44 @@ step_all(struct ptrnctx ctx, struct paths paths, struct state state)
                 "Divergence out of bounds!");
             for (ptr j = 0; j < code.amt; j++) {
                 state.code++;
-                paths = put(paths, step(ctx, state));
+                paths = path_put(paths, step(ctx, state));
             }
             break;
         case MATCH:
             return (struct stepres){.paths = paths, .matched = true};
         default:
-            paths = put(paths, step(ctx, state));
+            paths = path_put(paths, step(ctx, state));
     }
 
     return (struct stepres){.paths = paths, .matched = false};
 }
 
-/* Test the given paths. */
-static bool match(struct ptrnctx ctx, struct paths paths)
+/* The consumed character amount that signals no match. */
+const ptr NOT_MATCHED = -1;
+
+/* Test starting from the initial state. Returns the amount of characters that
+ * were consumed from the input by the path that was accepted by the automaton
+ * first. Negative one means none of the paths were accepted before all paths
+ * died. */
+static ptr match(struct ptrnctx ctx, struct state init)
 {
+    struct paths paths = {0};
+    paths              = path_put(paths, init);
+
     while (paths.end - paths.bgn != 0) {
         for (ptr i = 0; i < paths.end - paths.bgn; i++) {
             // Remove the dead ends.
-            struct state path = paths.bgn[i];
-            if (path.dead) {
+            struct state state = paths.bgn[i];
+            if (state.dead) {
                 paths.bgn[i--] = *--paths.end;
                 continue;
             }
             // Step all the states, and return if matched.
-            struct stepres res = step_all(ctx, paths, path);
+            struct stepres res = step_all(ctx, paths, state);
             if (res.matched) {
-                return true;
+                ptr consumed = str_size(init.input) - str_size(state.input);
+                path_destroy(paths);
+                return consumed;
             }
             paths = res.paths;
 
@@ -146,30 +184,22 @@ static bool match(struct ptrnctx ctx, struct paths paths)
         }
     }
 
-    return false;
+    path_destroy(paths);
+    return NOT_MATCHED;
 }
 
 struct str ptrn_match(struct ptrnctx ctx, struct str input)
 {
     for (const struct ptrninfo* i = ctx.info.bgn; i < ctx.info.end; i++) {
         if (i->visible) {
-            // Use stack memory for paths.
-#define PATH_CAPACITY 32
-            struct state memory[PATH_CAPACITY];
-            struct paths paths = {
-                .bgn = memory,
-                .end = memory,
-                .lst = memory + PATH_CAPACITY};
-
-            // Put the initial state.
+            // Create the initial state.
             struct state init = {
                 .input = input,
                 .code  = i->code,
                 .dead  = false};
-            paths = put(paths, init);
 
             // If matches a visible pattern, return the name.
-            if (match(ctx, paths)) {
+            if (match(ctx, init) != NOT_MATCHED) {
                 return i->name;
             }
         }
