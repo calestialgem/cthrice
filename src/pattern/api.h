@@ -8,36 +8,32 @@
 #include "string/api.h"
 #include "types/api.h"
 
-/* Compiled pattern byte code. */
-struct ptrncode;
-
 /* Pattern information. */
 struct ptrninfo;
+/* Compiled pattern byte code. */
+struct ptrncode;
 
 /* All pattern related data. */
 struct ptrnctx {
     /* Buffer that holds the pattern names. */
     struct bfr bfr;
-
-    /* Fields related to pattern name hash indicies. */
+    /* Dynamic array of pattern name hash index. */
     struct {
-        /* Pointer to the first allocated hash index. */
+        /* Pointer to the first allocated index. */
         ptr* bgn;
-        /* Pointer to the hash index after the last valid and allocated one. */
+        /* Pointer to the index after the last valid and allocated one. */
         ptr* end;
     } hash;
-
-    /* Fields related to pattern information. */
+    /* Dynamic array of pattern information. */
     struct {
-        /* Pointer to the first allocated pattern information. */
+        /* Pointer to the first allocated information. */
         struct ptrninfo* bgn;
-        /* Pointer to the pattern information after the last valid one. */
+        /* Pointer to the information after the last valid one. */
         struct ptrninfo* end;
-        /* Pointer to the pattern information after the last allocated one. */
+        /* Pointer to the information after the last allocated one. */
         struct ptrninfo* lst;
     } info;
-
-    /* Fields related to compiled pattern code. */
+    /* Dynamic array of compiled pattern code. */
     struct {
         /* Pointer to the first allocated code. */
         struct ptrncode* bgn;
@@ -50,16 +46,12 @@ struct ptrnctx {
 
 /* Parse the pattern by searching for references in the patterns. */
 struct ptrnctx ptrn_parse(struct ptrnctx, struct str);
-
-/* Match the string. Returns the name of a maching pattern. Returns empty string
- * if nothing matches. If the string matches to multiple patterns the one
- * returned is undeterministic. */
-struct str ptrn_match(struct ptrnctx, struct str);
-
-/* Check the string to the pattern with the give name. */
-bool ptrn_check(struct ptrnctx, struct str, struct str);
-
 /* Deallocate the patterns. */
 struct ptrnctx ptrn_destory(struct ptrnctx);
+
+/* Match the pattern with the name to the input. Returns the initial portion of
+ * the input that matched. Matches are checked from the begining. Empty match
+ * means it did not match. */
+struct srt ptrn_match(struct ptrnctx, struct str name, struct str input);
 
 #endif // PATTERN_H
