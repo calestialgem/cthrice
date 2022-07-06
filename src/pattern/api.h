@@ -12,14 +12,7 @@
 struct ptrncode;
 
 /* Pattern information. */
-struct ptrninfo {
-    /* Identifier. */
-    struct str name;
-    /* Index of the start of the pattern's code. */
-    ptr code;
-    /* Whether the pattern matches in the nameless search. */
-    bool visible;
-};
+struct ptrninfo;
 
 /* All pattern related data. */
 struct ptrnctx {
