@@ -87,9 +87,12 @@ static struct paths put(struct paths paths, struct state state)
     return paths;
 }
 
+/* Result of stepping all the states. */
 struct stepres {
+    /* Paths after stepping. */
     struct paths paths;
-    bool         matched;
+    /* Whether any state was accepted by the automaton. */
+    bool matched;
 };
 
 /* Transition the states in all the paths. */
