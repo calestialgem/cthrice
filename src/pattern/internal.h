@@ -85,6 +85,13 @@ struct ptrnctx ptrn_hash_put(struct ptrnctx, struct ptrninfo);
 /* Free the allocated memory. */
 struct ptrnctx ptrn_hash_destroy(struct ptrnctx);
 
+/* Returns the amount of pattern code in the context. */
+ptr ptrn_code_size(struct ptrnctx);
+/* Put the code into the list. */
+struct ptrnctx ptrn_code_put(struct ptrnctx, struct ptrncode);
+/* Free the allocated memory. */
+struct ptrnctx ptrn_code_destroy(struct ptrnctx);
+
 /* Print the pattern information in the context. */
 void ptrn_print_infos(struct ptrnctx);
 /* Print the pattern codes in the context. */
@@ -92,7 +99,7 @@ void ptrn_print_codes(struct ptrnctx);
 /* Print the pattern code with its type and data. */
 void ptrn_print_code(struct ptrncode);
 
-/* Put the state in to the states. */
+/* Put the state in to the list. */
 struct ptrnstates ptrn_state_put(struct ptrnstates, struct ptrnstate);
 /* Remove all the states. */
 struct ptrnstates ptrn_state_clear(struct ptrnstates);
