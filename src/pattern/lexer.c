@@ -100,6 +100,7 @@ static struct res quote(struct ctx ctx)
     while (++crt < ctx.input.end) {
         switch (*crt) {
             case '\'':
+                crt++;
                 break;
             case '\\':
                 crt++;
