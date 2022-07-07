@@ -78,8 +78,8 @@ struct ptrnstates {
 
 /* Result of decoding a state. */
 struct ptrndecoderes {
-    /* Paths after decoding. */
-    struct ptrnstates states;
+    /* States after decoding. */
+    struct ptrnstates next;
     /* Whether the state was accepted by the automaton. */
     bool matched;
 };
@@ -105,5 +105,9 @@ ptr ptrn_code_size(struct ptrnctx);
 /* Decode the state and add the next states. */
 struct ptrndecoderes
     ptrn_decode(struct ptrnctx, struct ptrnstates, struct ptrnstate);
+/* Decode until the end starting from the initial state. Returns the initial
+ * portion of the input that was accepted by the automaton first. Empty match
+ * means none of the states were accepted before all states died. */
+struct str ptrn_decode_all(struct ptrnctx, struct ptrnstate);
 
 #endif // INTERNAL_H
