@@ -7,49 +7,6 @@
 
 #include <stdlib.h>
 
-struct ptrnstate ptrn_state_step(struct ptrnctx ctx, struct ptrnstate state)
-{
-    ASSERT(state.dead == false, "Stepping dead state!");
-    ASSERT(state.code >= 0, "Code out of bounds!");
-    ASSERT(state.code < ptrn_code_size(ctx), "Code out of bounds!");
-    struct ptrncode code = *(ctx.code.bgn + state.code);
-
-    switch (code.type) {
-        case EMPTY:
-            break;
-        case LITERAL:
-            // Check the next input and consume it.
-            state.dead =
-                !str_finite(state.input) || *state.input.bgn++ != code.ltrl;
-            break;
-        case RANGE:
-            // Check the next input and consume it.
-            state.dead =
-                !str_finite(state.input) || !(*state.input.bgn++ >= code.bgn &&
-                                              *state.input.bgn <= code.end);
-            break;
-        case PATTERN:
-            // TODO: Implement referencing other patterns.
-            ASSERT(false, "Not implemented!");
-        case DIVERGE:
-        case MATCH:
-            // DEBUG: Print the unexpected code.
-            ptrn_print_code(code);
-            ASSERT(false, "Unexpected type!");
-        default:
-            // DEBUG: Print the unknown code.
-            ptrn_print_code(code);
-            ASSERT(false, "Unknown type!");
-    }
-
-    // Move to the target code.
-    state.code += code.move;
-    ASSERT(state.code >= 0, "Movement out of bounds!");
-    ASSERT(state.code < ptrn_code_size(ctx), "Movement out of bounds!");
-
-    return state;
-}
-
 struct ptrnstates
 ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
 {

@@ -15,27 +15,65 @@ ptr ptrn_code_size(struct ptrnctx ctx)
 struct ptrndecoderes
 ptrn_decode(struct ptrnctx ctx, struct ptrnstates next, struct ptrnstate state)
 {
+    ASSERT(state.dead == false, "Decoding a dead state!");
     ASSERT(state.code >= 0, "Code out of bounds!");
     ASSERT(state.code < ptrn_code_size(ctx), "Code out of bounds!");
     struct ptrncode code = *(ctx.code.bgn + state.code);
 
     switch (code.type) {
+        case EMPTY:
+            break;
+        case LITERAL:
+            // Check the next input and consume it.
+            state.dead =
+                !str_finite(state.input) || *state.input.bgn++ != code.ltrl;
+            break;
+        case RANGE:
+            // Check the next input and consume it.
+            state.dead =
+                !str_finite(state.input) || !(*state.input.bgn++ >= code.bgn &&
+                                              *state.input.bgn <= code.end);
+            break;
+        case PATTERN:
+            // Check the reffered pattern.
+            struct str match = ptrn_decode_all(
+                ctx,
+                (struct ptrnstate){
+                    .input = state.input,
+                    .code  = code.indx,
+                    .dead  = false});
+            // Consume the input.
+            ASSERT(
+                match.end <= state.input.end,
+                "Matched longer than the input!");
+            state.input.bgn = match.end;
+            state.dead      = !str_finite(match);
         case DIVERGE:
             ASSERT(code.amt > 0, "Nonpositive amount!");
             ASSERT(
                 state.code + code.amt < ptrn_code_size(ctx),
                 "Divergence out of bounds!");
+            // Add all diverging states to the next states.
             for (ptr j = 0; j < code.amt; j++) {
                 state.code++;
-                next = ptrn_state_put(next, ptrn_state_step(ctx, state));
+                next = ptrn_state_put(next, state);
             }
-            break;
+            goto end;
         case MATCH:
             return (struct ptrndecoderes){.next = next, .matched = true};
         default:
-            next = ptrn_state_put(next, ptrn_state_step(ctx, state));
+            // DEBUG: Print the unknown code.
+            ptrn_print_code(code);
+            ASSERT(false, "Unknown type!");
     }
 
+    // Add the target state to the next states..
+    state.code += code.move;
+    ASSERT(state.code >= 0, "Movement out of bounds!");
+    ASSERT(state.code < ptrn_code_size(ctx), "Movement out of bounds!");
+    next = ptrn_state_put(next, state);
+
+end:
     return (struct ptrndecoderes){.next = next, .matched = false};
 }
 

@@ -91,8 +91,6 @@ void ptrn_print_codes(struct ptrnctx);
 /* Print the pattern code with its type and data. */
 void ptrn_print_code(struct ptrncode);
 
-/* Transition to the next state. */
-struct ptrnstate ptrn_state_step(struct ptrnctx, struct ptrnstate);
 /* Put the state in to the states. */
 struct ptrnstates ptrn_state_put(struct ptrnstates, struct ptrnstate);
 /* Remove all the states. */

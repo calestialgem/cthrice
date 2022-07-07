@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-Checks: "bugprone-*,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,cert-*,-cert-err09-cpp.MaxSize,-cert-err61-cpp.MaxSize,-cert-dcl21-cpp,clang-*,concurrency-*,cppcoreguidelines-*,-cppcoreguidelines-no-malloc,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-type-union-access,hicpp-*,-hicpp-no-malloc,-hicpp-vararg,llvm-*,-hicpp-signed-bitwise,-llvm-header-guard,misc-*,-misc-throw-by-value-catch-by-reference.MaxSize,-misc-non-private-member-variables-in-classes,modernize-*,-modernize-use-trailing-return-type,performance-*,portability-*,readability-*,-readability-identifier-length"
+Checks: "bugprone-*,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,cert-*,-cert-err09-cpp.MaxSize,-cert-err61-cpp.MaxSize,-cert-dcl21-cpp,clang-*,concurrency-*,cppcoreguidelines-*,-cppcoreguidelines-no-malloc,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-type-union-access,hicpp-*,-hicpp-no-malloc,-hicpp-vararg,llvm-*,-hicpp-signed-bitwise,-llvm-header-guard,misc-*,-misc-no-recursion,-misc-throw-by-value-catch-by-reference.MaxSize,-misc-non-private-member-variables-in-classes,modernize-*,-modernize-use-trailing-return-type,performance-*,portability-*,readability-*,-readability-identifier-length"
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 AnalyzeTemporaryDtors: false
