@@ -91,7 +91,27 @@ static struct res number(struct ctx ctx)
 /* Try to lex a quote. */
 static struct res quote(struct ctx ctx)
 {
-    return (struct res){.ctx = ctx, .lxd = false};
+    ASSERT(str_finite(ctx.input), "There is no input!");
+    if (*ctx.input.bgn != '\'') {
+        return (struct res){.ctx = ctx, .lxd = false};
+    }
+    const byte* crt = ctx.input.bgn;
+
+    while (++crt < ctx.input.end) {
+        switch (*crt) {
+            case '\'':
+                break;
+            case '\\':
+                crt++;
+            default:
+                continue;
+        }
+        break;
+    }
+
+    ptr len = crt - ctx.input.bgn;
+    CHECK(len != 1 && *(crt - 1) == '\'', "No closing quote!");
+    return add(ctx, TOKEN_QUOTE, len);
 }
 
 /* Try to lex an identifier. */
