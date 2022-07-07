@@ -6,6 +6,8 @@
 #include "internal.h"
 #include "string/api.h"
 
+#include <stdlib.h>
+
 const ptr PTRN_INVALID_NAME = -1;
 
 /* Range of pattern information that coresponds to a hash. */
@@ -63,6 +65,16 @@ ptr ptrn_hash_get(struct ptrnctx ctx, struct str name)
     return PTRN_INVALID_NAME;
 }
 
-struct ptrnctx ptrn_hash_put(struct ptrnctx, struct ptrninfo) {}
+struct ptrnctx ptrn_hash_put(struct ptrnctx ctx, struct ptrninfo info)
+{
+    return ctx;
+}
 
-struct ptrnctx ptrn_hash_destroy(struct ptrnctx) {}
+struct ptrnctx ptrn_hash_destroy(struct ptrnctx ctx)
+{
+    free(ctx.hash.bgn);
+    free(ctx.info.bgn);
+    ctx.hash.bgn = ctx.hash.end = null;
+    ctx.info.bgn = ctx.info.end = ctx.info.lst = null;
+    return ctx;
+}
