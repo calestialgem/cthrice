@@ -17,7 +17,7 @@ add_executable(${PROJECT_NAME}
     src/pattern/lexer.c
     src/pattern/matcher.c
     src/pattern/parser.c
-    src/pattern/print.c
+    src/pattern/printer.c
     src/pattern/state.c
     src/string/string.c
     src/types/types.c

@@ -179,7 +179,8 @@ static struct ctx next(struct ctx ctx)
         return res.ctx;
     }
 
-    return ctx;
+    // Use -1 for unknown token type.
+    return add(ctx, -1, 1).ctx;
 }
 
 struct ptrnlex ptrn_lex(struct str input)

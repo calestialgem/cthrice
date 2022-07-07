@@ -69,7 +69,7 @@ enum ptrntkntyp {
     TOKEN_CLOSING_SQUARE_BRACKET,
     TOKEN_NUMBER,
     TOKEN_QUOTE,
-    TOKEN_IDENTIFIER,
+    TOKEN_IDENTIFIER
 };
 
 /* Pattern tokens. */
@@ -131,6 +131,8 @@ struct ptrnctx ptrn_code_put(struct ptrnctx, struct ptrncode);
 /* Free the allocated memory. */
 struct ptrnctx ptrn_code_destroy(struct ptrnctx);
 
+/* Print the pattern lexer result. */
+void ptrn_print_lex(struct ptrnlex);
 /* Print the pattern information in the context. */
 void ptrn_print_infos(struct ptrnctx);
 /* Print the pattern codes in the context. */
