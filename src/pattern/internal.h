@@ -54,6 +54,45 @@ struct ptrninfo {
     ptr code;
 };
 
+/* Patern token types. */
+enum ptrntkntyp {
+    TOKEN_EQUAL,
+    TOKEN_DOT,
+    TOKEN_PIPE,
+    TOKEN_COMMA,
+    TOKEN_QUESTION_MARK,
+    TOKEN_STAR,
+    TOKEN_PLUS,
+    TOKEN_OPENING_CURLY_BRACKET,
+    TOKEN_CLOSING_CURLY_BRACKET,
+    TOKEN_OPENING_SQUARE_BRACKET,
+    TOKEN_CLOSING_SQUARE_BRACKET,
+    TOKEN_NUMBER,
+    TOKEN_QUOTE,
+    TOKEN_IDENTIFIER,
+};
+
+/* Pattern tokens. */
+struct ptrntkn {
+    enum ptrntkntyp typ;
+    struct str      val;
+};
+
+/* List of pattern tokens. */
+struct ptrnlex {
+    /* Pointer to the token at the begining of the allocated memory. */
+    struct ptrntkn* bgn;
+    /* Pointer to the token one after the end of the valid tokens. */
+    struct ptrntkn* end;
+    /* Pointer to the token one after the end of the allocated memory. */
+    struct ptrntkn* lst;
+};
+
+/* Lex the given string. */
+struct ptrnlex ptrn_lex(struct str);
+/* Free allocated memory. */
+struct ptrnlex ptrn_lex_destroy(struct ptrnlex);
+
 /* The state of the nondeterministic finite automaton. */
 struct ptrnstate {
     /* Remaining input. */

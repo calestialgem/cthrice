@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
     src/pattern/code.c
     src/pattern/decode.c
     src/pattern/hash.c
+    src/pattern/lexer.c
     src/pattern/matcher.c
     src/pattern/parser.c
     src/pattern/print.c
