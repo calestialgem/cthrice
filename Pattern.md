@@ -19,13 +19,13 @@ from each other.
 
 ## Literals
 
-| Syntax                   | Name                    |
-| ------------------------ | ----------------------- |
-| `<identifier>`           | reference literal       |
-| `'<character>'`          | character literal       |
-| `'<string>`              | string literal          |
-| `'<character~character>` | character range literal |
-| `.`                      | wildcard literal        |
+| Syntax                    | Name                    |
+| ------------------------- | ----------------------- |
+| `<identifier>`            | reference literal       |
+| `'<character>'`           | character literal       |
+| `'<string>'`              | string literal          |
+| `'<character~character>'` | character range literal |
+| `.`                       | wildcard literal        |
 
 ### Reference
 
