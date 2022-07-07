@@ -22,12 +22,12 @@ struct range {
 
 /* Hash the pattern name. Assumes the pattern name is made of English alphabet
  * with the same case throughout the string. */
-static ptr hash(struct str str)
+static u64 hash(struct str str)
 {
-    ptr res = 0;
+    u64 res = 0;
 
     for (const byte* i = str.bgn; i < str.end; i++) {
-        const ptr prime = 31;
+        const u64 prime = 31;
         res *= prime;
         res += *i;
     }
@@ -36,7 +36,7 @@ static ptr hash(struct str str)
 }
 
 /* Get the range corresponding to the hash. */
-static struct range range(struct ptrnctx ctx, ptr hash)
+static struct range range(struct ptrnctx ctx, u64 hash)
 {
     ptr sze = ctx.hash.end - ctx.hash.bgn;
     ASSERT(sze >= 0, "Hash size is negative!");
@@ -108,13 +108,13 @@ static struct ptrnctx rehash(struct ptrnctx ctx)
         // Grow the hash array.
         ptr sze = ctx.hash.end - ctx.hash.bgn;
         ASSERT(sze >= 0, "Size is negative!");
-        ptr nwc = sze << 1;
+        ptr nws = sze << 1;
 
-        ptr* mem = realloc(ctx.hash.bgn, nwc);
+        ptr* mem = realloc(ctx.hash.bgn, nws);
         CHECK(mem != null, "Could not allocate hash!");
 
         ctx.hash.bgn = mem;
-        ctx.hash.end = mem + nwc;
+        ctx.hash.end = mem + nws;
 
         // Sort the infos using hash.
         qsort(
@@ -123,7 +123,25 @@ static struct ptrnctx rehash(struct ptrnctx ctx)
             sizeof(struct ptrninfo),
             &compare);
 
-        // TODO: Fix pointers from hashes.
+        // Recalculate hash skip positions.
+        ptr hsh = -1;
+
+        for (ptr i = 0; i < ctx.info.end - ctx.info.bgn; i++) {
+            ptr chsh = (ptr)(hash(ctx.info.bgn[i].name) % nws);
+            ASSERT(chsh >= hsh, "Pattern infos are not sorted correctly!");
+            while (chsh > hsh) {
+                *(ctx.hash.bgn + ++hsh) = i;
+                ASSERT(hsh <= nws, "Hash index is bigger than hash size!");
+            }
+        }
+
+        while (hsh < nws) {
+            *(ctx.hash.bgn + ++hsh) = ctx.info.end - ctx.info.bgn;
+        }
+
+        ASSERT(
+            hsh == nws,
+            "Did not correctly calculate all the skip positions!");
     } while (need_rehash(ctx));
     return ctx;
 }
@@ -131,15 +149,13 @@ static struct ptrnctx rehash(struct ptrnctx ctx)
 struct ptrnctx ptrn_hash_put(struct ptrnctx ctx, struct ptrninfo info)
 {
     // Get the range for the corresponding hash.
-    ptr          hsh  = hash(info.name);
+    u64          hsh  = hash(info.name);
     struct range rnge = range(ctx, hsh);
 
     // Check if it already exists.
     for (struct ptrninfo* i = rnge.bgn; i < rnge.end; i++) {
         CHECK(str_equal(i->name, info.name), "Name already exists!");
     }
-
-    // Add to the map.
 
     // Grow if the current avalible space is not enough.
     if (ctx.info.lst - ctx.info.end < 1) {
