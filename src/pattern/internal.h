@@ -52,8 +52,6 @@ struct ptrninfo {
     struct str name;
     /* Index of the start of the pattern's code. */
     ptr code;
-    /* Whether the pattern matches in the nameless search. */
-    bool visible;
 };
 
 /* The state of the nondeterministic finite automaton. */
