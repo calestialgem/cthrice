@@ -1,19 +1,63 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// x 'a'       -> x is the character a
-// x 'ab'      -> x is the characters a then b
-// x 'a~b'     -> x is any character in range [a, b]
-// x a b       -> x is a then b
-// x a
-//   b         -> x is a then b
-// x a | b     -> x is a or b
-// x [a]       -> x is a or nothing
-// x {a}       -> x is 0 or more a
-// x (a)       -> x is 1 or more a
-// f<a, b>     -> f is a function taking a and b as parameters
-// x f<a, b>   -> x is result of function f using a and b as arguments
-// @x          -> x is a token
+// +-------------------+
+// |   R  U  L  E  S   |
+// +-------------------+
+//
+// * Definition of pattern p:
+//      p
+//
+// * The character a:
+//      'a'
+//
+// * The string abc:
+//      'abc'
+//
+// * Any character between a and z inclusive:
+//      'a~z'
+//
+// * Any character:
+//      .
+//
+// * Special escape sequences using \:
+//
+//      - '\a'      alert
+//      - '\b'      backspace
+//      - '\f'      formfeed page break
+//      - '\n'      newline
+//      - '\r'      carriage return
+//      - '\t'      horizontal tab
+//      - '\v'      vertical tab
+//      - '\\'      backslash
+//      - '\''      apostrophe
+//      - '\~'      tilde
+//
+// * Pattern x then pattern y:
+//      x y
+//
+// * Pattern x or pattern y:
+//      x | y
+//
+// * Pattern x grouped:
+//      {x}
+//
+// * Pattern x repeated n times:
+//      [n]{x}
+//
+// * Pattern x group repeated from n upto m times inclusive:
+//      [n,m]{x}
+//
+// * Pattern x group repeated from n upto infinite times:
+//      [n,]{x}
+//
+// * Special syntax for common patterns:
+//
+//      - @{x}    = [@]{x}                              ommited square brackets
+//      - [,m]{x} = [0,m]{x}                            0 to m
+//      - ?{x}    = [?]{x}   = [,1]{x} = [0,1]{x}       optional
+//      - *{x}    = [*]{x}   = [,]{x}  = [0,]{x}        0 or more
+//      - +{x}    = [+]{x}   = [1,]{x}                  1 or more
 
 // Integers and floats.
 n
