@@ -12,7 +12,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/cthrice",
             "args": [
-                "main.thr"
+                ".cthrice-token"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/res",
@@ -27,7 +27,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/cthrice.exe",
             "args": [
-                "main.thr"
+                ".cthrice-token"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/res",

@@ -57,9 +57,6 @@ static struct res add(struct ctx ctx, enum ptrntkntyp typ, ptr len)
 
     *ctx.lex.end++ = tkn;
 
-    // DEBUG: Print lex.
-    ptrn_print_lex(ctx.lex);
-
     return (struct res){.ctx = ctx, .lxd = true};
 }
 
