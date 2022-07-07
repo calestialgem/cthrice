@@ -132,24 +132,16 @@ static struct res identifier(struct ctx ctx)
     return add(ctx, TOKEN_IDENTIFIER, i - ctx.input.bgn);
 }
 
-/* Check whether a character is whitespace. */
-static bool whitespace(byte c)
+/* Check whether a character is not a whitespace. */
+static bool not_whitespace(byte c)
 {
-    switch (c) {
-        case '\t':
-        case '\n':
-        case '\r':
-        case ' ':
-            return true;
-        default:
-            return false;
-    }
+    return c != '\t' && c != '\n' && c != '\r' && c != ' ';
 }
 
 /* Skip all the whitespace. */
 static struct str trim(struct str str)
 {
-    str.bgn = str_find_pred(str, &whitespace);
+    str.bgn = str_find_pred(str, &not_whitespace);
     return str;
 }
 
