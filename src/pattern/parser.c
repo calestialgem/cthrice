@@ -243,10 +243,10 @@ struct ptrnctx ptrn_parse(struct ptrnctx ptrns, struct str ptrn)
     return ctx.ptrns;
 }
 
-struct ptrnctx ptrn_destory(struct ptrnctx ptrns)
+struct ptrnctx ptrn_destory(struct ptrnctx ctx)
 {
-    ptrns.bfr = bfr_destroy(ptrns.bfr);
-    free(ptrns.bgn);
-    ptrns.bgn = ptrns.end = ptrns.lst = null;
-    return ptrns;
+    ctx     = ptrn_hash_destroy(ctx);
+    ctx     = ptrn_code_destroy(ctx);
+    ctx.bfr = bfr_destroy(ctx.bfr);
+    return ctx;
 }
