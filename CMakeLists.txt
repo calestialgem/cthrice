@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
+# SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.0.0)
@@ -9,13 +9,18 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 project(cthrice)
 
 add_executable(${PROJECT_NAME}
-    src/cthrice_buffer.c
-    src/cthrice_character.c
-    src/cthrice_error.c
-    src/cthrice_format.c
-    src/cthrice_lexer.c
-    src/cthrice_string.c
-    src/cthrice_token.c
+    src/buffer/buffer.c
+    src/error/error.c
+    src/pattern/code.c
+    src/pattern/decode.c
+    src/pattern/hash.c
+    src/pattern/lexer.c
+    src/pattern/matcher.c
+    src/pattern/parser.c
+    src/pattern/printer.c
+    src/pattern/state.c
+    src/string/string.c
+    src/types/types.c
     src/main.c
 )
 
@@ -27,4 +32,3 @@ if(MSVC)
 else(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif(MSVC)
-

@@ -1,65 +1,43 @@
-// SPDX-FileCopyrightText: (C) 2022 Cem Geçgel <gecgelcem@outlook.com>
+// SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*
- * x: 'a'       -> x is the character a
- * x: 'a-b'     -> x is any character in range [a, b]
- * x: 'a|b'     -> x is the character a or the character b
- * x: "abc"     -> x is the string abc
- * x: a b       -> x is a then b
- * x: a
- *    b         -> x is a then b
- * x: a | b     -> x is a or b
- * x: [a]       -> x is a or nothing
- * x: {a}       -> x is 0 or more a
- * x: (a)       -> x is 1 or more a
- * f<a, b>:     -> f is a template taking a and b as parameters
- * x: f<a, b>   -> x is result of template f using a and b as arguments
- * x@:          -> x is a token
- */
+// Token File Rules:
+// * Comments using `//`.
+// * Every line has single pattern definition. Pattern definitions can span
+// multiple lines but a continuation line should not have a new pattern
+// definition in the end.
+// * Template patterns using `<>`. These are done using text substitution. An
+// extra group is added around the templates to not get weird results.
+// * A set of pattern names at the end that gives the order of the tokens. Some
+// of the patterns that are not supposed to be tokens can be skiped here. The
+// tokenizer will try to match from the first pattern in the set and will try
+// the next one if the maching fails. If all patterns in the set do not match
+// the lexer aborts with an error.
+// * Do not define a pattern with name eof, it is the end of file token that is
+// added by the lexer to the end of the token list.
 
-/** Integers and floats. */
-number:
-    /** Number optionally separated for readability. */
-    separated<digit>: (digit) {'_' (digit)}
+// Numeric Literals
 
-    /** Whole number. */
-    integer<digit>: ['+|-'] separated<digit>
+num<dgt>        = +dgt *{'_' +dgt}
+int<dgt>        = '+'|'-' num<dgt>
+float<dgt, exp> = int<dgt> '.' num<dgt> ?{exp int<'0~9'>}
 
-    /** Floating point number. */
-    float<digit, exponent>: ['+|-'] separated<digit> '.' separated<digit>
-        [exponent integer<'0-9'>]
+bin_int   = '0' {'b'|'B'} int<'0~1'>
+bin_float = '0' {'b'|'B'} float<'0~1', 'p'|'P'>
 
-    /** Floating point base 2 exponent character. */
-    binary-exponent: 'p|P'
+oct_int   = '0' {'o'|'O'} int<'0~7'>
+oct_float = '0' {'o'|'O'} float<'0~7', 'p'|'P'>
 
-    /** Indicator for numbers with different base than 10. */
-    special<base>: '0' base
+dec_int   = int<'0~9'>
+dec_float = float<'0~9', 'e'|'E'>
 
-    /** Base 2 numbers. */
-    binary:
-        base: 'b|B'
-        digit: '0-1'
-        integer@: special<base> integer<digit>
-        float@: special<base> float<digit, binary-exponent>
+hex_dgt<> = '0~9' | 'A~F' | 'a~f'
+hex_int   = '0' {'x'|'X'} int<hex_dgt<>>
+hex_float = '0' {'x'|'X'} float<hex_dgt<>, 'p'|'P'>
 
-    /** Base 8 numbers. */
-    octal:
-        base: 'o|O'
-        digit: '0-7'
-        integer@: special<base> integer<digit>
-        float@: special<base> float<digit, binary-exponent>
+// Tokens
 
-    /** Base 10 numbers. */
-    decimal:
-        digit: '0-9'
-        exponent: 'e|E'
-        integer@: integer<digit>
-        float@: float<digit, exponent>
-
-    /** Base 16 numbers. */
-    hexadecimal:
-        base: 'x|X'
-        digit: '0-9' | 'A-F' | 'a-f'
-        integer@: special<base> integer<digit>
-        float@: special<base> float<digit, binary-exponent>
+[
+    bin_int, oct_int, dec_int, hex_int,
+    bin_float, oct_float, dec_float, hex_float,
+]
