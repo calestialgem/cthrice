@@ -18,7 +18,14 @@ int main(int argc, char** argv)
 
     struct ptrnctx ptrnctx = {0};
 
-    printf("%.*s\n", (int)str_size(file), file.bgn);
+    while (str_finite(file)) {
+        struct str line = {.bgn = file.bgn, .end = str_find(file, '\n')};
+        file.bgn        = line.end + 1;
+        if (str_size(line) >= 2 && *line.bgn == '/' && *(line.bgn + 1) == '/') {
+            continue;
+        }
+        ptrnctx = ptrn_parse(ptrnctx, line);
+    }
 
     ptrnctx = ptrn_destory(ptrnctx);
     bfr     = bfr_destroy(bfr);

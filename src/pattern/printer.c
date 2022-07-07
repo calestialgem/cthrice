@@ -34,19 +34,16 @@ static byte* token_type_name(enum ptrntkntyp typ)
         case TOKEN_CLOSING_SQUARE_BRACKET:
             return "] ";
         case TOKEN_NUMBER:
-            return "number {%.*s} ";
         case TOKEN_QUOTE:
-            return "quote {%.*s} ";
         case TOKEN_IDENTIFIER:
-            return "identifier {%.*s} ";
+            return "%.*s ";
         default:
-            return "unknown {%.*s} ";
+            return "!(%.*s) ";
     }
 }
 
 void ptrn_print_lex(struct ptrnlex lex)
 {
-    printf("\n  LEX\n=======\n\n");
     for (const struct ptrntkn* i = lex.bgn; i < lex.end; i++) {
         printf(token_type_name(i->typ), (int)str_size(i->val), i->val.bgn);
     }
@@ -55,7 +52,6 @@ void ptrn_print_lex(struct ptrnlex lex)
 
 void ptrn_print_infos(struct ptrnctx ctx)
 {
-    printf("\n  PATTERNS\n============\n\n");
     for (const struct ptrninfo* i = ctx.info.bgn; i < ctx.info.end; i++) {
         printf(
             "Pattern {%.*s} [%05lld]\n",
@@ -67,7 +63,6 @@ void ptrn_print_infos(struct ptrnctx ctx)
 
 void ptrn_print_codes(struct ptrnctx ctx)
 {
-    printf("\n  PATTERN CODE\n================\n\n");
     for (const struct ptrncode* i = ctx.code.bgn; i < ctx.code.end; i++) {
         printf("[%05lld] ", i - ctx.code.bgn);
         ptrn_print_code(*i);
