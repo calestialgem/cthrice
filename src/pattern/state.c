@@ -14,13 +14,15 @@ ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
     if (states.lst - states.end < 1) {
         // Store the current size to calculate the end pointer later.
         ptr sze = states.end - states.bgn;
+        ASSERT(sze >= 0, "Size is negative!");
 
         // Double the capacity.
         ptr cap = states.lst - states.bgn;
+        ASSERT(cap >= 0, "Capacity is negative");
         ptr nwc = cap << 1;
 
         struct ptrnstate* mem = realloc(states.bgn, nwc);
-        CHECK(mem != null, "Cannot allocate states!");
+        CHECK(mem != null, "Could not allocate states!");
 
         states.bgn = mem;
         states.end = mem + sze;
