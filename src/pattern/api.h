@@ -20,9 +20,9 @@ struct ptrnctx {
     /* Dynamic array of pattern name hash index. */
     struct {
         /* Pointer to the first allocated index. */
-        ptr* bgn;
+        ix* bgn;
         /* Pointer to the index after the last valid and allocated one. */
-        ptr* end;
+        ix* end;
     } hash;
     /* Dynamic array of pattern information. */
     struct {

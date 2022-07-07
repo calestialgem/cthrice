@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-ptr ptrn_code_size(struct ptrnctx ctx)
+ix ptrn_code_size(struct ptrnctx ctx)
 {
     ASSERT(ctx.code.end >= ctx.code.bgn, "Code size is negative!");
     return ctx.code.end - ctx.code.bgn;
@@ -18,13 +18,13 @@ struct ptrnctx ptrn_code_put(struct ptrnctx ctx, struct ptrncode code)
     // Grow if the current avalible space is not enough.
     if (ctx.code.lst - ctx.code.end < 1) {
         // Store the current size to calculate the end pointer later.
-        ptr sze = ctx.code.end - ctx.code.bgn;
+        ix sze = ctx.code.end - ctx.code.bgn;
         ASSERT(sze >= 0, "Size is negative!");
 
         // Double the capacity.
-        ptr cap = ctx.code.lst - ctx.code.bgn;
+        ix cap = ctx.code.lst - ctx.code.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = max(1, cap << 1);
+        ix nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New code capacity is not positive!");
         struct ptrncode* mem =

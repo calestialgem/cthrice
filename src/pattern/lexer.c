@@ -26,7 +26,7 @@ struct res {
 };
 
 /* Add a token to the lex and return a positive result. */
-static struct res add(struct ctx ctx, enum ptrntkntyp typ, ptr len)
+static struct res add(struct ctx ctx, enum ptrntkntyp typ, ix len)
 {
     struct ptrntkn tkn = {
         .typ = typ,
@@ -37,13 +37,13 @@ static struct res add(struct ctx ctx, enum ptrntkntyp typ, ptr len)
     // Grow if the current avalible space is not enough.
     if (ctx.lex.lst - ctx.lex.end < 1) {
         // Store the current size to calculate the end pointer later.
-        ptr sze = ctx.lex.end - ctx.lex.bgn;
+        ix sze = ctx.lex.end - ctx.lex.bgn;
         ASSERT(sze >= 0, "Size is negative!");
 
         // Double the capacity.
-        ptr cap = ctx.lex.lst - ctx.lex.bgn;
+        ix cap = ctx.lex.lst - ctx.lex.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = max(1, cap << 1);
+        ix nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New token capacity is not positive!");
         struct ptrntkn* mem =
@@ -113,7 +113,7 @@ static struct res quote(struct ctx ctx)
         break;
     }
 
-    ptr len = crt - ctx.input.bgn;
+    ix len = crt - ctx.input.bgn;
     CHECK(len != 1 && *(crt - 1) == '\'', "No closing quote!");
     return add(ctx, TOKEN_QUOTE, len);
 }

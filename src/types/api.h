@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* Type that pointer arithmetic should be done with. Better than using an
- * unsigned type like size_t. If the pointer difference cannot fit this, it is
- * undefined behaviour any ways. */
-typedef ptrdiff_t ptr;
+/* Index type: the type that pointer arithmetic should be done with. Better than
+ * using an unsigned type like size_t. If the pointer difference cannot fit into
+ * this, it is undefined behaviour any ways. */
+typedef ptrdiff_t ix;
 
 /* Pointer that does not point to anything. */
 extern void* const null;

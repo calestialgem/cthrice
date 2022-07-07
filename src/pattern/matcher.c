@@ -8,7 +8,7 @@
 
 struct str ptrn_match(struct ptrnctx ctx, struct str name, struct str input)
 {
-    ptr code = ptrn_hash_get(ctx, name);
+    ix code = ptrn_hash_get(ctx, name);
 
     if (code == PTRN_INVALID_NAME) {
         return (struct str){0};

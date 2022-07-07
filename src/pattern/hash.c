@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const ptr PTRN_INVALID_NAME = -1;
+const ix PTRN_INVALID_NAME = -1;
 
 /* Range of pattern information that coresponds to a hash. The size of the range
  * gives the collision amount for the corresponding hash. */
@@ -38,7 +38,7 @@ static u64 hash(struct str str)
 /* Get the range corresponding to the hash. */
 static struct range range(struct ptrnctx ctx, u64 hash)
 {
-    ptr sze = ctx.hash.end - ctx.hash.bgn;
+    ix sze = ctx.hash.end - ctx.hash.bgn;
     ASSERT(sze >= 0, "Hash size is negative!");
 
     // If the hash is empty, probably the info is empty too.
@@ -51,8 +51,8 @@ static struct range range(struct ptrnctx ctx, u64 hash)
     }
 
     // Find the indicies that correspond to this and the next hashes.
-    ptr* this = ctx.hash.bgn + hash % sze;
-    ptr* next = this + 1;
+    ix* this = ctx.hash.bgn + hash % sze;
+    ix* next = this + 1;
 
     struct ptrninfo* bgn = ctx.info.bgn + *this;
     struct ptrninfo* end = ctx.info.end;
@@ -66,7 +66,7 @@ static struct range range(struct ptrnctx ctx, u64 hash)
     return (struct range){.bgn = bgn, .end = end};
 }
 
-ptr ptrn_hash_get(struct ptrnctx ctx, struct str name)
+ix ptrn_hash_get(struct ptrnctx ctx, struct str name)
 {
     struct range rnge = range(ctx, hash(name));
 
@@ -79,12 +79,12 @@ ptr ptrn_hash_get(struct ptrnctx ctx, struct str name)
     return PTRN_INVALID_NAME;
 }
 
-static const ptr MAX_COLLISION = 8;
+static const ix MAX_COLLISION = 8;
 
 static bool need_rehash(struct ptrnctx ctx)
 {
-    ptr sze = ctx.hash.end - ctx.hash.bgn;
-    for (ptr i = 0; i < sze; i++) {
+    ix sze = ctx.hash.end - ctx.hash.bgn;
+    for (ix i = 0; i < sze; i++) {
         struct range rnge = range(ctx, i);
         if (rnge.end - rnge.bgn > MAX_COLLISION) {
             return true;
@@ -106,11 +106,11 @@ static struct ptrnctx rehash(struct ptrnctx ctx)
 {
     do {
         // Grow the hash array.
-        ptr sze = ctx.hash.end - ctx.hash.bgn;
+        ix sze = ctx.hash.end - ctx.hash.bgn;
         ASSERT(sze >= 0, "Size is negative!");
-        ptr nws = sze << 1;
+        ix nws = sze << 1;
 
-        ptr* mem = realloc(ctx.hash.bgn, nws * sizeof(ptr));
+        ix* mem = realloc(ctx.hash.bgn, nws * sizeof(ix));
         CHECK(mem != null, "Could not allocate hash!");
 
         ctx.hash.bgn = mem;
@@ -124,10 +124,10 @@ static struct ptrnctx rehash(struct ptrnctx ctx)
             &compare);
 
         // Recalculate hash skip positions.
-        ptr hsh = -1;
+        ix hsh = -1;
 
-        for (ptr i = 0; i < ctx.info.end - ctx.info.bgn; i++) {
-            ptr chsh = (ptr)(hash(ctx.info.bgn[i].name) % nws);
+        for (ix i = 0; i < ctx.info.end - ctx.info.bgn; i++) {
+            ix chsh = (ix)(hash(ctx.info.bgn[i].name) % nws);
             ASSERT(chsh >= hsh, "Pattern infos are not sorted correctly!");
             while (chsh > hsh) {
                 *(ctx.hash.bgn + ++hsh) = i;
@@ -160,13 +160,13 @@ struct ptrnctx ptrn_hash_put(struct ptrnctx ctx, struct ptrninfo info)
     // Grow if the current avalible space is not enough.
     if (ctx.info.lst - ctx.info.end < 1) {
         // Store the current size to calculate the end pointer later.
-        ptr sze = ctx.info.end - ctx.info.bgn;
+        ix sze = ctx.info.end - ctx.info.bgn;
         ASSERT(sze >= 0, "Size is negative!");
 
         // Double the capacity.
-        ptr cap = ctx.info.lst - ctx.info.bgn;
+        ix cap = ctx.info.lst - ctx.info.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = max(1, cap << 1);
+        ix nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New info capacity is not positive!");
         struct ptrninfo* mem =

@@ -56,7 +56,7 @@ decode(struct ptrnctx ctx, struct ptrnstates next, struct ptrnstate state)
                 state.code + code.amt < ptrn_code_size(ctx),
                 "Divergence out of bounds!");
             // Add all diverging states to the next states.
-            for (ptr j = 0; j < code.amt; j++) {
+            for (ix j = 0; j < code.amt; j++) {
                 state.code++;
                 next = ptrn_state_put(next, state);
             }

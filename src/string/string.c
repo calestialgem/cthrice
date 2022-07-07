@@ -15,7 +15,7 @@ struct str str_convert(const byte* nts)
     return str;
 }
 
-ptr str_size(struct str str)
+ix str_size(struct str str)
 {
     ASSERT(str.end >= str.bgn, "String size is negative!");
     return str.end - str.bgn;
@@ -28,12 +28,12 @@ bool str_finite(struct str str)
 
 bool str_equal(struct str lhs, struct str rhs)
 {
-    ptr sze = str_size(lhs);
+    ix sze = str_size(lhs);
     if (sze != str_size(rhs)) {
         return false;
     }
 
-    for (ptr i = 0; i < sze; i++) {
+    for (ix i = 0; i < sze; i++) {
         if (lhs.bgn[i] != rhs.bgn[i]) {
             return false;
         }

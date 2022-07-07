@@ -12,7 +12,7 @@
  * nondeterministic finite automaton with empty moves. */
 struct ptrncode {
     /* The amount of pattern code to move forward. Zero means a match. */
-    ptr move;
+    ix move;
     /* Type of the pattern code. */
     enum {
         /* Move regardless without consuming a character. */
@@ -40,9 +40,9 @@ struct ptrncode {
             byte end;
         };
         /* Data of PATTERN type; index of the reffered pattern. */
-        ptr indx;
+        ix indx;
         /* Data of the DIVERGE type; amount of states. */
-        ptr amt;
+        ix amt;
     };
 };
 
@@ -51,7 +51,7 @@ struct ptrninfo {
     /* Identifier. */
     struct str name;
     /* Index of the start of the pattern's code. */
-    ptr code;
+    ix code;
 };
 
 /* Patern token types. */
@@ -98,7 +98,7 @@ struct ptrnstate {
     /* Remaining input. */
     struct str input;
     /* Index of the current pattern code. */
-    ptr code;
+    ix code;
     /* Whether the last transition failed. */
     bool dead;
 };
@@ -115,17 +115,17 @@ struct ptrnstates {
 
 /* Code index that signals that a pattern with the name does not exist in the
  * hash map. */
-extern const ptr PTRN_INVALID_NAME;
+extern const ix PTRN_INVALID_NAME;
 
 /* Find the pattern code from the hash of the name. */
-ptr ptrn_hash_get(struct ptrnctx, struct str);
+ix ptrn_hash_get(struct ptrnctx, struct str);
 /* Put the pattern info to the hash map. */
 struct ptrnctx ptrn_hash_put(struct ptrnctx, struct ptrninfo);
 /* Free the allocated memory. */
 struct ptrnctx ptrn_hash_destroy(struct ptrnctx);
 
 /* Returns the amount of pattern code in the context. */
-ptr ptrn_code_size(struct ptrnctx);
+ix ptrn_code_size(struct ptrnctx);
 /* Put the code into the list. */
 struct ptrnctx ptrn_code_put(struct ptrnctx, struct ptrncode);
 /* Free the allocated memory. */

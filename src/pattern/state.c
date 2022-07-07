@@ -13,13 +13,13 @@ ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
     // Grow if the current avalible space is not enough.
     if (states.lst - states.end < 1) {
         // Store the current size to calculate the end pointer later.
-        ptr sze = states.end - states.bgn;
+        ix sze = states.end - states.bgn;
         ASSERT(sze >= 0, "Size is negative!");
 
         // Double the capacity.
-        ptr cap = states.lst - states.bgn;
+        ix cap = states.lst - states.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = max(1, cap << 1);
+        ix nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New state capacity is not positive!");
         struct ptrnstate* mem =
