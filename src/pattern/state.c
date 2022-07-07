@@ -7,11 +7,11 @@
 
 #include <stdlib.h>
 
-struct state state_step(struct ptrnctx ctx, struct state state)
+struct ptrnstate ptrn_state_step(struct ptrnctx ctx, struct ptrnstate state)
 {
     ASSERT(state.dead == false, "Stepping dead state!");
     ASSERT(state.code >= 0, "Code out of bounds!");
-    ASSERT(state.code < code_size(ctx), "Code out of bounds!");
+    ASSERT(state.code < ptrn_code_size(ctx), "Code out of bounds!");
     struct ptrncode code = *(ctx.code.bgn + state.code);
 
     switch (code.type) {
@@ -34,23 +34,24 @@ struct state state_step(struct ptrnctx ctx, struct state state)
         case DIVERGE:
         case MATCH:
             // DEBUG: Print the unexpected code.
-            print_code(code);
+            ptrn_print_code(code);
             ASSERT(false, "Unexpected type!");
         default:
             // DEBUG: Print the unknown code.
-            print_code(code);
+            ptrn_print_code(code);
             ASSERT(false, "Unknown type!");
     }
 
     // Move to the target code.
     state.code += code.move;
     ASSERT(state.code >= 0, "Movement out of bounds!");
-    ASSERT(state.code < code_size(ctx), "Movement out of bounds!");
+    ASSERT(state.code < ptrn_code_size(ctx), "Movement out of bounds!");
 
     return state;
 }
 
-struct states state_put(struct states states, struct state state)
+struct ptrnstates
+ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
 {
     // Grow if the current avalible space is not enough.
     if (states.lst - states.end < 1) {
@@ -61,7 +62,7 @@ struct states state_put(struct states states, struct state state)
         ptr cap = states.lst - states.bgn;
         ptr nwc = cap << 1;
 
-        struct state* mem = realloc(states.bgn, nwc);
+        struct ptrnstate* mem = realloc(states.bgn, nwc);
         CHECK(mem != null, "Cannot allocate states!");
 
         states.bgn = mem;
@@ -73,13 +74,13 @@ struct states state_put(struct states states, struct state state)
     return states;
 }
 
-struct states state_clear(struct states states)
+struct ptrnstates ptrn_state_clear(struct ptrnstates states)
 {
     states.end = states.bgn;
     return states;
 }
 
-struct states state_destroy(struct states states)
+struct ptrnstates ptrn_state_destroy(struct ptrnstates states)
 {
     free(states.bgn);
     states.bgn = states.end = states.lst = null;

@@ -57,7 +57,7 @@ struct ptrninfo {
 };
 
 /* The state of the nondeterministic finite automaton. */
-struct state {
+struct ptrnstate {
     /* Remaining input. */
     struct str input;
     /* Index of the current pattern code. */
@@ -67,42 +67,43 @@ struct state {
 };
 
 /* Dynamic array of states. */
-struct states {
+struct ptrnstates {
     /* Pointer to the first allocated state. */
-    struct state* bgn;
+    struct ptrnstate* bgn;
     /* Pointer to the state after the last valid one. */
-    struct state* end;
+    struct ptrnstate* end;
     /* Pointer to the state after the last allocated one. */
-    struct state* lst;
+    struct ptrnstate* lst;
 };
 
 /* Result of decoding a state. */
-struct decoderes {
+struct ptrndecoderes {
     /* Paths after decoding. */
-    struct states states;
+    struct ptrnstates states;
     /* Whether the state was accepted by the automaton. */
     bool matched;
 };
 
 /* Print the pattern information in the context. */
-void print_infos(struct ptrnctx);
+void ptrn_print_infos(struct ptrnctx);
 /* Print the pattern codes in the context. */
-void print_codes(struct ptrnctx);
+void ptrn_print_codes(struct ptrnctx);
 /* Print the pattern code with its type and data. */
-void print_code(struct ptrncode);
+void ptrn_print_code(struct ptrncode);
 
 /* Transition to the next state. */
-struct state state_step(struct ptrnctx, struct state);
+struct ptrnstate ptrn_state_step(struct ptrnctx, struct ptrnstate);
 /* Put the state in to the states. */
-struct states state_put(struct states, struct state);
+struct ptrnstates ptrn_state_put(struct ptrnstates, struct ptrnstate);
 /* Remove all the states. */
-struct states state_clear(struct states);
+struct ptrnstates ptrn_state_clear(struct ptrnstates);
 /* Free the allocated memory. */
-struct states state_destroy(struct states);
+struct ptrnstates ptrn_state_destroy(struct ptrnstates);
 
 /* Returns the amount of pattern code in the context. */
-ptr code_size(struct ptrnctx);
+ptr ptrn_code_size(struct ptrnctx);
 /* Decode the state and add the next states. */
-struct decoderes decode(struct ptrnctx, struct states, struct state);
+struct ptrndecoderes
+    ptrn_decode(struct ptrnctx, struct ptrnstates, struct ptrnstate);
 
 #endif // INTERNAL_H

@@ -18,69 +18,70 @@ const ptr NOT_MATCHED = -1;
  * first. Negative one means none of the states were accepted before all states
  * died. */
 static ptr match(
-    struct ptrnctx ctx,
-    struct states  mainpaths,
-    struct states  subpaths,
-    struct state   init)
+    struct ptrnctx    ctx,
+    struct ptrnstates mainpaths,
+    struct ptrnstates subpaths,
+    struct ptrnstate  init)
 {
-    mainpaths = state_put(mainpaths, init);
+    mainpaths = ptrn_state_put(mainpaths, init);
 
     while (mainpaths.end - mainpaths.bgn != 0) {
         // Step all the states, and return if matched.
-        for (const struct state* i = mainpaths.bgn; i < mainpaths.end; i++) {
-            struct decoderes res = decode(ctx, subpaths, *i);
-            subpaths             = res.states;
+        for (const struct ptrnstate* i = mainpaths.bgn; i < mainpaths.end;
+             i++) {
+            struct ptrndecoderes res = ptrn_decode(ctx, subpaths, *i);
+            subpaths                 = res.states;
             if (res.matched) {
                 return str_size(init.input) - str_size(i->input);
             }
         }
         // Take all the nondead subpaths to the main states.
-        mainpaths = state_clear(mainpaths);
-        for (const struct state* i = subpaths.bgn; i < subpaths.end; i++) {
+        mainpaths = ptrn_state_clear(mainpaths);
+        for (const struct ptrnstate* i = subpaths.bgn; i < subpaths.end; i++) {
             if (!i->dead) {
-                mainpaths = state_put(mainpaths, *i);
+                mainpaths = ptrn_state_put(mainpaths, *i);
             }
         }
-        subpaths = state_clear(subpaths);
+        subpaths = ptrn_state_clear(subpaths);
     }
 
     return NOT_MATCHED;
 }
 
-struct str ptrn_match(struct ptrnctx ctx, struct str input)
+struct str ptrn_match(struct ptrnctx ctx, struct str name, struct str input)
 {
-    struct states mainpaths = {0};
-    struct states subpaths  = {0};
+    struct ptrnstates mainpaths = {0};
+    struct ptrnstates subpaths  = {0};
 
+    // TODO: Find pattern using the hash map.
     for (const struct ptrninfo* i = ctx.info.bgn; i < ctx.info.end; i++) {
-        if (i->visible) {
+        if (str_equal(i->name, name)) {
             // Create the initial state.
-            struct state init = {
+            struct ptrnstate init = {
                 .input = input,
                 .code  = i->code,
                 .dead  = false};
 
-            // If matches a visible pattern, return the name.
-            if (match(ctx, mainpaths, subpaths, init) != NOT_MATCHED) {
-                mainpaths = state_destroy(mainpaths);
-                subpaths  = state_destroy(subpaths);
-                return i->name;
+            // If matches the pattern, return the match.
+            ptr consumed = match(ctx, mainpaths, subpaths, init);
+            if (consumed != NOT_MATCHED) {
+                mainpaths = ptrn_state_destroy(mainpaths);
+                subpaths  = ptrn_state_destroy(subpaths);
+                ASSERT(
+                    consumed <= str_size(input),
+                    "Consumed more than the input!");
+                return (
+                    struct str){.bgn = input.bgn, .end = input.bgn + consumed};
             }
 
             // Clear the states to be reused later.
-            mainpaths = state_clear(mainpaths);
-            subpaths  = state_clear(subpaths);
+            mainpaths = ptrn_state_clear(mainpaths);
+            subpaths  = ptrn_state_clear(subpaths);
         }
     }
 
     // Return empty string if nothing matched.
-    mainpaths = state_destroy(mainpaths);
-    subpaths  = state_destroy(subpaths);
+    mainpaths = ptrn_state_destroy(mainpaths);
+    subpaths  = ptrn_state_destroy(subpaths);
     return (struct str){0};
-}
-
-bool ptrn_check(struct ptrnctx ctx, struct str name, struct str input)
-{
-    // TODO: Use hashmap to access to the pattern code.
-    return false;
 }

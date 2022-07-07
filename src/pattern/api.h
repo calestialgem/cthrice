@@ -52,6 +52,6 @@ struct ptrnctx ptrn_destory(struct ptrnctx);
 /* Match the pattern with the name to the input. Returns the initial portion of
  * the input that matched. Matches are checked from the begining. Empty match
  * means it did not match. */
-struct srt ptrn_match(struct ptrnctx, struct str name, struct str input);
+struct str ptrn_match(struct ptrnctx, struct str name, struct str input);
 
 #endif // PATTERN_H

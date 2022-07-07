@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-void print_infos(struct ptrnctx ctx)
+void ptrn_print_infos(struct ptrnctx ctx)
 {
     printf("\n  PATTERNS\n============\n\n");
     for (const struct ptrninfo* i = ctx.info.bgn; i < ctx.info.end; i++) {
@@ -18,16 +18,16 @@ void print_infos(struct ptrnctx ctx)
     }
 }
 
-void print_codes(struct ptrnctx ctx)
+void ptrn_print_codes(struct ptrnctx ctx)
 {
     printf("\n  PATTERN CODE\n================\n\n");
     for (const struct ptrncode* i = ctx.code.bgn; i < ctx.code.end; i++) {
         printf("[%05lld] ", i - ctx.code.bgn);
-        print_code(*i);
+        ptrn_print_code(*i);
     }
 }
 
-void print_code(struct ptrncode code)
+void ptrn_print_code(struct ptrncode code)
 {
     switch (code.type) {
         case EMPTY:
