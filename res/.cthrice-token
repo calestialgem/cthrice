@@ -59,6 +59,22 @@
 //      - *{x}    = [*]{x}   = [,]{x}  = [0,]{x}        0 or more
 //      - +{x}    = [+]{x}   = [1,]{x}                  1 or more
 
+// Token File Rules:
+// * Comments using //.
+// * Every line has single pattern definition. Pattern definitions can span
+// multiple lines but a continuation line should not have a new pattern
+// definition in the end.
+// * Template patterns using <>.
+// * A set of pattern names at the end that gives the order of the tokens. Some
+// of the patterns that are not supposed to be tokens can be skiped here. The
+// tokenizer will try to match from the first pattern in the set and will try
+// the next one if the maching fails. If all patterns in the set do not match
+// the lexer aborts with an error.
+// * Do not define a pattern with name eof, it is the end of file token that is
+// added by the lexer to the end of the token list.
+// * Have all lowercase pattern names with only letters from the English
+// alphabet.
+
 // Integers and floats.
 n
     //  Number optionally separated for readability.
