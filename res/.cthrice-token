@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // Token File Rules:
-// * Comments using //.
+// * Comments using `//`.
 // * Every line has single pattern definition. Pattern definitions can span
 // multiple lines but a continuation line should not have a new pattern
 // definition in the end.
-// * Template patterns using <>.
+// * Template patterns using `<>`. These are done using text substitution. An
+// extra group is added around the templates to not get weird results.
 // * A set of pattern names at the end that gives the order of the tokens. Some
 // of the patterns that are not supposed to be tokens can be skiped here. The
 // tokenizer will try to match from the first pattern in the set and will try
@@ -15,47 +16,28 @@
 // * Do not define a pattern with name eof, it is the end of file token that is
 // added by the lexer to the end of the token list.
 
-// Integers and floats.
-n
-    //  Number optionally separated for readability.
-    s<d> (d) {'_' (d)}
+// Numeric Literals
 
-    //  Whole number.
-    i<d> ['+' | '-'] s<d>
+num<dgt>        = +dgt *{'_' +dgt}
+int<dgt>        = '+'|'-' num<dgt>
+float<dgt, exp> = int<dgt> '.' num<dgt> ?{exp int<'0~9'>}
 
-    //  Floating point number.
-    f<d, e> ['+' | '-'] s<d> '.' s<d> [e i<'0~9'>]
+bin_int   = '0' {'b'|'B'} int<'0~1'>
+bin_float = '0' {'b'|'B'} float<'0~1', 'p'|'P'>
 
-    //  Floating point base 2 exponent character.
-    p 'p' | 'P'
+oct_int   = '0' {'o'|'O'} int<'0~7'>
+oct_float = '0' {'o'|'O'} float<'0~7', 'p'|'P'>
 
-    //  Indicator for numbers with different base than 10.
-    z<b> '0' b
+dec_int   = int<'0~9'>
+dec_float = float<'0~9', 'e'|'E'>
 
-    //  Base 2 numbers.
-    b
-        b 'b' | 'B'
-        d '0~1'
-        @i z<b> i<d>
-        @f z<b> f<d, p>
+hex_dgt<> = '0~9' | 'A~F' | 'a~f'
+hex_int   = '0' {'x'|'X'} int<hex_dgt<>>
+hex_float = '0' {'x'|'X'} float<hex_dgt<>, 'p'|'P'>
 
-    //  Base 8 numbers.
-    o
-        b 'o' | 'O'
-        d '0~7'
-        @i z<b> i<d>
-        @f z<b> f<d, p>
+// Tokens
 
-    //  Base 10 numbers.
-    d
-        d '0~9'
-        e 'e' | 'E'
-        @i i<d>
-        @f f<d, e>
-
-    //  Base 16 numbers.
-    x
-        b 'x' | 'X'
-        d '0~9' | 'A~F' | 'a~f'
-        @i z<b> i<d>
-        @f z<b> f<d, p>
+[
+    bin_int, oct_int, dec_int, hex_int,
+    bin_float, oct_float, dec_float, hex_float,
+]
