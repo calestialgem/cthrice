@@ -114,10 +114,22 @@ static struct res quote(struct ctx ctx)
     return add(ctx, TOKEN_QUOTE, len);
 }
 
+/* Check whether a character is not a letter or underscore. */
+static bool not_letter_underscore(byte c)
+{
+    return (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && c != '_';
+}
+
 /* Try to lex an identifier. */
 static struct res identifier(struct ctx ctx)
 {
-    return (struct res){.ctx = ctx, .lxd = false};
+    ASSERT(str_finite(ctx.input), "There is no input!");
+    const byte* i = str_find_pred(ctx.input, &not_letter_underscore);
+    if (i == ctx.input.bgn) {
+        return (struct res){.ctx = ctx, .lxd = false};
+    }
+
+    return add(ctx, TOKEN_IDENTIFIER, i - ctx.input.bgn);
 }
 
 /* Check whether a character is whitespace. */
