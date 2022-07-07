@@ -43,7 +43,7 @@ static struct res add(struct ctx ctx, enum ptrntkntyp typ, ptr len)
         // Double the capacity.
         ptr cap = ctx.lex.lst - ctx.lex.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = cap << 1;
+        ptr nwc = max(1, cap << 1);
 
         struct ptrntkn* mem = realloc(ctx.lex.bgn, nwc);
         CHECK(mem != null, "Could not allocate token!");

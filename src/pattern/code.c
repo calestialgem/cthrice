@@ -24,7 +24,7 @@ struct ptrnctx ptrn_code_put(struct ptrnctx ctx, struct ptrncode code)
         // Double the capacity.
         ptr cap = ctx.code.lst - ctx.code.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = cap << 1;
+        ptr nwc = max(1, cap << 1);
 
         struct ptrncode* mem = realloc(ctx.code.bgn, nwc);
         CHECK(mem != null, "Could not allocate code!");

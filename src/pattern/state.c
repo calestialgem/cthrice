@@ -19,7 +19,7 @@ ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
         // Double the capacity.
         ptr cap = states.lst - states.bgn;
         ASSERT(cap >= 0, "Capacity is negative");
-        ptr nwc = cap << 1;
+        ptr nwc = max(1, cap << 1);
 
         struct ptrnstate* mem = realloc(states.bgn, nwc);
         CHECK(mem != null, "Could not allocate states!");
