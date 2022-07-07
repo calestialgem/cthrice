@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "api.h"
+#include <cstdio>
+#include <stdio.h>
 
-void* const null = 0;
-
-const bool true = 1;
-
-const bool false = 0;
+int main(int argc, char** argv)
+{
+    printf("Hello, hello, hello!\n");
+}
