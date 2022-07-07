@@ -39,14 +39,26 @@ static struct range range(struct ptrnctx ctx, struct str name)
     ptr sze = ctx.hash.end - ctx.hash.bgn;
     ASSERT(sze >= 0, "Hash size is negative!");
 
-    ptr* hashbgn = ctx.hash.bgn + hash(name) % sze;
-    ptr* hashend = hashbgn + 1;
+    // If the hash is empty, probably the info is empty too.
+    if (sze == 0) {
+        // Actually it is supposed to be.
+        ASSERT(
+            ctx.info.end - ctx.info.bgn == 0,
+            "Hashes are empty but not the infos!");
+        return (struct range){.bgn = ctx.info.bgn, .end = ctx.info.end};
+    }
 
-    struct ptrninfo* bgn = ctx.info.bgn + *hashbgn;
+    // Find the indicies that correspond to this and the next hashes.
+    ptr* this = ctx.hash.bgn + hash(name) % sze;
+    ptr* next = this + 1;
+
+    struct ptrninfo* bgn = ctx.info.bgn + *this;
     struct ptrninfo* end = ctx.info.end;
 
-    if (hashend < ctx.hash.end) {
-        end = ctx.info.bgn + *hashend;
+    // This hash might be the last one; thus, check the next one.
+    // If the next hash is valid limit the search range from the end.
+    if (next < ctx.hash.end) {
+        end = ctx.info.bgn + *next;
     }
 
     return (struct range){.bgn = bgn, .end = end};
