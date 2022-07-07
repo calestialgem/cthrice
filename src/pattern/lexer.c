@@ -46,7 +46,8 @@ static struct res add(struct ctx ctx, enum ptrntkntyp typ, ptr len)
         ptr nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New token capacity is not positive!");
-        struct ptrntkn* mem = realloc(ctx.lex.bgn, nwc);
+        struct ptrntkn* mem =
+            realloc(ctx.lex.bgn, nwc * sizeof(struct ptrntkn));
         CHECK(mem != null, "Could not allocate token!");
 
         ctx.lex.bgn = mem;

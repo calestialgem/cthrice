@@ -110,7 +110,7 @@ static struct ptrnctx rehash(struct ptrnctx ctx)
         ASSERT(sze >= 0, "Size is negative!");
         ptr nws = sze << 1;
 
-        ptr* mem = realloc(ctx.hash.bgn, nws);
+        ptr* mem = realloc(ctx.hash.bgn, nws * sizeof(ptr));
         CHECK(mem != null, "Could not allocate hash!");
 
         ctx.hash.bgn = mem;
@@ -169,7 +169,8 @@ struct ptrnctx ptrn_hash_put(struct ptrnctx ctx, struct ptrninfo info)
         ptr nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New info capacity is not positive!");
-        struct ptrninfo* mem = realloc(ctx.info.bgn, nwc);
+        struct ptrninfo* mem =
+            realloc(ctx.info.bgn, nwc * sizeof(struct ptrninfo));
         CHECK(mem != null, "Could not allocate info!");
 
         ctx.info.bgn = mem;

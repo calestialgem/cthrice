@@ -22,7 +22,8 @@ ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
         ptr nwc = max(1, cap << 1);
 
         ASSERT(nwc > 0, "New state capacity is not positive!");
-        struct ptrnstate* mem = realloc(states.bgn, nwc);
+        struct ptrnstate* mem =
+            realloc(states.bgn, nwc * sizeof(struct ptrnstate));
         CHECK(mem != null, "Could not allocate states!");
 
         states.bgn = mem;
