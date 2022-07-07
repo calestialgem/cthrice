@@ -4,7 +4,7 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H 1
 
-#include "pattern/api.h"
+#include "api.h"
 #include "string/api.h"
 #include "types/api.h"
 
@@ -74,13 +74,16 @@ struct ptrnstates {
     struct ptrnstate* lst;
 };
 
-/* Result of decoding a state. */
-struct ptrndecoderes {
-    /* States after decoding. */
-    struct ptrnstates next;
-    /* Whether the state was accepted by the automaton. */
-    bool matched;
-};
+/* Code index that signals that a pattern with the name does not exist in the
+ * hash map. */
+extern const ptr PTRN_INVALID_NAME;
+
+/* Find the pattern code from the hash of the name. */
+ptr ptrn_hash_get(struct ptrnctx, struct str);
+/* Put the pattern info to the hash map. */
+struct ptrnctx ptrn_hash_put(struct ptrnctx, struct ptrninfo);
+/* Free the allocated memory. */
+struct ptrnctx ptrn_hash_destroy(struct ptrnctx);
 
 /* Print the pattern information in the context. */
 void ptrn_print_infos(struct ptrnctx);
@@ -96,14 +99,9 @@ struct ptrnstates ptrn_state_clear(struct ptrnstates);
 /* Free the allocated memory. */
 struct ptrnstates ptrn_state_destroy(struct ptrnstates);
 
-/* Returns the amount of pattern code in the context. */
-ptr ptrn_code_size(struct ptrnctx);
-/* Decode the state and add the next states. */
-struct ptrndecoderes
-    ptrn_decode(struct ptrnctx, struct ptrnstates, struct ptrnstate);
 /* Decode until the end starting from the initial state. Returns the initial
  * portion of the input that was accepted by the automaton first. Empty match
  * means none of the states were accepted before all states died. */
-struct str ptrn_decode_all(struct ptrnctx, struct ptrnstate);
+struct str ptrn_decode(struct ptrnctx, struct ptrnstate);
 
 #endif // INTERNAL_H
