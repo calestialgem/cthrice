@@ -70,10 +70,22 @@ static struct res mark(struct ctx ctx)
     return add(ctx, TOKEN_EQUAL + i - marks.bgn, 1);
 }
 
+/* Check whether a character is not a decimal digit. */
+static bool not_digit(byte c)
+{
+    return c < '0' || c > '9';
+}
+
 /* Try to lex a number. */
 static struct res number(struct ctx ctx)
 {
-    return (struct res){.ctx = ctx, .lxd = false};
+    ASSERT(str_finite(ctx.input), "There is no input!");
+    const byte* i = str_find_pred(ctx.input, &not_digit);
+    if (i == ctx.input.bgn) {
+        return (struct res){.ctx = ctx, .lxd = false};
+    }
+
+    return add(ctx, TOKEN_NUMBER, i - ctx.input.bgn);
 }
 
 /* Try to lex a quote. */
@@ -89,9 +101,9 @@ static struct res identifier(struct ctx ctx)
 }
 
 /* Check whether a character is whitespace. */
-static bool whitespace(byte b)
+static bool whitespace(byte c)
 {
-    switch (b) {
+    switch (c) {
         case '\t':
         case '\n':
         case '\r':
