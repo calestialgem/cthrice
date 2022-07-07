@@ -5,8 +5,14 @@
 // |   R  U  L  E  S   |
 // +-------------------+
 //
-// * Definition of pattern p:
-//      p
+// * Definition of pattern with identifier p:
+//      p = <pattern>
+//
+// * Pattern identifiers can have letters from the English alphabet and
+// underscores. The length is unbounded.
+//
+// * Whitespace in the pattern is neglected but it is used to separate
+// identifiers from each other.
 //
 // * The character a:
 //      'a'
@@ -72,8 +78,6 @@
 // the lexer aborts with an error.
 // * Do not define a pattern with name eof, it is the end of file token that is
 // added by the lexer to the end of the token list.
-// * Have all lowercase pattern names with only letters from the English
-// alphabet.
 
 // Integers and floats.
 n
