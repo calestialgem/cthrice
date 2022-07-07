@@ -26,6 +26,7 @@ struct ptrnctx ptrn_code_put(struct ptrnctx ctx, struct ptrncode code)
         ASSERT(cap >= 0, "Capacity is negative");
         ptr nwc = max(1, cap << 1);
 
+        ASSERT(nwc > 0, "New code capacity is not positive!");
         struct ptrncode* mem = realloc(ctx.code.bgn, nwc);
         CHECK(mem != null, "Could not allocate code!");
 

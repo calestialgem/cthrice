@@ -168,6 +168,7 @@ struct ptrnctx ptrn_hash_put(struct ptrnctx ctx, struct ptrninfo info)
         ASSERT(cap >= 0, "Capacity is negative");
         ptr nwc = max(1, cap << 1);
 
+        ASSERT(nwc > 0, "New info capacity is not positive!");
         struct ptrninfo* mem = realloc(ctx.info.bgn, nwc);
         CHECK(mem != null, "Could not allocate info!");
 

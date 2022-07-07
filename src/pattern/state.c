@@ -21,6 +21,7 @@ ptrn_state_put(struct ptrnstates states, struct ptrnstate state)
         ASSERT(cap >= 0, "Capacity is negative");
         ptr nwc = max(1, cap << 1);
 
+        ASSERT(nwc > 0, "New state capacity is not positive!");
         struct ptrnstate* mem = realloc(states.bgn, nwc);
         CHECK(mem != null, "Could not allocate states!");
 
