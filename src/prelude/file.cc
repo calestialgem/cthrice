@@ -9,14 +9,20 @@
 #include "view.cc"
 
 #include <cstdio>
-#include <tuple>
 
 namespace cthrice::file
 {
+    /* Result of loading a file to the memory. */
+    struct Res {
+        /* Memory buffer that the contents of the file were loaded. */
+        List<b8> bfr;
+        /* Contents of the file. */
+        View<b8> file;
+    };
+
     /* Load the contents of a file to the buffer. Returns the resulting buffer
      * and a view to the contents of the file. */
-    [[nodiscard]] std::tuple<List<b8>, View<b8>>
-    load(List<b8> bfr, const b8* path)
+    [[nodiscard]] Res load(List<b8> bfr, const b8* path)
     {
         std::FILE* file = std::fopen(path, "r");
         check(file != nullptr, "Could not open the file!");
@@ -34,6 +40,6 @@ namespace cthrice::file
         check(std::feof(file) != 0, "Problem while reading!");
         check(std::fclose(file) != -1, "Could not close the file!");
 
-        return std::make_tuple(bfr, List<b8>::view_end(bfr, bix));
+        return {.bfr = bfr, .file = List<b8>::view_end(bfr, bix)};
     }
 } // namespace cthrice::file
