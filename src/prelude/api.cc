@@ -4,6 +4,7 @@
 #pragma once
 
 #include "error.cc"
+#include "file.cc"
 #include "list.cc"
 #include "types.cc"
 #include "view.cc"
