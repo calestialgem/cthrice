@@ -27,9 +27,9 @@ namespace cthrice
         /* Amount of elements. */
         static ix size(Span<T> span)
         {
-            ix size = span.end - span.bgn;
-            debug(size >= 0, "Negative size!");
-            return size;
+            ix sze = span.end - span.bgn;
+            debug(sze >= 0, "Negative size!");
+            return sze;
         }
 
         /* Whether there are any elements. */
