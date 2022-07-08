@@ -12,14 +12,15 @@
 
 namespace cthrice
 {
-    /* Mutable and dynamic storage of contiguously placed elements. */
+    /* Mutable and dynamic storage of contiguously placed elements where
+     * allocated memory is bigger than the used memory. */
     template<typename T>
     struct List {
         /* Pointer to the element at the begining. */
         T* bgn;
-        /* Pointer to the element one after the end. */
+        /* Pointer to the element one after the last valid one. */
         T* end;
-        /* Pointer to the element one after the last one. */
+        /* Pointer to the element one after the last allocated one. */
         T* lst;
 
         /* Amount of elements. */
@@ -62,7 +63,7 @@ namespace cthrice
         }
 
         /* Immutable view of the end of the list from the element at the begin
-         * index to the last element. */
+         * index to the last valid element. */
         static View<T> view_end(List<T> list, ix bix)
         {
             View<T> res = {.bgn = list.bgn + bix, .end = list.end};
@@ -71,7 +72,7 @@ namespace cthrice
         }
 
         /* Immutable view of the list from the first element to the last
-         * element. */
+         * valid element. */
         static View<T> view(List<T> list)
         {
             return {.bgn = list.bgn, .end = list.end};
@@ -92,29 +93,22 @@ namespace cthrice
             return list;
         }
 
-        /* Grow the capacity to the next powers of 16 until the space that is
-         * wanted exists in the list. */
-        [[nodiscard]] static List<T> reserve(List<T> list, ix wsp)
+        /* Make sure the space is at least as big as the amount. Grows if
+         * necessary by at least the half of the current capacity. */
+        [[nodiscard]] static List<T> reserve(List<T> list, ix amt)
         {
-            debug(wsp >= 0, "Wanted space is negative!");
+            debug(amt >= 0, "Reserving negative amount!");
 
-            if (space(list) >= wsp) {
+            ix grw = amt - space(list);
+
+            if (grw <= 0) {
                 return list;
             }
 
             ix sze = size(list);
-            ix wcp = sze + wsp;
+            ix cap = capacity(list);
 
-            // Find the new capacity.
-            ix nwc = capacity(list);
-            if (nwc == 0) {
-                nwc = 1;
-            }
-            while (nwc < wcp) {
-                nwc <<= 4;
-            }
-            debug(nwc > 0, "Allocating nonpositive capacity!");
-
+            ix nwc = cap + std::max(grw, cap >> 1);
             T* mem = (T*)std::realloc(list.bgn, sizeof(T) * nwc);
             check(mem != nullptr, "Could not allocate!");
 
@@ -142,27 +136,27 @@ namespace cthrice
             return list;
         }
 
-        /* Open space at and after the given index by moving elements and
-         * growing the memory if necessary. */
+        /* Open space at the index by moving the elements and growing the memory
+         * if necessary. */
         [[nodiscard]] static List<T> open(List<T> list, ix i, ix len)
         {
-            list        = reserve(list, len);
-            View opened = view_part(list, i, i + len);
+            list           = reserve(list, len);
+            View<T> opened = view_part(list, i, i + len);
             std::memmove((void*)opened.end, (void*)opened.bgn, len);
             list.end += len;
             return list;
         }
 
         /* Put the element to the list at the index. */
-        [[nodiscard]] static List<T> put(List<T> list, T t, ix i)
+        [[nodiscard]] static List<T> put(List<T> list, ix i, T t)
         {
             list        = open(list, i, 1);
             list.bgn[i] = t;
             return list;
         }
 
-        /* Put a view to the list at the index. */
-        [[nodiscard]] static List<T> put_view(List<T> list, View<T> view, ix i)
+        /* Put the view to the list at the index. */
+        [[nodiscard]] static List<T> put_view(List<T> list, ix i, View<T> view)
         {
             ix len = View<T>::size(view);
             list   = open(list, i, len);

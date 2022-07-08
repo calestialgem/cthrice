@@ -157,7 +157,7 @@ namespace cthrice
                 if (prs.end < map.prs.end) {
                     // Put at the end of the view.
                     ix end  = prs.end - map.prs.bgn;
-                    map.prs = List<Pair>::put(map.prs, p, end);
+                    map.prs = List<Pair>::put(map.prs, end, p);
                 } else {
                     // Add to the end.
                     map.prs = List<Pair>::add(map.prs, p);

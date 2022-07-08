@@ -12,8 +12,8 @@
 
 namespace cthrice
 {
-    /* Mutable and dynamic storage of contiguously placed elements where all
-     * elements are valid and all memory is used. */
+    /* Mutable and dynamic storage of contiguously placed elements where
+     * allocated memory is same as the used memory. */
     template<typename T>
     struct Array {
         /* Pointer to the element at the begining. */
@@ -85,23 +85,22 @@ namespace cthrice
         /* Add the element to the end of the array. */
         [[nodiscard]] static Array<T> add(Array<T> array, T t)
         {
-            ix pos         = size(array);
-            array          = grow(array, 1);
-            array.bgn[pos] = t;
+            array         = grow(array, 1);
+            array.end[-1] = t;
             return array;
         }
 
         /* Add the view to the end of the array. */
         [[nodiscard]] static Array<T> add_view(Array<T> array, View<T> view)
         {
-            ix pos = size(array);
             ix len = View<T>::size(view);
             array  = grow(array, len);
-            std::memmove((void*)(array.bgn + pos), (void*)view.bgn, len);
+            std::memmove((void*)(array.end - len), (void*)view.bgn, len);
             return array;
         }
 
-        /* Open space at the index by moving elements and growing. */
+        /* Open space at the index by moving the elements and growing the
+         * memory. */
         [[nodiscard]] static Array<T> open(Array<T> array, ix i, ix len)
         {
             array          = grow(array, len);
@@ -118,7 +117,7 @@ namespace cthrice
             return array;
         }
 
-        /* Put a view to the array at the index. */
+        /* Put the view to the array at the index. */
         [[nodiscard]] static Array<T>
         put_view(Array<T> array, ix i, View<T> view)
         {
