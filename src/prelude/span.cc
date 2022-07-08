@@ -9,9 +9,9 @@ namespace cthrice
     /* Immutable view of contiguously placed elements. */
     template<typename T>
     struct Span {
-        /* Pointer to the element that is at the begining. */
+        /* Pointer to the element at the begining. */
         const T* bgn;
-        /* Pointer to the element one after the last one. */
+        /* Pointer to the element one after the end. */
         const T* end;
 
         /* View of a null terminated array. */
