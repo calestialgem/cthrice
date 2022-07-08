@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "array.cc"
 #include "error.cc"
 #include "list.cc"
 #include "view.cc"
@@ -25,18 +26,18 @@ namespace cthrice
         };
 
         /* Pair indicies corresponding to hashes. */
-        List<ix> ixs;
+        Array<ix> ixs;
         /* Pairs. */
         List<Pair> prs;
 
         /* Pairs corresponding to the hash. */
         static View<Pair> view(Map<K, V> map, hash hsh)
         {
-            ix sze = List<ix>::size(map.ixs);
+            ix sze = Array<ix>::size(map.ixs);
 
             // If the indicies are empty, probably the pairs are empty too.
             if (sze == 0) {
-                // Actually it is supposed to be.
+                // Actually they are supposed to be.
                 debug(
                     List<Pair>::size(map.prs) == 0,
                     "Indicies are empty but not the pairs!");
@@ -75,7 +76,7 @@ namespace cthrice
         /* Deallocate the memory. */
         [[nodiscard]] static Map<K, V> free(Map<K, V> map)
         {
-            map.ixs = List<ix>::free(map.ixs);
+            map.ixs = Array<ix>::free(map.ixs);
             map.prs = List<Pair>::free(map.prs);
             return map;
         }
@@ -89,7 +90,7 @@ namespace cthrice
          * restriction. */
         static bool need_rehash(Map<K, V> map)
         {
-            for (ix i = 0; i < List<ix>::size(map.ixs); i++) {
+            for (ix i = 0; i < Array<ix>::size(map.ixs); i++) {
                 if (View<Pair>::size(view(map, i)) > MAX_COLLISION) {
                     return true;
                 }
@@ -101,10 +102,10 @@ namespace cthrice
         [[nodiscard]] static Map<K, V> rehash(Map<K, V> map)
         {
             do {
-                // Grow the indicies.
-                map.ixs = List<ix>::reserve(
+                // Grow the indicies; double, start from 1.
+                map.ixs = Array<ix>::grow(
                     map.ixs,
-                    std::max((ix)1, List<ix>::capacity(map.ixs)));
+                    std::max((ix)1, Array<ix>::size(map.ixs)));
 
                 // Sort the pairs by hash.
                 std::sort(map.prs.bgn, map.prs.end, [](Pair lhs, Pair rhs) {
@@ -113,7 +114,7 @@ namespace cthrice
 
                 // Recalculate indicies.
                 ix hsh  = -1;
-                ix isze = List<ix>::size(map.ixs);
+                ix isze = Array<ix>::size(map.ixs);
                 ix psze = List<Pair>::size(map.prs);
                 for (ix i = 0; i < psze; i++) {
                     ix chsh = (ix)(K::hash(map.prs.bgn[i].key) % isze);
@@ -122,10 +123,10 @@ namespace cthrice
                         map.ixs.bgn[++hsh] = i;
                     }
                 }
-                while (hsh < isze) {
-                    map.ixs.bgn[++hsh] = psze;
+                while (++hsh < isze) {
+                    map.ixs.bgn[hsh] = psze;
                 }
-                debug(hsh != isze, "Did not correctly calculate indicies!");
+                debug(hsh == isze, "Did not correctly calculate indicies!");
             } while (need_rehash(map));
 
             return map;
@@ -148,16 +149,21 @@ namespace cthrice
                     }),
                 "Key already exists!");
 
-            Pair p = {.key = key, .val = val};
+            Pair p   = {.key = key, .val = val};
+            ix   sze = Array<ix>::size(map.ixs);
 
             // If it would not create too many collisions.
-            if (View<Pair>::size(prs) <= MAX_COLLISION) {
-                // Put at the end of the view.
-                ix end  = prs.end - map.prs.bgn;
-                map.prs = List<Pair>::put(map.prs, p, end);
+            if (View<Pair>::size(prs) <= MAX_COLLISION && sze != 0) {
+                if (prs.end < map.prs.end) {
+                    // Put at the end of the view.
+                    ix end  = prs.end - map.prs.bgn;
+                    map.prs = List<Pair>::put(map.prs, p, end);
+                } else {
+                    // Add to the end.
+                    map.prs = List<Pair>::add(map.prs, p);
+                }
 
                 // Increase indicies.
-                ix sze = List<ix>::size(map.ixs);
                 for (ix* i = map.ixs.bgn + hsh % sze + 1; i < map.ixs.end;
                      i++) {
                     (*i)++;

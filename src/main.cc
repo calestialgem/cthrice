@@ -56,7 +56,31 @@ int main(int argc, char** argv)
         View<b8>::terminated("Hakkı"));
 
     View<b8>* name = Map<Age, View<b8>>::at(agemap, Age{21});
+    if (name != nullptr) {
+        std::printf("Name: {%.*s}\n", (int)View<b8>::size(*name), name->bgn);
+    }
 
+    name = Map<Age, View<b8>>::at(agemap, Age{23});
+    if (name != nullptr) {
+        std::printf("Name: {%.*s}\n", (int)View<b8>::size(*name), name->bgn);
+    }
+
+    name = Map<Age, View<b8>>::at(agemap, Age{2021 - 1972});
+    if (name != nullptr) {
+        std::printf("Name: {%.*s}\n", (int)View<b8>::size(*name), name->bgn);
+    }
+
+    name = Map<Age, View<b8>>::at(agemap, Age{2022 - 1967});
+    if (name != nullptr) {
+        std::printf("Name: {%.*s}\n", (int)View<b8>::size(*name), name->bgn);
+    }
+
+    name = Map<Age, View<b8>>::at(agemap, Age{1967});
+    if (name != nullptr) {
+        std::printf("Name: {%.*s}\n", (int)View<b8>::size(*name), name->bgn);
+    }
+
+    name = Map<Age, View<b8>>::at(agemap, Age{-5});
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)View<b8>::size(*name), name->bgn);
     }
