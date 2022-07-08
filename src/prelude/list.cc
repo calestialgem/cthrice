@@ -137,7 +137,7 @@ namespace cthrice
         {
             ix len = View<T>::size(view);
             list   = reserve(list, len);
-            std::memmove(list.end, view.bgn, len);
+            std::memmove((void*)list.end, (void*)view.bgn, len);
             list.end += len;
             return list;
         }
