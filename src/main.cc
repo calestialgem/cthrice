@@ -4,6 +4,7 @@
 #include "prelude/error.cc"
 #include "prelude/file.cc"
 #include "prelude/list.cc"
+#include "prelude/map.cc"
 #include "prelude/types.cc"
 #include "prelude/view.cc"
 

@@ -16,13 +16,16 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     src/prelude/error.cc
     src/prelude/file.cc
     src/prelude/list.cc
+    src/prelude/map.cc
     src/prelude/types.cc
     src/prelude/view.cc
+    <cmath>
     <cstddef>
     <cstdlib>
     <cstdint>
     <cstdio>
-    <cstdstring>
+    <cstring>
+    <algorithm>
     <exception>
 )
 
