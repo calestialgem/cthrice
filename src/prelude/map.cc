@@ -67,10 +67,10 @@ namespace cthrice
         template<typename K, typename V>
         V* at(Map<K, V> map, K key)
         {
-            View<Pair<K, V>> prs = view(map, K::hash(key));
+            View<Pair<K, V>> prs = view(map, hash(key));
 
             const Pair<K, V>* pos = view::find_fit(prs, [key](Pair<K, V> p) {
-                return K::equal(p.key, key);
+                return equal(p.key, key);
             });
 
             if (pos == prs.end) {
@@ -120,7 +120,7 @@ namespace cthrice
                     map.prs.bgn,
                     map.prs.end,
                     [](Pair<K, V> lhs, Pair<K, V> rhs) {
-                        return K::hash(lhs.key) < K::hash(rhs.key);
+                        return hash(lhs.key) < hash(rhs.key);
                     });
 
                 // Recalculate indicies.
@@ -128,7 +128,7 @@ namespace cthrice
                 Ix isze = array::size(map.ixs);
                 Ix psze = list::size(map.prs);
                 for (Ix i = 0; i < psze; i++) {
-                    Ix chsh = (Ix)(K::hash(map.prs.bgn[i].key) % isze);
+                    Ix chsh = (Ix)(hash(map.prs.bgn[i].key) % isze);
                     debug(chsh >= hsh, "Pairs are not sorted correctly!");
                     while (chsh > hsh) {
                         map.ixs.bgn[++hsh] = i;
@@ -149,7 +149,7 @@ namespace cthrice
         [[nodiscard]] Map<K, V> add(Map<K, V> map, K key, V val)
         {
             // Get the corresponding view for the hash.
-            Hash             hsh = K::hash(key);
+            Hash             hsh = hash(key);
             View<Pair<K, V>> prs = view(map, hsh);
 
             // Check if it already exists.
@@ -157,7 +157,7 @@ namespace cthrice
                 !view::contains_fit(
                     prs,
                     [key](Pair<K, V> p) {
-                        return K::equal(p.key, key);
+                        return equal(p.key, key);
                     }),
                 "Key already exists!");
 

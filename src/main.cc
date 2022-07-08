@@ -12,6 +12,19 @@
 
 using namespace cthrice;
 
+namespace cthrice::map
+{
+    Hash hash(I32 age)
+    {
+        return age;
+    }
+
+    bool equal(I32 lhs, I32 rhs)
+    {
+        return lhs == rhs;
+    }
+} // namespace cthrice::map
+
 int main(int argc, char** argv)
 {
     check(argc >= 2, "Provide a Thrice file!");
@@ -22,53 +35,39 @@ int main(int argc, char** argv)
     std::printf("%.*s\n", (int)view::size(file), file.bgn);
     bfr = list::free(bfr);
 
-    struct Age {
-        int v;
+    Map<I32, View<B8>> agemap{};
 
-        static Hash hash(Age age)
-        {
-            return age.v;
-        }
+    agemap = map::add(agemap, 2021 - 2000, view::terminated("Cem"));
+    agemap = map::add(agemap, 2022 - 1999, view::terminated("Gülhan"));
+    agemap = map::add(agemap, 2021 - 1972, view::terminated("Zülfiye"));
+    agemap = map::add(agemap, 2022 - 1967, view::terminated("Hakkı"));
 
-        static bool equal(Age lhs, Age rhs)
-        {
-            return lhs.v == rhs.v;
-        }
-    };
-
-    Map<Age, View<B8>> agemap{};
-
-    agemap = map::add(agemap, Age{2021 - 2000}, view::terminated("Cem"));
-    agemap = map::add(agemap, Age{2022 - 1999}, view::terminated("Gülhan"));
-    agemap = map::add(agemap, Age{2021 - 1972}, view::terminated("Zülfiye"));
-    agemap = map::add(agemap, Age{2022 - 1967}, view::terminated("Hakkı"));
-
-    View<B8>* name = map::at(agemap, Age{21});
+    View<B8>* name = map::at(agemap, 21);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, Age{23});
+    name = map::at(agemap, 23);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, Age{2021 - 1972});
+    name = map::at(agemap, 2021 - 1972);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, Age{2022 - 1967});
+    name = map::at(agemap, 2022 - 1967);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, Age{1967});
+    name = map::at(agemap, 1967);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, Age{-5});
+    name = map::at(agemap, -5);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
