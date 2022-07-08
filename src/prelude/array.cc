@@ -20,24 +20,30 @@ namespace cthrice
         T* bgn;
         /* Pointer to the element one after the end. */
         T* end;
+    };
 
+    namespace array
+    {
         /* Amount of elements. */
-        static ix size(Array<T> array)
+        template<typename T>
+        Ix size(Array<T> array)
         {
-            ix sze = array.end - array.bgn;
+            Ix sze = array.end - array.bgn;
             debug(sze >= 0, "Negative size!");
             return sze;
         }
 
         /* Whether the view is valid. */
-        static bool view_valid(Array<T> array, View<T> view)
+        template<typename T>
+        bool view_valid(Array<T> array, View<T> view)
         {
             return view.bgn >= array.bgn && view.end <= array.end;
         }
 
         /* Immutable view of a part of the array from the element at the begin
          * index to the element one before the end index. */
-        static View<T> view_part(Array<T> array, ix bix, ix eix)
+        template<typename T>
+        View<T> view_part(Array<T> array, Ix bix, Ix eix)
         {
             View<T> res = {.bgn = array.bgn + bix, .end = array.bgn + eix};
             debug(view_valid(array, res), "Creating invalid view!");
@@ -46,7 +52,8 @@ namespace cthrice
 
         /* Immutable view of the end of the array from the element at the begin
          * index to the last element. */
-        static View<T> view_end(Array<T> array, ix bix)
+        template<typename T>
+        View<T> view_end(Array<T> array, Ix bix)
         {
             View<T> res = {.bgn = array.bgn + bix, .end = array.end};
             debug(view_valid(array, res), "Creating invalid view!");
@@ -55,13 +62,15 @@ namespace cthrice
 
         /* Immutable view of the array from the first element to the last
          * element. */
-        static View<T> view(Array<T> array)
+        template<typename T>
+        View<T> view(Array<T> array)
         {
             return {.bgn = array.bgn, .end = array.end};
         }
 
         /* Deallocate the memory. */
-        [[nodiscard]] static Array<T> free(Array<T> array)
+        template<typename T>
+        [[nodiscard]] Array<T> free(Array<T> array)
         {
             std::free(array.bgn);
             array.bgn = array.end = nullptr;
@@ -69,11 +78,12 @@ namespace cthrice
         }
 
         /* Grow by the amount. */
-        [[nodiscard]] static Array<T> grow(Array<T> array, ix amt)
+        template<typename T>
+        [[nodiscard]] Array<T> grow(Array<T> array, Ix amt)
         {
             debug(amt >= 0, "Growing by negative amount!");
 
-            ix nws = size(array) + amt;
+            Ix nws = size(array) + amt;
             T* mem = (T*)std::realloc(array.bgn, sizeof(T) * nws);
             check(mem != nullptr, "Could not allocate!");
 
@@ -83,7 +93,8 @@ namespace cthrice
         }
 
         /* Add the element to the end of the array. */
-        [[nodiscard]] static Array<T> add(Array<T> array, T t)
+        template<typename T>
+        [[nodiscard]] Array<T> add(Array<T> array, T t)
         {
             array         = grow(array, 1);
             array.end[-1] = t;
@@ -91,9 +102,10 @@ namespace cthrice
         }
 
         /* Add the view to the end of the array. */
-        [[nodiscard]] static Array<T> add_view(Array<T> array, View<T> view)
+        template<typename T>
+        [[nodiscard]] Array<T> add_view(Array<T> array, View<T> view)
         {
-            ix len = View<T>::size(view);
+            Ix len = view::size(view);
             array  = grow(array, len);
             std::memmove((void*)(array.end - len), (void*)view.bgn, len);
             return array;
@@ -101,7 +113,8 @@ namespace cthrice
 
         /* Open space at the index by moving the elements and growing the
          * memory. */
-        [[nodiscard]] static Array<T> open(Array<T> array, ix i, ix len)
+        template<typename T>
+        [[nodiscard]] Array<T> open(Array<T> array, Ix i, Ix len)
         {
             array          = grow(array, len);
             View<T> opened = view_part(array, i, i + len);
@@ -110,7 +123,8 @@ namespace cthrice
         }
 
         /* Put the element to the array at the index. */
-        [[nodiscard]] static Array<T> put(Array<T> array, ix i, T t)
+        template<typename T>
+        [[nodiscard]] Array<T> put(Array<T> array, Ix i, T t)
         {
             array        = open(array, i, 1);
             array.bgn[i] = t;
@@ -118,13 +132,13 @@ namespace cthrice
         }
 
         /* Put the view to the array at the index. */
-        [[nodiscard]] static Array<T>
-        put_view(Array<T> array, ix i, View<T> view)
+        template<typename T>
+        [[nodiscard]] Array<T> put_view(Array<T> array, Ix i, View<T> view)
         {
-            ix len = View<T>::size(view);
+            Ix len = view::size(view);
             array  = open(array, i, len);
             std::memmove((void*)(array.bgn + i), (void*)view.bgn, len);
             return array;
         }
-    };
+    } // namespace array
 } // namespace cthrice

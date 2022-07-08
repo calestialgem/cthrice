@@ -15,31 +15,31 @@ namespace cthrice::file
     /* Result of loading a file to the memory. */
     struct Res {
         /* Memory buffer that the contents of the file were loaded. */
-        List<b8> bfr;
+        List<B8> bfr;
         /* Contents of the file. */
-        View<b8> file;
+        View<B8> file;
     };
 
     /* Load the contents of a file to the buffer. Returns the resulting buffer
      * and a view to the contents of the file. */
-    [[nodiscard]] Res load(List<b8> bfr, const b8* path)
+    [[nodiscard]] Res load(List<B8> bfr, const B8* path)
     {
         std::FILE* file = std::fopen(path, "r");
         check(file != nullptr, "Could not open the file!");
 
-        ix           bix   = List<b8>::size(bfr);
-        constexpr ix CHUNK = 1024;
-        ix           wrt   = 0;
+        Ix           bix   = list::size(bfr);
+        constexpr Ix CHUNK = 1024;
+        Ix           wrt   = 0;
 
         do {
-            bfr = List<b8>::reserve(bfr, CHUNK);
-            wrt = (ix)std::fread(bfr.end, 1, CHUNK, file);
+            bfr = list::reserve(bfr, CHUNK);
+            wrt = (Ix)std::fread(bfr.end, 1, CHUNK, file);
             bfr.end += wrt;
         } while (CHUNK == wrt);
 
         check(std::feof(file) != 0, "Problem while reading!");
         check(std::fclose(file) != -1, "Could not close the file!");
 
-        return {.bfr = bfr, .file = List<b8>::view_end(bfr, bix)};
+        return {.bfr = bfr, .file = list::view_end(bfr, bix)};
     }
 } // namespace cthrice::file

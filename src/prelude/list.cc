@@ -22,40 +22,48 @@ namespace cthrice
         T* end;
         /* Pointer to the element one after the last allocated one. */
         T* lst;
+    };
 
+    namespace list
+    {
         /* Amount of elements. */
-        static ix size(List<T> list)
+        template<typename T>
+        Ix size(List<T> list)
         {
-            ix sze = list.end - list.bgn;
+            Ix sze = list.end - list.bgn;
             debug(sze >= 0, "Negative size!");
             return sze;
         }
 
         /* Amount of allocated element memory. */
-        static ix capacity(List<T> list)
+        template<typename T>
+        Ix capacity(List<T> list)
         {
-            ix cap = list.lst - list.bgn;
+            Ix cap = list.lst - list.bgn;
             debug(cap >= 0, "Negative capacity!");
             return cap;
         }
 
         /* Amount of unused element memory. */
-        static ix space(List<T> list)
+        template<typename T>
+        Ix space(List<T> list)
         {
-            ix spc = list.lst - list.end;
+            Ix spc = list.lst - list.end;
             debug(spc >= 0, "Negative space!");
             return spc;
         }
 
         /* Whether the view is valid. */
-        static bool view_valid(List<T> list, View<T> view)
+        template<typename T>
+        bool view_valid(List<T> list, View<T> view)
         {
             return view.bgn >= list.bgn && view.end <= list.end;
         }
 
         /* Immutable view of a part of the list from the element at the begin
          * index to the element one before the end index. */
-        static View<T> view_part(List<T> list, ix bix, ix eix)
+        template<typename T>
+        View<T> view_part(List<T> list, Ix bix, Ix eix)
         {
             View<T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
             debug(view_valid(list, res), "Creating invalid view!");
@@ -64,7 +72,8 @@ namespace cthrice
 
         /* Immutable view of the end of the list from the element at the begin
          * index to the last valid element. */
-        static View<T> view_end(List<T> list, ix bix)
+        template<typename T>
+        View<T> view_end(List<T> list, Ix bix)
         {
             View<T> res = {.bgn = list.bgn + bix, .end = list.end};
             debug(view_valid(list, res), "Creating invalid view!");
@@ -73,13 +82,15 @@ namespace cthrice
 
         /* Immutable view of the list from the first element to the last
          * valid element. */
-        static View<T> view(List<T> list)
+        template<typename T>
+        View<T> view(List<T> list)
         {
             return {.bgn = list.bgn, .end = list.end};
         }
 
         /* Deallocate the memory. */
-        [[nodiscard]] static List<T> free(List<T> list)
+        template<typename T>
+        [[nodiscard]] List<T> free(List<T> list)
         {
             std::free(list.bgn);
             list.bgn = list.end = list.lst = nullptr;
@@ -87,7 +98,8 @@ namespace cthrice
         }
 
         /* Remove all the elements. Keeps the memory. */
-        [[nodiscard]] static List<T> clean(List<T> list)
+        template<typename T>
+        [[nodiscard]] List<T> clean(List<T> list)
         {
             list.end = list.bgn;
             return list;
@@ -95,20 +107,21 @@ namespace cthrice
 
         /* Make sure the space is at least as big as the amount. Grows if
          * necessary by at least the half of the current capacity. */
-        [[nodiscard]] static List<T> reserve(List<T> list, ix amt)
+        template<typename T>
+        [[nodiscard]] List<T> reserve(List<T> list, Ix amt)
         {
             debug(amt >= 0, "Reserving negative amount!");
 
-            ix grw = amt - space(list);
+            Ix grw = amt - space(list);
 
             if (grw <= 0) {
                 return list;
             }
 
-            ix sze = size(list);
-            ix cap = capacity(list);
+            Ix sze = size(list);
+            Ix cap = capacity(list);
 
-            ix nwc = cap + std::max(grw, cap >> 1);
+            Ix nwc = cap + std::max(grw, cap >> 1);
             T* mem = (T*)std::realloc(list.bgn, sizeof(T) * nwc);
             check(mem != nullptr, "Could not allocate!");
 
@@ -119,7 +132,8 @@ namespace cthrice
         }
 
         /* Add the element to the end of the list. */
-        [[nodiscard]] static List<T> add(List<T> list, T t)
+        template<typename T>
+        [[nodiscard]] List<T> add(List<T> list, T t)
         {
             list        = reserve(list, 1);
             *list.end++ = t;
@@ -127,9 +141,10 @@ namespace cthrice
         }
 
         /* Add the view to the end of the list. */
-        [[nodiscard]] static List<T> add_view(List<T> list, View<T> view)
+        template<typename T>
+        [[nodiscard]] List<T> add_view(List<T> list, View<T> view)
         {
-            ix len = View<T>::size(view);
+            Ix len = view::size(view);
             list   = reserve(list, len);
             std::memmove((void*)list.end, (void*)view.bgn, len);
             list.end += len;
@@ -138,7 +153,8 @@ namespace cthrice
 
         /* Open space at the index by moving the elements and growing the memory
          * if necessary. */
-        [[nodiscard]] static List<T> open(List<T> list, ix i, ix len)
+        template<typename T>
+        [[nodiscard]] List<T> open(List<T> list, Ix i, Ix len)
         {
             list           = reserve(list, len);
             View<T> opened = view_part(list, i, i + len);
@@ -148,7 +164,8 @@ namespace cthrice
         }
 
         /* Put the element to the list at the index. */
-        [[nodiscard]] static List<T> put(List<T> list, ix i, T t)
+        template<typename T>
+        [[nodiscard]] List<T> put(List<T> list, Ix i, T t)
         {
             list        = open(list, i, 1);
             list.bgn[i] = t;
@@ -156,12 +173,13 @@ namespace cthrice
         }
 
         /* Put the view to the list at the index. */
-        [[nodiscard]] static List<T> put_view(List<T> list, ix i, View<T> view)
+        template<typename T>
+        [[nodiscard]] List<T> put_view(List<T> list, Ix i, View<T> view)
         {
-            ix len = View<T>::size(view);
+            Ix len = view::size(view);
             list   = open(list, i, len);
             std::memmove((void*)(list.bgn + i), (void*)view.bgn, len);
             return list;
         }
-    };
+    } // namespace list
 } // namespace cthrice
