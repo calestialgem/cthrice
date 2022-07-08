@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <cstdio>
-#include <stdio.h>
 
 int main(int argc, char** argv)
 {
