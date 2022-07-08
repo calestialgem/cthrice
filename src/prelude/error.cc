@@ -21,19 +21,17 @@ namespace cthrice
     /* Whether the transpiler is in debugging mode. */
     constexpr bool DEBUG_MODE = CTHRICE_DEBUG_MODE;
 
-    /* Print the message and type with the file and line number. */
-    void
-    log(const b8* msg,
-        const b8* typ,
+    /* Print the error message with the file and line number and terminate. */
+    void error(
+        const b8* msg,
         const b8* file = __builtin_FILE(),
         u32       line = __builtin_LINE())
     {
-        std::printf("%s:%u: %s: %s\n", file, line, typ, msg);
+        std::printf("%s:%u: error: %s\n", file, line, msg);
         std::terminate();
     }
 
-    /* Check whether the condition holds or not. Terminates if the condition is
-     * false. Prints the error message with the file and line number. */
+    /* Call error with the message if the condition does not hold. */
     void check(
         bool      cnd,
         const b8* msg,
@@ -41,7 +39,7 @@ namespace cthrice
         u32       line = __builtin_LINE())
     {
         if (!cnd) {
-            log(msg, "error", file, line);
+            error(msg, file, line);
         }
     }
 
@@ -53,9 +51,7 @@ namespace cthrice
         u32       line = __builtin_LINE())
     {
         if (DEBUG_MODE) {
-            if (!cnd) {
-                log(msg, "debug", file, line);
-            }
+            check(cnd, msg, file, line);
         }
     }
 } // namespace cthrice
