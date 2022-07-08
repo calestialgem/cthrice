@@ -32,7 +32,7 @@ namespace cthrice::file
         ix           wrt   = 0;
 
         do {
-            bfr = List<b8>::ensure_space(bfr, CHUNK);
+            bfr = List<b8>::reserve(bfr, CHUNK);
             wrt = (ix)std::fread(bfr.end, 1, CHUNK, file);
             bfr.end += wrt;
         } while (CHUNK == wrt);

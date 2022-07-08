@@ -85,9 +85,16 @@ namespace cthrice
             return list;
         }
 
+        /* Remove all the elements. Keeps the memory. */
+        [[nodiscard]] static List<T> clean(List<T> list)
+        {
+            list.end = list.bgn;
+            return list;
+        }
+
         /* Grow the capacity to the next powers of 16 until the space that is
          * wanted exists in the list. */
-        [[nodiscard]] static List<T> ensure_space(List<T> list, ix wsp)
+        [[nodiscard]] static List<T> reserve(List<T> list, ix wsp)
         {
             debug(wsp >= 0, "Wanted space is negative!");
 
@@ -120,7 +127,7 @@ namespace cthrice
         /* Add the element to the end of the list. */
         [[nodiscard]] static List<T> add(List<T> list, T t)
         {
-            list        = ensure_space(list, 1);
+            list        = reserve(list, 1);
             *list.end++ = t;
             return list;
         }
@@ -129,7 +136,7 @@ namespace cthrice
         [[nodiscard]] static List<T> add_view(List<T> list, View<T> view)
         {
             ix len = View<T>::size(view);
-            list   = ensure_space(list, len);
+            list   = reserve(list, len);
             std::memmove(list.end, view.bgn, len);
             list.end += len;
             return list;
@@ -137,9 +144,9 @@ namespace cthrice
 
         /* Open space at and after the given index by moving elements and
          * growing the memory if necessary. */
-        [[nodiscard]] static List<T> open_space(List<T> list, ix i, ix len)
+        [[nodiscard]] static List<T> open(List<T> list, ix i, ix len)
         {
-            list        = ensure_space(list, len);
+            list        = reserve(list, len);
             View opened = view_part(list, i, i + len);
             std::memmove(opened.end, opened.bgn, len);
             list.end += len;
@@ -149,7 +156,7 @@ namespace cthrice
         /* Put the element to the list at the index. */
         [[nodiscard]] static List<T> put(List<T> list, T t, ix i)
         {
-            list        = open_space(list, i, 1);
+            list        = open(list, i, 1);
             list.bgn[i] = t;
             return list;
         }
@@ -158,7 +165,7 @@ namespace cthrice
         [[nodiscard]] static List<T> put_view(List<T> list, View<T> view, ix i)
         {
             ix len = View<T>::size(view);
-            list   = open_space(list, i, len);
+            list   = open(list, i, len);
             std::memmove(list.bgn + i, view.bgn, len);
             return list;
         }
