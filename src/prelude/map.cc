@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include "error.cc"
 #include "list.cc"
-#include "prelude/error.cc"
-#include "prelude/view.cc"
+#include "view.cc"
 
 #include <algorithm>
 #include <cmath>
