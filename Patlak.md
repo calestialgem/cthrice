@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com> -->
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 
-# Pattern Language
+# Patlak Standard
 
 ## Definition
 
@@ -37,13 +37,8 @@ Matching a character. Which can be escaped using `\`.
 
 | Escape Sequence                   | Name                                                       |
 | --------------------------------- | ---------------------------------------------------------- |
-| `'\a'`                            | alert                                                      |
-| `'\b'`                            | backspace                                                  |
-| `'\f'`                            | formfeed page break                                        |
 | `'\n'`                            | newline                                                    |
-| `'\r'`                            | carriage return                                            |
 | `'\t'`                            | horizontal tab                                             |
-| `'\v'`                            | vertical tab                                               |
 | `'\<up-hex-digit><up-hex-digit>'` | character with the given uppercase hexadecimal ASCII value |
 | `'\\'`                            | backslash                                                  |
 | `'\''`                            | apostroph                                                  |
