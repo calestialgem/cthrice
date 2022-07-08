@@ -3,9 +3,7 @@
 
 #include "prelude/api.cc"
 
-#include <cstdio>
-
 int main(int argc, char** argv)
 {
-    std::printf("Hello, hello, hello!\n");
+    cthrice::debug(false, "Hello, hello, hello!");
 }
