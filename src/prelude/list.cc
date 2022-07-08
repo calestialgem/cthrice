@@ -56,8 +56,8 @@ namespace cthrice
          * index to the element one before the end index. */
         static View<T> view_part(List<T> list, ix bix, ix eix)
         {
-            View res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
-            debug(view_valid(res), "Creating invalid view!");
+            View<T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
+            debug(view_valid(list, res), "Creating invalid view!");
             return res;
         }
 
@@ -148,7 +148,7 @@ namespace cthrice
         {
             list        = reserve(list, len);
             View opened = view_part(list, i, i + len);
-            std::memmove(opened.end, opened.bgn, len);
+            std::memmove((void*)opened.end, (void*)opened.bgn, len);
             list.end += len;
             return list;
         }
@@ -166,7 +166,7 @@ namespace cthrice
         {
             ix len = View<T>::size(view);
             list   = open(list, i, len);
-            std::memmove(list.bgn + i, view.bgn, len);
+            std::memmove((void*)(list.bgn + i), (void*)view.bgn, len);
             return list;
         }
     };

@@ -12,6 +12,9 @@
 
 namespace cthrice
 {
+    /* Hash type. */
+    using hash = u64;
+
     /* Fast value access using hashed keys. */
     template<typename K, typename V>
     struct Map {
@@ -20,9 +23,6 @@ namespace cthrice
             K key;
             V val;
         };
-
-        /* Hash type. */
-        using hash = u64;
 
         /* Pair indicies corresponding to hashes. */
         List<ix> ixs;
@@ -69,7 +69,7 @@ namespace cthrice
             if (pos == prs.end) {
                 return nullptr;
             }
-            return const_cast<V*>(pos->val);
+            return const_cast<V*>(&pos->val);
         }
 
         /* Deallocate the memory. */
@@ -90,7 +90,7 @@ namespace cthrice
         static bool need_rehash(Map<K, V> map)
         {
             for (ix i = 0; i < List<ix>::size(map.ixs); i++) {
-                if (List<Pair>::size(view(map, i)) > MAX_COLLISION) {
+                if (View<Pair>::size(view(map, i)) > MAX_COLLISION) {
                     return true;
                 }
             }
@@ -104,7 +104,7 @@ namespace cthrice
                 // Grow the indicies.
                 map.ixs = List<ix>::reserve(
                     map.ixs,
-                    std::max(1, List<ix>::capacity(map.ixs)));
+                    std::max((ix)1, List<ix>::capacity(map.ixs)));
 
                 // Sort the pairs by hash.
                 std::sort(map.prs.bgn, map.prs.end, [](Pair lhs, Pair rhs) {
@@ -141,18 +141,20 @@ namespace cthrice
 
             // Check if it already exists.
             check(
-                View<Pair>::contains_fit(
+                !View<Pair>::contains_fit(
                     prs,
                     [key](Pair p) {
                         return K::equal(p.key, key);
                     }),
                 "Key already exists!");
 
+            Pair p = {.key = key, .val = val};
+
             // If it would not create too many collisions.
             if (View<Pair>::size(prs) <= MAX_COLLISION) {
                 // Put at the end of the view.
                 ix end  = prs.end - map.prs.bgn;
-                map.prs = List<Pair>::put(map.prs, end, val);
+                map.prs = List<Pair>::put(map.prs, p, end);
 
                 // Increase indicies.
                 ix sze = List<ix>::size(map.ixs);
@@ -162,7 +164,7 @@ namespace cthrice
                 }
             } else {
                 // Just add to the end; rehash will handle the rest.
-                map.prs = List<Pair>::add(map.prs, val);
+                map.prs = List<Pair>::add(map.prs, p);
                 map     = rehash(map);
             }
 
