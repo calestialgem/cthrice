@@ -60,10 +60,7 @@ namespace cthrice
         static const T* find_fit(Span<T> span, P pred)
         {
             const T* res = span.bgn;
-            while (res < span.end) {
-                if (pred(*res)) {
-                    break;
-                }
+            while (res < span.end && !pred(*res)) {
                 res++;
             }
             return res;
