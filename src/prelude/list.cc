@@ -65,8 +65,8 @@ namespace cthrice
          * index to the last element. */
         static View<T> view_end(List<T> list, ix bix)
         {
-            View res = {.bgn = list.bgn + bix, .end = list.end};
-            debug(view_valid(res), "Creating invalid view!");
+            View<T> res = {.bgn = list.bgn + bix, .end = list.end};
+            debug(view_valid(list, res), "Creating invalid view!");
             return res;
         }
 
@@ -108,7 +108,7 @@ namespace cthrice
             }
             debug(nwc > 0, "Allocating nonpositive capacity!");
 
-            T* mem = std::realloc(list.bgn, sizeof(T) * nwc);
+            T* mem = (T*)std::realloc(list.bgn, sizeof(T) * nwc);
             check(mem != nullptr, "Could not allocate!");
 
             list.bgn = mem;
