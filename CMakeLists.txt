@@ -12,6 +12,20 @@ add_executable(${PROJECT_NAME} src/main.cc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    src/prelude/error.cc
+    src/prelude/file.cc
+    src/prelude/list.cc
+    src/prelude/types.cc
+    src/prelude/view.cc
+    <cstddef>
+    <cstdlib>
+    <cstdint>
+    <cstdio>
+    <cstdstring>
+    <exception>
+)
+
 # Enable all warnings.
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /Wall)
