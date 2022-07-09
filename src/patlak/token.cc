@@ -8,7 +8,7 @@
 #include "prelude/types.cc"
 #include "prelude/view.cc"
 
-#include <tuple>
+#include <cstdio>
 
 namespace cthrice::patlak
 {
@@ -63,6 +63,59 @@ namespace cthrice::patlak
 
     namespace token
     {
+        /* Format string from the token type. */
+        const B8* type_format(Token::Type typ)
+        {
+            switch (typ) {
+                case Token::EQUAL:
+                    return "= ";
+                case Token::DOT:
+                    return ". ";
+                case Token::PIPE:
+                    return "| ";
+                case Token::COMMA:
+                    return ", ";
+                case Token::QUESTION_MARK:
+                    return "? ";
+                case Token::STAR:
+                    return "* ";
+                case Token::PLUS:
+                    return "+ ";
+                case Token::OPENING_CURLY_BRACKET:
+                    return "{ ";
+                case Token::CLOSING_CURLY_BRACKET:
+                    return "} ";
+                case Token::OPENING_SQUARE_BRACKET:
+                    return "[ ";
+                case Token::CLOSING_SQUARE_BRACKET:
+                    return "] ";
+                case Token::NUMBER:
+                case Token::QUOTE:
+                case Token::IDENTIFIER:
+                    return "%.*s ";
+                default:
+                    return "!(%.*s)";
+            }
+        }
+
+        /* Print the token. */
+        void print(Token tkn)
+        {
+            std::printf(
+                type_format(tkn.typ),
+                (int)view::size(tkn.val),
+                tkn.val.bgn);
+        }
+
+        /* Print the tokens. */
+        void print_all(View<Token> tkns)
+        {
+            for (const Token* i = tkns.bgn; i < tkns.end; i++) {
+                print(*i);
+            }
+            std::printf("\n");
+        }
+
         /* Create a token with the type and the length. */
         [[nodiscard]] Lex form(Lex lex, Token::Type typ, Ix len)
         {
@@ -179,7 +232,7 @@ namespace cthrice::patlak
             while (view::finite(lex.ptrn)) {
                 lex = next(lex);
             }
-            return tkns;
+            return lex.tkns;
         }
     } // namespace token
 } // namespace cthrice::patlak
