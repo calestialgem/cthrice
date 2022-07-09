@@ -53,6 +53,13 @@ namespace cthrice
             return spc;
         }
 
+        /* Whether there are any elements. */
+        template<typename T>
+        bool finite(List<T> list)
+        {
+            return size(list) > 0;
+        }
+
         /* Whether the index is valid. */
         template<typename T>
         bool valid(List<T> list, Ix ix)

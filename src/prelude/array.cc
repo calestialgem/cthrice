@@ -33,6 +33,13 @@ namespace cthrice
             return sze;
         }
 
+        /* Whether there are any elements. */
+        template<typename T>
+        bool finite(Array<T> array)
+        {
+            return size(array) > 0;
+        }
+
         /* Whether the index is valid. */
         template<typename T>
         bool valid(Array<T> array, Ix ix)

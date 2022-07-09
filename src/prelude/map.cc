@@ -35,6 +35,34 @@ namespace cthrice
 
     namespace map
     {
+        /* Amount of values. */
+        template<typename K, typename V>
+        Ix size(Map<K, V> map)
+        {
+            return list::size(map.prs);
+        }
+
+        /* Amount of allocated value memory. */
+        template<typename K, typename V>
+        Ix capacity(Map<K, V> map)
+        {
+            return list::capacity(map.prs);
+        }
+
+        /* Amount of unused value memory. */
+        template<typename K, typename V>
+        Ix space(Map<K, V> map)
+        {
+            return list::space(map.prs);
+        }
+
+        /* Whether there are any elements. */
+        template<typename K, typename V>
+        bool finite(Map<K, V> map)
+        {
+            return size(map) > 0;
+        }
+
         /* Pairs corresponding to the hash. */
         template<typename K, typename V>
         View<Pair<K, V>> view(Map<K, V> map, Hash hsh)
