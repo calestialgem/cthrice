@@ -53,11 +53,37 @@ namespace cthrice
             return spc;
         }
 
+        /* Whether the index is valid. */
+        template<typename T>
+        bool valid(List<T> list, Ix ix)
+        {
+            return ix >= 0 && ix < size(list);
+        }
+
         /* Whether the view is valid. */
         template<typename T>
-        bool view_valid(List<T> list, View<T> view)
+        bool valid_view(List<T> list, View<T> view)
         {
             return view.bgn >= list.bgn && view.end <= list.end;
+        }
+
+        /* Reference to the value at the index. */
+        template<typename T>
+        T& at(List<T> list, Ix ix)
+        {
+            debug(valid(list, ix), "Invalid index!");
+            return list.bgn[ix];
+        }
+
+        /* Pointer to the value at the index. Returns null if the index is
+         * invalid. */
+        template<typename T>
+        T* get(List<T> list, Ix ix)
+        {
+            if (valid(list, ix)) {
+                return list.bgn + ix;
+            }
+            return nullptr;
         }
 
         /* Immutable view of a part of the list from the element at the begin
@@ -66,7 +92,7 @@ namespace cthrice
         View<T> view_part(List<T> list, Ix bix, Ix eix)
         {
             View<T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
-            debug(view_valid(list, res), "Creating invalid view!");
+            debug(valid_view(list, res), "Creating invalid view!");
             return res;
         }
 
@@ -76,7 +102,7 @@ namespace cthrice
         View<T> view_end(List<T> list, Ix bix)
         {
             View<T> res = {.bgn = list.bgn + bix, .end = list.end};
-            debug(view_valid(list, res), "Creating invalid view!");
+            debug(valid_view(list, res), "Creating invalid view!");
             return res;
         }
 

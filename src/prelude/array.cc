@@ -33,11 +33,37 @@ namespace cthrice
             return sze;
         }
 
+        /* Whether the index is valid. */
+        template<typename T>
+        bool valid(Array<T> array, Ix ix)
+        {
+            return ix >= 0 && ix < size(array);
+        }
+
         /* Whether the view is valid. */
         template<typename T>
-        bool view_valid(Array<T> array, View<T> view)
+        bool valid_view(Array<T> array, View<T> view)
         {
             return view.bgn >= array.bgn && view.end <= array.end;
+        }
+
+        /* Reference to the value at the index. */
+        template<typename T>
+        T& at(Array<T> array, Ix ix)
+        {
+            debug(valid(array, ix), "Invalid index!");
+            return array.bgn[ix];
+        }
+
+        /* Pointer to the value at the index. Returns null if the index is
+         * invalid. */
+        template<typename T>
+        T* get(Array<T> array, Ix ix)
+        {
+            if (valid(array, ix)) {
+                return array.bgn + ix;
+            }
+            return nullptr;
         }
 
         /* Immutable view of a part of the array from the element at the begin
@@ -46,7 +72,7 @@ namespace cthrice
         View<T> view_part(Array<T> array, Ix bix, Ix eix)
         {
             View<T> res = {.bgn = array.bgn + bix, .end = array.bgn + eix};
-            debug(view_valid(array, res), "Creating invalid view!");
+            debug(valid_view(array, res), "Creating invalid view!");
             return res;
         }
 
@@ -56,7 +82,7 @@ namespace cthrice
         View<T> view_end(Array<T> array, Ix bix)
         {
             View<T> res = {.bgn = array.bgn + bix, .end = array.end};
-            debug(view_valid(array, res), "Creating invalid view!");
+            debug(valid_view(array, res), "Creating invalid view!");
             return res;
         }
 

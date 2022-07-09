@@ -63,10 +63,23 @@ namespace cthrice
             return list::view_end(map.prs, *current);
         }
 
+        /* Reference to the value that corresponds to the key. */
+        template<typename K, typename V>
+        V& at(Map<K, V> map, K key)
+        {
+            View<Pair<K, V>> prs = view(map, hash(key));
+
+            const Pair<K, V>* pos = view::find_fit(prs, [key](Pair<K, V> p) {
+                return equal(p.key, key);
+            });
+
+            return const_cast<V&>(pos->val);
+        }
+
         /* Pointer to the value that corresponds to the key. Returns nullptr if
          * the value does not exist. */
         template<typename K, typename V>
-        V* at(Map<K, V> map, K key)
+        V* get(Map<K, V> map, K key)
         {
             View<Pair<K, V>> prs = view(map, hash(key));
 

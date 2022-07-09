@@ -42,32 +42,30 @@ int main(int argc, char** argv)
     agemap = map::add(agemap, 2021 - 1972, view::terminated("Zülfiye"));
     agemap = map::add(agemap, 2022 - 1967, view::terminated("Hakkı"));
 
-    View<B8>* name = map::at(agemap, 21);
+    View<B8>& cem = map::at(agemap, 21);
+    std::printf("Name: {%.*s}\n", (int)view::size(cem), cem.bgn);
+
+    View<B8>* name = map::get(agemap, 23);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, 23);
+    name = map::get(agemap, 2021 - 1972);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, 2021 - 1972);
+    name = map::get(agemap, 2022 - 1967);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, 2022 - 1967);
+    name = map::get(agemap, 1967);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
 
-    name = map::at(agemap, 1967);
-    if (name != nullptr) {
-        std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
-    }
-
-    name = map::at(agemap, -5);
+    name = map::get(agemap, -5);
     if (name != nullptr) {
         std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
     }
