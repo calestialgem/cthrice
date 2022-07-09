@@ -130,6 +130,15 @@ namespace cthrice
             return map;
         }
 
+        /* Remove all the elements. Keeps the memory. */
+        template<typename K, typename V>
+        [[nodiscard]] Map<K, V> clear(Map<K, V> map)
+        {
+            map.ixs = array::free(map.ixs);
+            map.prs = list::clear(map.prs);
+            return map;
+        }
+
         /* Maximum allowed amount of keys whose hashes give the same index after
          * modulus operation. Decreases the speed of the hashmap, but also
          * the memory usage. */

@@ -132,7 +132,7 @@ namespace cthrice
 
         /* Remove all the elements. Keeps the memory. */
         template<typename T>
-        [[nodiscard]] List<T> clean(List<T> list)
+        [[nodiscard]] List<T> clear(List<T> list)
         {
             list.end = list.bgn;
             return list;
