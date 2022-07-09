@@ -23,6 +23,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     src/patlak/code.cc
     src/patlak/hash.cc
     src/patlak/match.cc
+    src/patlak/token.cc
     <cmath>
     <cstddef>
     <cstdlib>
