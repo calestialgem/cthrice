@@ -25,6 +25,16 @@ namespace cthrice::map
     }
 } // namespace cthrice::map
 
+bool prime(Hash hash)
+{
+    for (Hash i = 2; i < hash / 2; i++) {
+        if (hash % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, char** argv)
 {
     check(argc >= 2, "Provide a Thrice file!");
@@ -71,4 +81,6 @@ int main(int argc, char** argv)
     }
 
     agemap = map::free(agemap);
+
+    std::printf("Hash %llu %s prime.\n", 53, prime(53) ? "is" : "is not");
 }
