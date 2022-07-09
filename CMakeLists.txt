@@ -20,9 +20,10 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     src/prelude/map.cc
     src/prelude/types.cc
     src/prelude/view.cc
+    src/patlak/api.cc
     src/patlak/code.cc
     src/patlak/hash.cc
-    src/patlak/match.cc
+    src/patlak/parse.cc
     src/patlak/token.cc
     <cmath>
     <cstddef>

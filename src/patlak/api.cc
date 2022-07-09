@@ -21,11 +21,8 @@ namespace cthrice::patlak
         Map<View<B8>, Ix> starts;
     };
 
-    /* Parse the pattern by searching for references in the context. */
-    [[nodiscard]] Context parse(Context ctx, View<B8> ptrn)
-    {
-        return ctx;
-    }
+    /* Compile the pattern by searching for references in the context. */
+    [[nodiscard]] Context compile(Context ctx, View<B8> ptrn);
 
     /* Match the pattern with the name to the input. Returns the initial portion
      * of the input that matched. Matches are checked from the begining. Empty
