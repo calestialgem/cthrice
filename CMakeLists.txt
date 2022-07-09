@@ -34,5 +34,5 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /Wall)
 else(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-deprecated-declarations -Wnognu-anonymous-struct -Wnonested-anon-types)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-deprecated-declarations -Wno-gnu-anonymous-struct -Wno-nested-anon-types)
 endif(MSVC)
