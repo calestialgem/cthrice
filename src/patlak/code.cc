@@ -73,6 +73,42 @@ namespace cthrice::patlak
 
     namespace code
     {
+        /* Print the code. */
+        void print(Code code)
+        {
+            switch (code.type) {
+                case Code::EMPTY:
+                    printf("EMPTY");
+                    break;
+                case Code::LITERAL:
+                    printf("LITERAL {%c}", code.ltrl);
+                    break;
+                case Code::RANGE:
+                    printf("RANGE {%c~%c}", code.bgn, code.end);
+                    break;
+                case Code::REFERANCE:
+                    printf("REFERANCE {%05lld}", code.ref);
+                    break;
+                case Code::BRANCH:
+                    printf("BRANCH {%lld}", code.amt);
+                    break;
+                case Code::TERMINAL:
+                    printf("TERMINAL");
+                    break;
+            }
+            printf(" %+lld\n", code.move);
+        }
+
+        /* Print the codes. */
+        void print_all(View<Code> codes)
+        {
+            for (const Code* i = codes.bgn; i < codes.end; i++) {
+                printf("[%05lld] ", i - codes.bgn);
+                print(*i);
+            }
+        }
+
+        // Prototype for call before definition.
         View<B8> test(View<Code> codes, State init);
 
         /* Decode the state using the codes and add the states come after it to
@@ -122,7 +158,7 @@ namespace cthrice::patlak
                     return {.next = next, .matched = true};
                 default:
                     // DEBUG: Print the unkown code.
-                    // TODO: Print the code.
+                    print(code);
                     debug(false, "Unkown type!");
             }
 
