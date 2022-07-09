@@ -23,7 +23,8 @@ namespace cthrice
         };
     } // namespace map
 
-    /* Fast value access using hashed keys. */
+    /* Mapping from a unique, hashable and comparible key to a value. Fast to
+     * get a value and traverse all the values, slow to add a new value. */
     template<typename K, typename V>
     struct Map {
         /* Pair indicies corresponding to hashes. */
