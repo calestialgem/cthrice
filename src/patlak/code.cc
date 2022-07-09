@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "prelude/list.cc"
 #include "prelude/types.cc"
 #include "prelude/view.cc"
 
@@ -59,5 +60,13 @@ namespace cthrice::patlak
         Ix code;
         /* Whether the state reached a dead end. */
         bool dead;
+    };
+
+    /* Result of decoding a state. */
+    struct Decode {
+        /* States that come after. */
+        List<State> next;
+        /* Whether the input was accepted by the automaton. */
+        bool matched;
     };
 } // namespace cthrice::patlak
