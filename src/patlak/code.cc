@@ -73,6 +73,8 @@ namespace cthrice::patlak
 
     namespace code
     {
+        View<B8> test(View<Code> codes, State init);
+
         /* Decode the state using the codes and add the states come after it to
          * the next states. */
         Decode decode(View<Code> codes, List<State> next, State state)
@@ -94,15 +96,17 @@ namespace cthrice::patlak
                                *state.inpt.bgn++ < code.bgn ||
                                *state.inpt.bgn > code.end;
                     break;
-                case Code::REFERANCE:
+                case Code::REFERANCE: {
                     // Check the reffered pattern.
                     State ref = {
                         .inpt = state.inpt,
                         .code = code.ref,
                         .dead = false};
-                    // TODO: Decode the pattern.
-                    // TODO: Consume the input.
-                    break;
+                    View<B8> match = test(codes, ref);
+                    // Consume the input.
+                    state.inpt.bgn = match.end;
+                    state.dead     = !view::finite(match);
+                } break;
                 case Code::BRANCH:
                     debug(code.amt > 0, "Nonpositive branch amount!");
                     debug(
@@ -129,6 +133,52 @@ namespace cthrice::patlak
 
         end:
             return {.next = next, .matched = false};
+        }
+
+        /* Decode until the end starting from the initial state. Returns the
+         * initial portion of the input that was accepted by the
+         * nondeterministic finite automaton first. Empty match means none of
+         * the states were accepted before all states died. */
+        View<B8> test(View<Code> codes, State init)
+        {
+            View<B8>    match{};
+            List<State> active{};
+            List<State> next{};
+
+            // Put the initial state.
+            debug(!init.dead, "Initial state is dead!");
+            active = list::add(active, init);
+
+            // Until all states die.
+            while (list::finite(active)) {
+                // Step all the active states and collect all the next states.
+                next = list::clear(next);
+                for (const State* i = active.bgn; i < active.end; i++) {
+                    Decode dcde = decode(codes, next, *i);
+                    next        = dcde.next;
+
+                    // Return early if matched.
+                    if (dcde.matched) {
+                        match.bgn = init.inpt.bgn;
+                        match.end = i->inpt.bgn;
+                        debug(view::finite(match), "Did not consume anything!");
+                        goto end;
+                    }
+                }
+
+                // Take all the nondead next states to the active states.
+                active = list::clear(active);
+                for (const State* i = next.bgn; i < next.end; i++) {
+                    if (!i->dead) {
+                        active = list::add(active, *i);
+                    }
+                }
+            }
+
+        end:
+            active = list::free(active);
+            next   = list::free(next);
+            return match;
         }
     } // namespace code
 } // namespace cthrice::patlak
