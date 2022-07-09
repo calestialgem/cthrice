@@ -4,10 +4,11 @@
 #pragma once
 
 #include "prelude/types.cc"
+#include "prelude/view.cc"
 
 namespace cthrice::patlak
 {
-    /* Compiled pattern information. These are the transitions in a
+    /* Compiled pattern information. These are the transitions in the
      * nondeterministic finite automaton with empty moves. */
     struct Code {
         /* Amount of code to move forward. Zero means a match. */
@@ -48,5 +49,15 @@ namespace cthrice::patlak
             /* Data of BRANCH type. Amount of branches. */
             Ix amt;
         };
+    };
+
+    /* State of the nondeterministic finite automaton. */
+    struct State {
+        /* Remaining input. */
+        View<B8> inpt;
+        /* Index of the code. */
+        Ix code;
+        /* Whether the state reached a dead end. */
+        bool dead;
     };
 } // namespace cthrice::patlak
