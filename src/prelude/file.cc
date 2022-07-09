@@ -13,7 +13,7 @@
 namespace cthrice::file
 {
     /* Result of loading a file to the memory. */
-    struct Res {
+    struct Result {
         /* Memory buffer that the contents of the file were loaded. */
         List<B8> bfr;
         /* Contents of the file. */
@@ -22,7 +22,7 @@ namespace cthrice::file
 
     /* Load the contents of a file to the buffer. Returns the resulting buffer
      * and a view to the contents of the file. */
-    [[nodiscard]] Res load(List<B8> bfr, const B8* path)
+    [[nodiscard]] Result load(List<B8> bfr, const B8* path)
     {
         std::FILE* file = std::fopen(path, "r");
         check(file != nullptr, "Could not open the file!");

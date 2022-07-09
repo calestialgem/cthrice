@@ -12,29 +12,6 @@
 
 using namespace cthrice;
 
-namespace cthrice::map
-{
-    Hash hash(I32 age)
-    {
-        return age;
-    }
-
-    bool equal(I32 lhs, I32 rhs)
-    {
-        return lhs == rhs;
-    }
-} // namespace cthrice::map
-
-bool prime(Hash hash)
-{
-    for (Hash i = 2; i < hash / 2; i++) {
-        if (hash % i == 0) {
-            return false;
-        }
-    }
-    return true;
-}
-
 int main(int argc, char** argv)
 {
     check(argc >= 2, "Provide a Thrice file!");
@@ -44,43 +21,4 @@ int main(int argc, char** argv)
     View file    = res.file;
     std::printf("%.*s\n", (int)view::size(file), file.bgn);
     bfr = list::free(bfr);
-
-    Map<I32, View<B8>> agemap{};
-
-    agemap = map::add(agemap, 2021 - 2000, view::terminated("Cem"));
-    agemap = map::add(agemap, 2022 - 1999, view::terminated("Gülhan"));
-    agemap = map::add(agemap, 2021 - 1972, view::terminated("Zülfiye"));
-    agemap = map::add(agemap, 2022 - 1967, view::terminated("Hakkı"));
-
-    View<B8>& cem = map::at(agemap, 21);
-    std::printf("Name: {%.*s}\n", (int)view::size(cem), cem.bgn);
-
-    View<B8>* name = map::get(agemap, 23);
-    if (name != nullptr) {
-        std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
-    }
-
-    name = map::get(agemap, 2021 - 1972);
-    if (name != nullptr) {
-        std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
-    }
-
-    name = map::get(agemap, 2022 - 1967);
-    if (name != nullptr) {
-        std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
-    }
-
-    name = map::get(agemap, 1967);
-    if (name != nullptr) {
-        std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
-    }
-
-    name = map::get(agemap, -5);
-    if (name != nullptr) {
-        std::printf("Name: {%.*s}\n", (int)view::size(*name), name->bgn);
-    }
-
-    agemap = map::free(agemap);
-
-    std::printf("Hash %llu %s prime.\n", 53, prime(53) ? "is" : "is not");
 }
