@@ -62,6 +62,59 @@ namespace cthrice
             return true;
         }
 
+        /* Whether the index is valid. */
+        template<typename T>
+        bool valid(View<T> view, Ix ix)
+        {
+            return ix >= 0 && ix < size(view);
+        }
+
+        /* Whether the part is valid. */
+        template<typename T>
+        bool valid_view(View<T> view, View<T> part)
+        {
+            return part.bgn >= view.bgn && part.end <= view.end;
+        }
+
+        /* Immutable reference to the value at the index. */
+        template<typename T>
+        const T& at(View<T> view, Ix ix)
+        {
+            debug(valid(view, ix), "Invalid index!");
+            return view.bgn[ix];
+        }
+
+        /* Immutable pointer to the value at the index. Returns null if the
+         * index is invalid. */
+        template<typename T>
+        const T* get(View<T> view, Ix ix)
+        {
+            if (valid(view, ix)) {
+                return view.bgn + ix;
+            }
+            return nullptr;
+        }
+
+        /* Immutable view of a part of the view from the element at the begin
+         * index to the element one before the end index. */
+        template<typename T>
+        View<T> view_part(View<T> view, Ix bix, Ix eix)
+        {
+            View<T> res = {.bgn = view.bgn + bix, .end = view.bgn + eix};
+            debug(valid_view(view, res), "Creating invalid view!");
+            return res;
+        }
+
+        /* Immutable view of the end of the view from the element at the begin
+         * index to the last valid element. */
+        template<typename T>
+        View<T> view_end(View<T> view, Ix bix)
+        {
+            View<T> res = {.bgn = view.bgn + bix, .end = view.end};
+            debug(valid_view(view, res), "Creating invalid view!");
+            return res;
+        }
+
         /* Find the first position of the element that fits the predicate.
          * Returns the pointer to the element after the last one if none of the
          * elements fits the predicate. */
