@@ -94,7 +94,7 @@ namespace cthrice::patlak
                 case Token::IDENTIFIER:
                     return "%.*s ";
                 default:
-                    return "!(%.*s)";
+                    return "!(%.*s) ";
             }
         }
 
