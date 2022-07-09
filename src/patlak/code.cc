@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "prelude/error.cc"
 #include "prelude/list.cc"
 #include "prelude/types.cc"
 #include "prelude/view.cc"
@@ -69,4 +70,65 @@ namespace cthrice::patlak
         /* Whether the input was accepted by the automaton. */
         bool matched;
     };
+
+    namespace code
+    {
+        /* Decode the state using the codes and add the states come after it to
+         * the next states. */
+        Decode decode(View<Code> codes, List<State> next, State state)
+        {
+            debug(!state.dead, "Decoding a dead state!");
+            const Code& code = view::at(codes, state.code);
+
+            switch (code.type) {
+                case Code::EMPTY:
+                    break;
+                case Code::LITERAL:
+                    // Check the next input and consume it.
+                    state.dead = !view::finite(state.inpt) ||
+                               *state.inpt.bgn++ != code.ltrl;
+                    break;
+                case Code::RANGE:
+                    // Check the next input and consume it.
+                    state.dead = !view::finite(state.inpt) ||
+                               *state.inpt.bgn++ < code.bgn ||
+                               *state.inpt.bgn > code.end;
+                    break;
+                case Code::REFERANCE:
+                    // Check the reffered pattern.
+                    State ref = {
+                        .inpt = state.inpt,
+                        .code = code.ref,
+                        .dead = false};
+                    // TODO: Decode the pattern.
+                    // TODO: Consume the input.
+                    break;
+                case Code::BRANCH:
+                    debug(code.amt > 0, "Nonpositive branch amount!");
+                    debug(
+                        view::valid(codes, state.code + code.amt),
+                        "Branching out of bounds!");
+                    // Add all diverging states to the next states.
+                    for (Ix j = 0; j < code.amt; j++) {
+                        state.code++;
+                        next = list::add(next, state);
+                    }
+                    goto end;
+                case Code::TERMINAL:
+                    return {.next = next, .matched = true};
+                default:
+                    // DEBUG: Print the unkown code.
+                    // TODO: Print the code.
+                    debug(false, "Unkown type!");
+            }
+
+            // Add the target state to the next states.
+            state.code += code.move;
+            debug(view::valid(codes, state.code), "Movement out of bounds!");
+            next = list::add(next, state);
+
+        end:
+            return {.next = next, .matched = false};
+        }
+    } // namespace code
 } // namespace cthrice::patlak
