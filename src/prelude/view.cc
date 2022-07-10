@@ -95,6 +95,27 @@ namespace cthrice
             return nullptr;
         }
 
+        /* Parts of a view, which was splitted at a point. The element where the
+         * split happens is the first element of the after view. */
+        template<typename T>
+        struct Split {
+            /* Part of the split from the begining. */
+            View<T> before;
+            /* Part of the split from the end. */
+            View<T> after;
+        };
+
+        /* Split the view from the given position. */
+        template<typename T>
+        Split<T> split(View<T> view, T* pos)
+        {
+            debug(pos >= view.bgn && pos <= view.end, "Invalid position!");
+            return {
+                .before = {.bgn = view.bgn,      .end = pos},
+                .after  = {     .bgn = pos, .end = view.end}
+            };
+        }
+
         /* View of a part of the view from the element at the begin index to the
          * element one before the end index. */
         template<typename T>
@@ -129,7 +150,7 @@ namespace cthrice
          * Returns the pointer to the element after the last one if none of the
          * elements fits the predicate. */
         template<typename T, typename P>
-        T* find_fit(View<T> view, P pred)
+        T* first_fit(View<T> view, P pred)
         {
             T* res = view.bgn;
             while (res < view.end && !pred(*res)) {
@@ -138,19 +159,57 @@ namespace cthrice
             return res;
         }
 
+        /* Find the last position of the element that fits the predicate.
+         * Returns the pointer to the element before the first one if none of
+         * the elements fits the predicate. */
+        template<typename T, typename P>
+        T* last_fit(View<T> view, P pred)
+        {
+            T* res = view.end - 1;
+            while (res >= view.bgn && !pred(*res)) {
+                res--;
+            }
+            return res;
+        }
+
         /* Whether there is an element that fits the predicate. */
         template<typename T, typename P>
         bool contains_fit(View<T> view, P pred)
         {
-            return find_fit(view, pred) != view.end;
+            return first_fit(view, pred) != view.end;
         }
 
-        /* Find the first position of the element. Returns the pointer to the
-         * element after the last one if it does not exist. */
-        template<typename T>
-        T* find(View<T> view, T t)
+        /* Split the view from the first element that fits the predicate. */
+        template<typename T, typename P>
+        Split<T> before_fit(View<T> view, P pred)
         {
-            return find_fit(view, [t](T elem) {
+            return split(view, first_fit(view, pred));
+        }
+
+        /* Split the view from the element one after the last element that fits
+         * the predicate. */
+        template<typename T, typename P>
+        Split<T> after_fit(View<T> view, P pred)
+        {
+            return split(view, last_fit(view, pred) + 1);
+        }
+
+        /* Find the first position of the element. Returns the pointer to
+         * the element after the last one if it does not exist. */
+        template<typename T>
+        T* first(View<T> view, T t)
+        {
+            return first_fit(view, [t](T elem) {
+                return elem == t;
+            });
+        }
+
+        /* Find the last position of the element. Returns the pointer to
+         * the element after the last one if it does not exist. */
+        template<typename T>
+        T* last(View<T> view, T t)
+        {
+            return last_fit(view, [t](T elem) {
                 return elem == t;
             });
         }
@@ -159,7 +218,22 @@ namespace cthrice
         template<typename T>
         bool contains(View<T> view, T t)
         {
-            return find(view, t) != view.end;
+            return first(view, t) != view.end;
+        }
+
+        /* Split the view from the first occurance of the element. */
+        template<typename T>
+        Split<T> before(View<T> view, T t)
+        {
+            return split(view, first(view, t));
+        }
+
+        /* Split the view from the element on after the last occurance of the
+         * element. */
+        template<typename T>
+        Split<T> after(View<T> view, T t)
+        {
+            return split(view, last(view, t) + 1);
         }
     } // namespace view
 } // namespace cthrice
