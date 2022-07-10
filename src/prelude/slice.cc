@@ -51,7 +51,7 @@ namespace cthrice
 
         /* Whether the slices have the same elements in the same order. */
         template<typename T>
-        bool equal(Slice<T> lhs, decltype(lhs) rhs)
+        bool equal(Slice<T> lhs, Slice<T> rhs)
         {
             Ix sze = size(lhs);
             if (sze != size(rhs)) {
@@ -74,7 +74,7 @@ namespace cthrice
 
         /* Whether the part is valid. */
         template<typename T>
-        bool valid_slice(Slice<T> slice, decltype(slice) part)
+        bool valid_slice(Slice<T> slice, Slice<T> part)
         {
             return part.bgn >= slice.bgn && part.end <= slice.end;
         }
@@ -105,7 +105,7 @@ namespace cthrice
             /* Part of the split from the begining. */
             Slice<T> before;
             /* Part of the split from the end. */
-            decltype(before) after;
+            Slice<T> after;
         };
 
         /* Split the slice from the given position. */
