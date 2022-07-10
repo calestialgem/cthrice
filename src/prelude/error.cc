@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "types.cc"
+#include "scalar.cc"
 
 #include <cstdio>
 #include <exception>
