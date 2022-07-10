@@ -8,20 +8,20 @@
 
 namespace cthrice
 {
-    /* Immutable view of contiguously placed elements. */
+    /* View of contiguously placed elements. */
     template<typename T>
     struct View {
         /* Pointer to the element at the begining. */
-        const T* bgn;
+        T* bgn;
         /* Pointer to the element one after the end. */
-        const T* end;
+        T* end;
     };
 
     namespace view
     {
         /* View of a null terminated array. */
         template<typename T>
-        View<T> terminated(const T* nta)
+        View<T> terminated(T* nta)
         {
             View<T> res = {.bgn = nta, .end = nta};
             while (*res.end) {
@@ -76,18 +76,18 @@ namespace cthrice
             return part.bgn >= view.bgn && part.end <= view.end;
         }
 
-        /* Immutable reference to the value at the index. */
+        /* Reference to the value at the index. */
         template<typename T>
-        const T& at(View<T> view, Ix ix)
+        T& at(View<T> view, Ix ix)
         {
             debug(valid(view, ix), "Invalid index!");
             return view.bgn[ix];
         }
 
-        /* Immutable pointer to the value at the index. Returns null if the
-         * index is invalid. */
+        /* Pointer to the value at the index. Returns null if the index is
+         * invalid. */
         template<typename T>
-        const T* get(View<T> view, Ix ix)
+        T* get(View<T> view, Ix ix)
         {
             if (valid(view, ix)) {
                 return view.bgn + ix;
@@ -95,8 +95,8 @@ namespace cthrice
             return nullptr;
         }
 
-        /* Immutable view of a part of the view from the element at the begin
-         * index to the element one before the end index. */
+        /* View of a part of the view from the element at the begin index to the
+         * element one before the end index. */
         template<typename T>
         View<T> view_part(View<T> view, Ix bix, Ix eix)
         {
@@ -105,10 +105,20 @@ namespace cthrice
             return res;
         }
 
-        /* Immutable view of the end of the view from the element at the begin
-         * index to the last valid element. */
+        /* View of the begining of the view from the first element to the
+         * element one before the end index. */
         template<typename T>
-        View<T> view_end(View<T> view, Ix bix)
+        View<T> view_trail(View<T> view, Ix eix)
+        {
+            View<T> res = {.bgn = view.bgn, .end = view.bgn + eix};
+            debug(valid_view(view, res), "Creating invalid view!");
+            return res;
+        }
+
+        /* View of the end of the view from the element at the begin index upto
+         * the last valid element. */
+        template<typename T>
+        View<T> view_tail(View<T> view, Ix bix)
         {
             View<T> res = {.bgn = view.bgn + bix, .end = view.end};
             debug(valid_view(view, res), "Creating invalid view!");
@@ -119,9 +129,9 @@ namespace cthrice
          * Returns the pointer to the element after the last one if none of the
          * elements fits the predicate. */
         template<typename T, typename P>
-        const T* find_fit(View<T> view, P pred)
+        T* find_fit(View<T> view, P pred)
         {
-            const T* res = view.bgn;
+            T* res = view.bgn;
             while (res < view.end && !pred(*res)) {
                 res++;
             }
@@ -138,7 +148,7 @@ namespace cthrice
         /* Find the first position of the element. Returns the pointer to the
          * element after the last one if it does not exist. */
         template<typename T>
-        const T* find(View<T> view, T t)
+        T* find(View<T> view, T t)
         {
             return find_fit(view, [t](T elem) {
                 return elem == t;
