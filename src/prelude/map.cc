@@ -65,7 +65,7 @@ namespace cthrice
 
         /* Pairs corresponding to the hash. */
         template<typename K, typename V>
-        View<Pair<K, V>> view(Map<K, V> map, Hash hsh)
+        View<const Pair<K, V>> view(Map<K, V> map, Hash hsh)
         {
             Ix sze = array::size(map.ixs);
 
@@ -95,9 +95,9 @@ namespace cthrice
         template<typename K, typename V>
         V& at(Map<K, V> map, K key)
         {
-            View<Pair<K, V>> prs = view(map, hash(key));
+            View<const Pair<K, V>> prs = view(map, hash(key));
 
-            const Pair<K, V>* pos = view::find_fit(prs, [key](Pair<K, V> p) {
+            const Pair<K, V>* pos = view::first_fit(prs, [key](Pair<K, V> p) {
                 return equal(p.key, key);
             });
 
@@ -109,9 +109,9 @@ namespace cthrice
         template<typename K, typename V>
         V* get(Map<K, V> map, K key)
         {
-            View<Pair<K, V>> prs = view(map, hash(key));
+            View<const Pair<K, V>> prs = view(map, hash(key));
 
-            const Pair<K, V>* pos = view::find_fit(prs, [key](Pair<K, V> p) {
+            const Pair<K, V>* pos = view::first_fit(prs, [key](Pair<K, V> p) {
                 return equal(p.key, key);
             });
 
@@ -200,8 +200,8 @@ namespace cthrice
         [[nodiscard]] Map<K, V> add(Map<K, V> map, K key, V val)
         {
             // Get the corresponding view for the hash.
-            Hash             hsh = hash(key);
-            View<Pair<K, V>> prs = view(map, hsh);
+            Hash                   hsh = hash(key);
+            View<const Pair<K, V>> prs = view(map, hsh);
 
             // Check if it already exists.
             check(

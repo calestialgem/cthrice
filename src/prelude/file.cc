@@ -17,7 +17,7 @@ namespace cthrice::file
         /* Memory buffer that the contents of the file were loaded. */
         List<B8> bfr;
         /* Contents of the file. */
-        View<B8> file;
+        View<const B8> file;
     };
 
     /* Load the contents of a file to the buffer. Returns the resulting buffer

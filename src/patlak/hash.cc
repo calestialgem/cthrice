@@ -10,7 +10,7 @@ namespace cthrice::map
 {
     /* Hash a pattern name. Optimized for names that are made of characters in
      * English alphabet and underscores. */
-    Hash hash(View<B8> name)
+    Hash hash(View<const B8> name)
     {
         Hash res = 0;
 
@@ -24,7 +24,7 @@ namespace cthrice::map
     }
 
     /* Whether the pattern names are the same. */
-    bool equal(View<B8> lhs, View<B8> rhs)
+    bool equal(View<const B8> lhs, View<const B8> rhs)
     {
         return view::equal(lhs, rhs);
     }

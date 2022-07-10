@@ -48,7 +48,7 @@ namespace cthrice::patlak
             IDENTIFIER
         } typ;
         /* Token string. */
-        View<B8> val;
+        View<const B8> val;
     };
 
     /* State after the last lexing operation. */
@@ -56,7 +56,7 @@ namespace cthrice::patlak
         /* The token list. */
         List<Token> tkns;
         /* Remaining pattern string. */
-        View<B8> ptrn;
+        View<const B8> ptrn;
         /* Whether a token was read. */
         bool lxd;
     };
@@ -108,7 +108,7 @@ namespace cthrice::patlak
         }
 
         /* Print the tokens. */
-        void print_all(View<Token> tkns)
+        void print_all(View<const Token> tkns)
         {
             for (const Token* i = tkns.bgn; i < tkns.end; i++) {
                 print(*i);
@@ -122,16 +122,16 @@ namespace cthrice::patlak
             return {
                 .tkns = list::add(
                     lex.tkns,
-                    {.typ = typ, .val = view::view_part(lex.ptrn, 0, len)}),
-                .ptrn = view::view_end(lex.ptrn, len),
+                    {.typ = typ, .val = view::view_trail(lex.ptrn, len)}),
+                .ptrn = view::view_tail(lex.ptrn, len),
                 .lxd  = true};
         }
 
         /* Try to lex a punctuation mark. */
         [[nodiscard]] Lex mark(Lex lex)
         {
-            View<B8>  MARKS = view::terminated("=.|,?*+{}[]");
-            const B8* pos   = view::find(MARKS, view::at(lex.ptrn, 0));
+            View<const B8> MARKS = view::terminated("=.|,?*+{}[]");
+            const B8*      pos   = view::first(MARKS, view::at(lex.ptrn, 0));
             if (pos == MARKS.end) {
                 lex.lxd = false;
                 return lex;
@@ -142,7 +142,7 @@ namespace cthrice::patlak
         /* Try to lex a number. */
         [[nodiscard]] Lex number(Lex lex)
         {
-            const B8* pos = view::find_fit(lex.ptrn, [](B8 c) {
+            const B8* pos = view::first_fit(lex.ptrn, [](B8 c) {
                 return c < '0' || c > '9';
             });
             Ix        len = pos - lex.ptrn.bgn;
@@ -181,7 +181,7 @@ namespace cthrice::patlak
         /* Try to lex an identifier. */
         [[nodiscard]] Lex identifier(Lex lex)
         {
-            const B8* pos = view::find_fit(lex.ptrn, [](B8 c) {
+            const B8* pos = view::first_fit(lex.ptrn, [](B8 c) {
                 return (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && c != '_';
             });
             Ix        len = pos - lex.ptrn.bgn;
@@ -196,7 +196,7 @@ namespace cthrice::patlak
         [[nodiscard]] Lex next(Lex lex)
         {
             // Trim the whitespace at the begining.
-            lex.ptrn.bgn = view::find_fit(lex.ptrn, [](B8 c) {
+            lex.ptrn.bgn = view::first_fit(lex.ptrn, [](B8 c) {
                 return c != '\t' && c != '\n' && c != ' ';
             });
 
@@ -226,7 +226,7 @@ namespace cthrice::patlak
         }
 
         /* Lex the pattern and add its tokens to the list. */
-        [[nodiscard]] List<Token> lex(List<Token> tkns, View<B8> ptrn)
+        [[nodiscard]] List<Token> lex(List<Token> tkns, View<const B8> ptrn)
         {
             Lex lex = {.tkns = tkns, .ptrn = ptrn, .lxd = false};
             while (view::finite(lex.ptrn)) {

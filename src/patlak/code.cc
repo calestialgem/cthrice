@@ -56,7 +56,7 @@ namespace cthrice::patlak
     /* State of the nondeterministic finite automaton. */
     struct State {
         /* Remaining input. */
-        View<B8> inpt;
+        View<const B8> inpt;
         /* Index of the code. */
         Ix code;
         /* Whether the state reached a dead end. */
@@ -100,7 +100,7 @@ namespace cthrice::patlak
         }
 
         /* Print the codes. */
-        void print_all(View<Code> codes)
+        void print_all(View<const Code> codes)
         {
             for (const Code* i = codes.bgn; i < codes.end; i++) {
                 printf("[%05lld] ", i - codes.bgn);
@@ -109,11 +109,11 @@ namespace cthrice::patlak
         }
 
         // Prototype for call before definition.
-        View<B8> test(View<Code> codes, State init);
+        View<const B8> test(View<const Code> codes, State init);
 
         /* Decode the state using the codes and add the states come after it to
          * the next states. */
-        Decode decode(View<Code> codes, List<State> next, State state)
+        Decode decode(View<const Code> codes, List<State> next, State state)
         {
             debug(!state.dead, "Decoding a dead state!");
             const Code& code = view::at(codes, state.code);
@@ -138,7 +138,7 @@ namespace cthrice::patlak
                         .inpt = state.inpt,
                         .code = code.ref,
                         .dead = false};
-                    View<B8> match = test(codes, ref);
+                    View<const B8> match = test(codes, ref);
                     // Consume the input.
                     state.inpt.bgn = match.end;
                     state.dead     = !view::finite(match);
@@ -175,11 +175,11 @@ namespace cthrice::patlak
          * initial portion of the input that was accepted by the
          * nondeterministic finite automaton first. Empty match means none of
          * the states were accepted before all states died. */
-        View<B8> test(View<Code> codes, State init)
+        View<const B8> test(View<const Code> codes, State init)
         {
-            View<B8>    match{};
-            List<State> active{};
-            List<State> next{};
+            View<const B8> match{};
+            List<State>    active{};
+            List<State>    next{};
 
             // Put the initial state.
             debug(!init.dead, "Initial state is dead!");

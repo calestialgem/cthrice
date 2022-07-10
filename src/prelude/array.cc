@@ -49,7 +49,7 @@ namespace cthrice
 
         /* Whether the view is valid. */
         template<typename T>
-        bool valid_view(Array<T> array, View<T> view)
+        bool valid_view(Array<T> array, View<const T> view)
         {
             return view.bgn >= array.bgn && view.end <= array.end;
         }
@@ -76,9 +76,11 @@ namespace cthrice
         /* Immutable view of a part of the array from the element at the begin
          * index to the element one before the end index. */
         template<typename T>
-        View<T> view_part(Array<T> array, Ix bix, Ix eix)
+        View<const T> view_part(Array<T> array, Ix bix, Ix eix)
         {
-            View<T> res = {.bgn = array.bgn + bix, .end = array.bgn + eix};
+            View<const T> res = {
+                .bgn = array.bgn + bix,
+                .end = array.bgn + eix};
             debug(valid_view(array, res), "Creating invalid view!");
             return res;
         }
@@ -86,9 +88,9 @@ namespace cthrice
         /* Immutable view of the end of the array from the element at the begin
          * index to the last element. */
         template<typename T>
-        View<T> view_end(Array<T> array, Ix bix)
+        View<const T> view_end(Array<T> array, Ix bix)
         {
-            View<T> res = {.bgn = array.bgn + bix, .end = array.end};
+            View<const T> res = {.bgn = array.bgn + bix, .end = array.end};
             debug(valid_view(array, res), "Creating invalid view!");
             return res;
         }
@@ -96,7 +98,7 @@ namespace cthrice
         /* Immutable view of the array from the first element to the last
          * element. */
         template<typename T>
-        View<T> view(Array<T> array)
+        View<const T> view(Array<T> array)
         {
             return {.bgn = array.bgn, .end = array.end};
         }
@@ -136,7 +138,7 @@ namespace cthrice
 
         /* Add the view to the end of the array. */
         template<typename T>
-        [[nodiscard]] Array<T> add_view(Array<T> array, View<T> view)
+        [[nodiscard]] Array<T> add_view(Array<T> array, View<const T> view)
         {
             Ix len = view::size(view);
             array  = grow(array, len);
@@ -149,8 +151,8 @@ namespace cthrice
         template<typename T>
         [[nodiscard]] Array<T> open(Array<T> array, Ix i, Ix len)
         {
-            array          = grow(array, len);
-            View<T> opened = view_part(array, i, i + len);
+            array                = grow(array, len);
+            View<const T> opened = view_part(array, i, i + len);
             std::memmove((void*)opened.end, (void*)opened.bgn, len);
             return array;
         }
@@ -166,7 +168,8 @@ namespace cthrice
 
         /* Put the view to the array at the index. */
         template<typename T>
-        [[nodiscard]] Array<T> put_view(Array<T> array, Ix i, View<T> view)
+        [[nodiscard]] Array<T>
+        put_view(Array<T> array, Ix i, View<const T> view)
         {
             Ix len = view::size(view);
             array  = open(array, i, len);

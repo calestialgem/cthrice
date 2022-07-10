@@ -24,8 +24,8 @@ int main(int argc, char** argv)
     List<patlak::Token> tkns{};
 
     while (view::finite(file)) {
-        View<B8> line = {.bgn = file.bgn, .end = view::find(file, '\n')};
-        file.bgn      = line.end + 1;
+        View<const B8> line = {.bgn = file.bgn, .end = view::first(file, '\n')};
+        file.bgn            = line.end + 1;
         if (view::size(line) >= 2 && view::at(line, 0) == '/' &&
             view::at(line, 1) == '/') {
             continue;

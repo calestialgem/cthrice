@@ -69,7 +69,7 @@ namespace cthrice
 
         /* Whether the view is valid. */
         template<typename T>
-        bool valid_view(List<T> list, View<T> view)
+        bool valid_view(List<T> list, View<const T> view)
         {
             return view.bgn >= list.bgn && view.end <= list.end;
         }
@@ -96,9 +96,9 @@ namespace cthrice
         /* Immutable view of a part of the list from the element at the begin
          * index to the element one before the end index. */
         template<typename T>
-        View<T> view_part(List<T> list, Ix bix, Ix eix)
+        View<const T> view_part(List<T> list, Ix bix, Ix eix)
         {
-            View<T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
+            View<const T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
             debug(valid_view(list, res), "Creating invalid view!");
             return res;
         }
@@ -106,9 +106,9 @@ namespace cthrice
         /* Immutable view of the end of the list from the element at the begin
          * index to the last valid element. */
         template<typename T>
-        View<T> view_end(List<T> list, Ix bix)
+        View<const T> view_end(List<T> list, Ix bix)
         {
-            View<T> res = {.bgn = list.bgn + bix, .end = list.end};
+            View<const T> res = {.bgn = list.bgn + bix, .end = list.end};
             debug(valid_view(list, res), "Creating invalid view!");
             return res;
         }
@@ -116,7 +116,7 @@ namespace cthrice
         /* Immutable view of the list from the first element to the last
          * valid element. */
         template<typename T>
-        View<T> view(List<T> list)
+        View<const T> view(List<T> list)
         {
             return {.bgn = list.bgn, .end = list.end};
         }
@@ -175,7 +175,7 @@ namespace cthrice
 
         /* Add the view to the end of the list. */
         template<typename T>
-        [[nodiscard]] List<T> add_view(List<T> list, View<T> view)
+        [[nodiscard]] List<T> add_view(List<T> list, View<const T> view)
         {
             Ix len = view::size(view);
             list   = reserve(list, len);
@@ -189,8 +189,8 @@ namespace cthrice
         template<typename T>
         [[nodiscard]] List<T> open(List<T> list, Ix i, Ix len)
         {
-            list           = reserve(list, len);
-            View<T> opened = view_part(list, i, i + len);
+            list                 = reserve(list, len);
+            View<const T> opened = view_part(list, i, i + len);
             std::memmove((void*)opened.end, (void*)opened.bgn, len);
             list.end += len;
             return list;
@@ -207,7 +207,7 @@ namespace cthrice
 
         /* Put the view to the list at the index. */
         template<typename T>
-        [[nodiscard]] List<T> put_view(List<T> list, Ix i, View<T> view)
+        [[nodiscard]] List<T> put_view(List<T> list, Ix i, View<const T> view)
         {
             Ix len = view::size(view);
             list   = open(list, i, len);

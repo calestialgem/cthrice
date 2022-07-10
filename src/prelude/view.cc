@@ -11,6 +11,9 @@ namespace cthrice
     /* View of contiguously placed elements. */
     template<typename T>
     struct View {
+        /* Underlying type with correct qualifiers. */
+        using Type = T;
+
         /* Pointer to the element at the begining. */
         T* bgn;
         /* Pointer to the element one after the end. */
@@ -48,7 +51,7 @@ namespace cthrice
 
         /* Whether the views have the same elements in the same order. */
         template<typename T>
-        bool equal(View<T> lhs, View<T> rhs)
+        bool equal(View<T> lhs, decltype(lhs) rhs)
         {
             Ix sze = size(lhs);
             if (sze != size(rhs)) {
@@ -71,7 +74,7 @@ namespace cthrice
 
         /* Whether the part is valid. */
         template<typename T>
-        bool valid_view(View<T> view, View<T> part)
+        bool valid_view(View<T> view, decltype(view) part)
         {
             return part.bgn >= view.bgn && part.end <= view.end;
         }
@@ -102,12 +105,12 @@ namespace cthrice
             /* Part of the split from the begining. */
             View<T> before;
             /* Part of the split from the end. */
-            View<T> after;
+            decltype(before) after;
         };
 
         /* Split the view from the given position. */
         template<typename T>
-        Split<T> split(View<T> view, T* pos)
+        Split<T> split(View<T> view, typename decltype(view)::Type* pos)
         {
             debug(pos >= view.bgn && pos <= view.end, "Invalid position!");
             return {
@@ -197,9 +200,9 @@ namespace cthrice
         /* Find the first position of the element. Returns the pointer to
          * the element after the last one if it does not exist. */
         template<typename T>
-        T* first(View<T> view, T t)
+        T* first(View<T> view, const typename decltype(view)::Type& t)
         {
-            return first_fit(view, [t](T elem) {
+            return first_fit(view, [t](const T& elem) {
                 return elem == t;
             });
         }
@@ -207,23 +210,23 @@ namespace cthrice
         /* Find the last position of the element. Returns the pointer to
          * the element after the last one if it does not exist. */
         template<typename T>
-        T* last(View<T> view, T t)
+        T* last(View<T> view, const typename decltype(view)::Type& t)
         {
-            return last_fit(view, [t](T elem) {
+            return last_fit(view, [t](const T& elem) {
                 return elem == t;
             });
         }
 
         /* Whether the element is in. */
         template<typename T>
-        bool contains(View<T> view, T t)
+        bool contains(View<T> view, const typename decltype(view)::Type& t)
         {
             return first(view, t) != view.end;
         }
 
         /* Split the view from the first occurance of the element. */
         template<typename T>
-        Split<T> before(View<T> view, T t)
+        Split<T> before(View<T> view, const typename decltype(view)::Type& t)
         {
             return split(view, first(view, t));
         }
@@ -231,7 +234,7 @@ namespace cthrice
         /* Split the view from the element on after the last occurance of the
          * element. */
         template<typename T>
-        Split<T> after(View<T> view, T t)
+        Split<T> after(View<T> view, const typename decltype(view)::Type& t)
         {
             return split(view, last(view, t) + 1);
         }

@@ -13,7 +13,7 @@ namespace cthrice::patlak
     };
 
     /* Parse the pattern. */
-    [[nodiscard]] Tree parse(View<B8> ptrn)
+    [[nodiscard]] Tree parse(View<const B8> ptrn)
     {
         return {};
     }
