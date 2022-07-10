@@ -13,19 +13,8 @@ add_executable(${PROJECT_NAME} src/main.cc)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
-    src/prelude/array.cc
     src/prelude/error.cc
-    src/prelude/file.cc
-    src/prelude/list.cc
-    src/prelude/map.cc
-    src/prelude/slice.cc
-    src/prelude/tree.cc
     src/prelude/types.cc
-    src/patlak/api.cc
-    src/patlak/code.cc
-    src/patlak/hash.cc
-    src/patlak/parse.cc
-    src/patlak/token.cc
     <cmath>
     <cstddef>
     <cstdlib>
