@@ -8,7 +8,7 @@
 using namespace cthrice;
 
 /* Entry to the compiler. */
-i32 main(i32, b8 const* const*) noexcept
+i32 main(i32, c8 const* const*) noexcept
 {
     std::printf("Hello, hello, hello!\n");
     return 0;

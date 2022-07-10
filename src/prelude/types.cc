@@ -37,5 +37,8 @@ namespace cthrice
     using f64 = double;
 
     /* Smallest memory unit, which is a signed, 8-bit integer. */
-    using b8 = char;
+    using c8 = char;
+
+    /* Boolean algebra type, which is an 8-bit integer. */
+    using b8 = bool;
 } // namespace cthrice

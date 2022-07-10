@@ -23,8 +23,8 @@ namespace cthrice
 
     /* Print the error message with the file and line number and terminate. */
     void error(
-        b8 const* msg,
-        b8 const* file = __builtin_FILE(),
+        c8 const* msg,
+        c8 const* file = __builtin_FILE(),
         u32       line = __builtin_LINE()) noexcept
     {
         std::printf("%s:%u: error: %s\n", file, line, msg);
@@ -34,8 +34,8 @@ namespace cthrice
     /* Call error with the message if the condition does not hold. */
     constexpr void check(
         bool      cnd,
-        b8 const* msg,
-        b8 const* file = __builtin_FILE(),
+        c8 const* msg,
+        c8 const* file = __builtin_FILE(),
         u32       line = __builtin_LINE()) noexcept
     {
         if (!cnd) {
@@ -46,8 +46,8 @@ namespace cthrice
     /* Same as check, but only works in debugging mode. */
     constexpr void debug(
         bool      cnd,
-        b8 const* msg,
-        b8 const* file = __builtin_FILE(),
+        c8 const* msg,
+        c8 const* file = __builtin_FILE(),
         u32       line = __builtin_LINE()) noexcept
     {
         if constexpr (DEBUG_MODE) {
