@@ -5,8 +5,8 @@
 
 #include "prelude/error.cc"
 #include "prelude/list.cc"
+#include "prelude/slice.cc"
 #include "prelude/types.cc"
-#include "prelude/view.cc"
 
 namespace cthrice::patlak
 {
@@ -56,7 +56,7 @@ namespace cthrice::patlak
     /* State of the nondeterministic finite automaton. */
     struct State {
         /* Remaining input. */
-        View<const B8> inpt;
+        Slice<const B8> inpt;
         /* Index of the code. */
         Ix code;
         /* Whether the state reached a dead end. */
@@ -100,7 +100,7 @@ namespace cthrice::patlak
         }
 
         /* Print the codes. */
-        void print_all(View<const Code> codes)
+        void print_all(Slice<const Code> codes)
         {
             for (const Code* i = codes.bgn; i < codes.end; i++) {
                 printf("[%05lld] ", i - codes.bgn);
@@ -109,26 +109,26 @@ namespace cthrice::patlak
         }
 
         // Prototype for call before definition.
-        View<const B8> test(View<const Code> codes, State init);
+        Slice<const B8> test(Slice<const Code> codes, State init);
 
         /* Decode the state using the codes and add the states come after it to
          * the next states. */
-        Decode decode(View<const Code> codes, List<State> next, State state)
+        Decode decode(Slice<const Code> codes, List<State> next, State state)
         {
             debug(!state.dead, "Decoding a dead state!");
-            const Code& code = view::at(codes, state.code);
+            const Code& code = slice::at(codes, state.code);
 
             switch (code.type) {
                 case Code::EMPTY:
                     break;
                 case Code::LITERAL:
                     // Check the next input and consume it.
-                    state.dead = !view::finite(state.inpt) ||
+                    state.dead = !slice::finite(state.inpt) ||
                                *state.inpt.bgn++ != code.ltrl;
                     break;
                 case Code::RANGE:
                     // Check the next input and consume it.
-                    state.dead = !view::finite(state.inpt) ||
+                    state.dead = !slice::finite(state.inpt) ||
                                *state.inpt.bgn++ < code.bgn ||
                                *state.inpt.bgn > code.end;
                     break;
@@ -138,15 +138,15 @@ namespace cthrice::patlak
                         .inpt = state.inpt,
                         .code = code.ref,
                         .dead = false};
-                    View<const B8> match = test(codes, ref);
+                    Slice<const B8> match = test(codes, ref);
                     // Consume the input.
                     state.inpt.bgn = match.end;
-                    state.dead     = !view::finite(match);
+                    state.dead     = !slice::finite(match);
                 } break;
                 case Code::BRANCH:
                     debug(code.amt > 0, "Nonpositive branch amount!");
                     debug(
-                        view::valid(codes, state.code + code.amt),
+                        slice::valid(codes, state.code + code.amt),
                         "Branching out of bounds!");
                     // Add all diverging states to the next states.
                     for (Ix j = 0; j < code.amt; j++) {
@@ -164,7 +164,7 @@ namespace cthrice::patlak
 
             // Add the target state to the next states.
             state.code += code.move;
-            debug(view::valid(codes, state.code), "Movement out of bounds!");
+            debug(slice::valid(codes, state.code), "Movement out of bounds!");
             next = list::add(next, state);
 
         end:
@@ -175,11 +175,11 @@ namespace cthrice::patlak
          * initial portion of the input that was accepted by the
          * nondeterministic finite automaton first. Empty match means none of
          * the states were accepted before all states died. */
-        View<const B8> test(View<const Code> codes, State init)
+        Slice<const B8> test(Slice<const Code> codes, State init)
         {
-            View<const B8> match{};
-            List<State>    active{};
-            List<State>    next{};
+            Slice<const B8> match{};
+            List<State>     active{};
+            List<State>     next{};
 
             // Put the initial state.
             debug(!init.dead, "Initial state is dead!");
@@ -197,7 +197,9 @@ namespace cthrice::patlak
                     if (dcde.matched) {
                         match.bgn = init.inpt.bgn;
                         match.end = i->inpt.bgn;
-                        debug(view::finite(match), "Did not consume anything!");
+                        debug(
+                            slice::finite(match),
+                            "Did not consume anything!");
                         goto end;
                     }
                 }

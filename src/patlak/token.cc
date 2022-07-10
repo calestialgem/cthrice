@@ -5,8 +5,8 @@
 
 #include "prelude/error.cc"
 #include "prelude/list.cc"
+#include "prelude/slice.cc"
 #include "prelude/types.cc"
-#include "prelude/view.cc"
 
 #include <cstdio>
 
@@ -48,7 +48,7 @@ namespace cthrice::patlak
             IDENTIFIER
         } typ;
         /* Token string. */
-        View<const B8> val;
+        Slice<const B8> val;
     };
 
     /* State after the last lexing operation. */
@@ -56,7 +56,7 @@ namespace cthrice::patlak
         /* The token list. */
         List<Token> tkns;
         /* Remaining pattern string. */
-        View<const B8> ptrn;
+        Slice<const B8> ptrn;
         /* Whether a token was read. */
         bool lxd;
     };
@@ -103,12 +103,12 @@ namespace cthrice::patlak
         {
             std::printf(
                 type_format(tkn.typ),
-                (int)view::size(tkn.val),
+                (int)slice::size(tkn.val),
                 tkn.val.bgn);
         }
 
         /* Print the tokens. */
-        void print_all(View<const Token> tkns)
+        void print_all(Slice<const Token> tkns)
         {
             for (const Token* i = tkns.bgn; i < tkns.end; i++) {
                 print(*i);
@@ -122,16 +122,16 @@ namespace cthrice::patlak
             return {
                 .tkns = list::add(
                     lex.tkns,
-                    {.typ = typ, .val = view::view_trail(lex.ptrn, len)}),
-                .ptrn = view::view_tail(lex.ptrn, len),
+                    {.typ = typ, .val = slice::slice_trail(lex.ptrn, len)}),
+                .ptrn = slice::slice_tail(lex.ptrn, len),
                 .lxd  = true};
         }
 
         /* Try to lex a punctuation mark. */
         [[nodiscard]] Lex mark(Lex lex)
         {
-            View<const B8> MARKS = view::terminated("=.|,?*+{}[]");
-            const B8*      pos   = view::first(MARKS, view::at(lex.ptrn, 0));
+            Slice<const B8> MARKS = slice::terminated("=.|,?*+{}[]");
+            const B8*       pos   = slice::first(MARKS, slice::at(lex.ptrn, 0));
             if (pos == MARKS.end) {
                 lex.lxd = false;
                 return lex;
@@ -142,7 +142,7 @@ namespace cthrice::patlak
         /* Try to lex a number. */
         [[nodiscard]] Lex number(Lex lex)
         {
-            const B8* pos = view::first_fit(lex.ptrn, [](B8 c) {
+            const B8* pos = slice::first_fit(lex.ptrn, [](B8 c) {
                 return c < '0' || c > '9';
             });
             Ix        len = pos - lex.ptrn.bgn;
@@ -156,13 +156,13 @@ namespace cthrice::patlak
         /* Try to lex a quote. */
         [[nodiscard]] Lex quote(Lex lex)
         {
-            if (view::at(lex.ptrn, 0) != '\'') {
+            if (slice::at(lex.ptrn, 0) != '\'') {
                 lex.lxd = false;
                 return lex;
             }
             Ix len = 1;
-            for (; len < view::size(lex.ptrn); len++) {
-                switch (view::at(lex.ptrn, len)) {
+            for (; len < slice::size(lex.ptrn); len++) {
+                switch (slice::at(lex.ptrn, len)) {
                     case '\'':
                         len++;
                         break;
@@ -174,14 +174,14 @@ namespace cthrice::patlak
                 break;
             }
             check(len > 2, "Quote is too short!");
-            check(view::at(lex.ptrn, len - 1) == '\'', "No closing quote!");
+            check(slice::at(lex.ptrn, len - 1) == '\'', "No closing quote!");
             return form(lex, Token::QUOTE, len);
         }
 
         /* Try to lex an identifier. */
         [[nodiscard]] Lex identifier(Lex lex)
         {
-            const B8* pos = view::first_fit(lex.ptrn, [](B8 c) {
+            const B8* pos = slice::first_fit(lex.ptrn, [](B8 c) {
                 return (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && c != '_';
             });
             Ix        len = pos - lex.ptrn.bgn;
@@ -196,7 +196,7 @@ namespace cthrice::patlak
         [[nodiscard]] Lex next(Lex lex)
         {
             // Trim the whitespace at the begining.
-            lex.ptrn.bgn = view::first_fit(lex.ptrn, [](B8 c) {
+            lex.ptrn.bgn = slice::first_fit(lex.ptrn, [](B8 c) {
                 return c != '\t' && c != '\n' && c != ' ';
             });
 
@@ -226,10 +226,10 @@ namespace cthrice::patlak
         }
 
         /* Lex the pattern and add its tokens to the list. */
-        [[nodiscard]] List<Token> lex(List<Token> tkns, View<const B8> ptrn)
+        [[nodiscard]] List<Token> lex(List<Token> tkns, Slice<const B8> ptrn)
         {
             Lex lex = {.tkns = tkns, .ptrn = ptrn, .lxd = false};
-            while (view::finite(lex.ptrn)) {
+            while (slice::finite(lex.ptrn)) {
                 lex = next(lex);
             }
             return lex.tkns;

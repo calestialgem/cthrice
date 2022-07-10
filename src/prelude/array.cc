@@ -4,8 +4,8 @@
 #pragma once
 
 #include "error.cc"
+#include "slice.cc"
 #include "types.cc"
-#include "view.cc"
 
 #include <cstdlib>
 #include <cstring>
@@ -47,11 +47,11 @@ namespace cthrice
             return ix >= 0 && ix < size(array);
         }
 
-        /* Whether the view is valid. */
+        /* Whether the slice is valid. */
         template<typename T>
-        bool valid_view(Array<T> array, View<const T> view)
+        bool valid_slice(Array<T> array, Slice<const T> slice)
         {
-            return view.bgn >= array.bgn && view.end <= array.end;
+            return slice.bgn >= array.bgn && slice.end <= array.end;
         }
 
         /* Reference to the value at the index. */
@@ -73,32 +73,32 @@ namespace cthrice
             return nullptr;
         }
 
-        /* Immutable view of a part of the array from the element at the begin
+        /* Immutable slice of a part of the array from the element at the begin
          * index to the element one before the end index. */
         template<typename T>
-        View<const T> view_part(Array<T> array, Ix bix, Ix eix)
+        Slice<const T> slice_part(Array<T> array, Ix bix, Ix eix)
         {
-            View<const T> res = {
+            Slice<const T> res = {
                 .bgn = array.bgn + bix,
                 .end = array.bgn + eix};
-            debug(valid_view(array, res), "Creating invalid view!");
+            debug(valid_slice(array, res), "Creating invalid slice!");
             return res;
         }
 
-        /* Immutable view of the end of the array from the element at the begin
+        /* Immutable slice of the end of the array from the element at the begin
          * index to the last element. */
         template<typename T>
-        View<const T> view_end(Array<T> array, Ix bix)
+        Slice<const T> slice_end(Array<T> array, Ix bix)
         {
-            View<const T> res = {.bgn = array.bgn + bix, .end = array.end};
-            debug(valid_view(array, res), "Creating invalid view!");
+            Slice<const T> res = {.bgn = array.bgn + bix, .end = array.end};
+            debug(valid_slice(array, res), "Creating invalid slice!");
             return res;
         }
 
-        /* Immutable view of the array from the first element to the last
+        /* Immutable slice of the array from the first element to the last
          * element. */
         template<typename T>
-        View<const T> view(Array<T> array)
+        Slice<const T> slice(Array<T> array)
         {
             return {.bgn = array.bgn, .end = array.end};
         }
@@ -136,13 +136,13 @@ namespace cthrice
             return array;
         }
 
-        /* Add the view to the end of the array. */
+        /* Add the slice to the end of the array. */
         template<typename T>
-        [[nodiscard]] Array<T> add_view(Array<T> array, View<const T> view)
+        [[nodiscard]] Array<T> add_slice(Array<T> array, Slice<const T> slice)
         {
-            Ix len = view::size(view);
+            Ix len = slice::size(slice);
             array  = grow(array, len);
-            std::memmove((void*)(array.end - len), (void*)view.bgn, len);
+            std::memmove((void*)(array.end - len), (void*)slice.bgn, len);
             return array;
         }
 
@@ -151,8 +151,8 @@ namespace cthrice
         template<typename T>
         [[nodiscard]] Array<T> open(Array<T> array, Ix i, Ix len)
         {
-            array                = grow(array, len);
-            View<const T> opened = view_part(array, i, i + len);
+            array                 = grow(array, len);
+            Slice<const T> opened = slice_part(array, i, i + len);
             std::memmove((void*)opened.end, (void*)opened.bgn, len);
             return array;
         }
@@ -166,14 +166,14 @@ namespace cthrice
             return array;
         }
 
-        /* Put the view to the array at the index. */
+        /* Put the slice to the array at the index. */
         template<typename T>
         [[nodiscard]] Array<T>
-        put_view(Array<T> array, Ix i, View<const T> view)
+        put_slice(Array<T> array, Ix i, Slice<const T> slice)
         {
-            Ix len = view::size(view);
+            Ix len = slice::size(slice);
             array  = open(array, i, len);
-            std::memmove((void*)(array.bgn + i), (void*)view.bgn, len);
+            std::memmove((void*)(array.bgn + i), (void*)slice.bgn, len);
             return array;
         }
     } // namespace array

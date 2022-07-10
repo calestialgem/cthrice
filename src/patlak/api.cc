@@ -8,8 +8,8 @@
 #include "prelude/error.cc"
 #include "prelude/list.cc"
 #include "prelude/map.cc"
+#include "prelude/slice.cc"
 #include "prelude/types.cc"
-#include "prelude/view.cc"
 
 namespace cthrice::patlak
 {
@@ -18,20 +18,20 @@ namespace cthrice::patlak
         /* Compiled pattern code. */
         List<Code> codes;
         /* Mapping from the pattern name to the index of its first code. */
-        Map<View<const B8>, Ix> starts;
+        Map<Slice<const B8>, Ix> starts;
     };
 
     /* Compile the pattern by searching for references in the context. */
-    [[nodiscard]] Context compile(Context ctx, View<const B8> ptrn);
+    [[nodiscard]] Context compile(Context ctx, Slice<const B8> ptrn);
 
     /* Match the pattern with the name to the input. Returns the initial portion
      * of the input that matched. Matches are checked from the begining. Empty
      * match means it did not match or the pattern was not found. */
-    [[nodiscard]] View<const B8>
-    match(Context ctx, View<const B8> name, View<const B8> inpt)
+    [[nodiscard]] Slice<const B8>
+    match(Context ctx, Slice<const B8> name, Slice<const B8> inpt)
     {
         return code::test(
-            list::view(ctx.codes),
+            list::slice(ctx.codes),
             {.inpt = inpt, .code = map::at(ctx.starts, name)});
     }
 

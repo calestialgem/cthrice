@@ -3,14 +3,14 @@
 
 #pragma once
 
+#include "prelude/slice.cc"
 #include "prelude/types.cc"
-#include "prelude/view.cc"
 
 namespace cthrice::map
 {
     /* Hash a pattern name. Optimized for names that are made of characters in
      * English alphabet and underscores. */
-    Hash hash(View<const B8> name)
+    Hash hash(Slice<const B8> name)
     {
         Hash res = 0;
 
@@ -24,8 +24,8 @@ namespace cthrice::map
     }
 
     /* Whether the pattern names are the same. */
-    bool equal(View<const B8> lhs, View<const B8> rhs)
+    bool equal(Slice<const B8> lhs, Slice<const B8> rhs)
     {
-        return view::equal(lhs, rhs);
+        return slice::equal(lhs, rhs);
     }
 } // namespace cthrice::map

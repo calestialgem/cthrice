@@ -6,8 +6,8 @@
 #include "prelude/file.cc"
 #include "prelude/list.cc"
 #include "prelude/map.cc"
+#include "prelude/slice.cc"
 #include "prelude/types.cc"
-#include "prelude/view.cc"
 
 #include <cstdio>
 
@@ -19,20 +19,22 @@ int main(int argc, char** argv)
     List<B8> bfr{};
     auto     res = file::load(bfr, argv[1]);
     bfr          = res.bfr;
-    View file    = res.file;
+    Slice file   = res.file;
 
     List<patlak::Token> tkns{};
 
-    while (view::finite(file)) {
-        View<const B8> line = {.bgn = file.bgn, .end = view::first(file, '\n')};
-        file.bgn            = line.end + 1;
-        if (view::size(line) >= 2 && view::at(line, 0) == '/' &&
-            view::at(line, 1) == '/') {
+    while (slice::finite(file)) {
+        Slice<const B8> line = {
+            .bgn = file.bgn,
+            .end = slice::first(file, '\n')};
+        file.bgn = line.end + 1;
+        if (slice::size(line) >= 2 && slice::at(line, 0) == '/' &&
+            slice::at(line, 1) == '/') {
             continue;
         }
         tkns = list::clear(tkns);
         tkns = patlak::token::lex(tkns, line);
-        patlak::token::print_all(list::view(tkns));
+        patlak::token::print_all(list::slice(tkns));
     }
 
     tkns = list::free(tkns);

@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "prelude/slice.cc"
 #include "prelude/types.cc"
-#include "prelude/view.cc"
 
 namespace cthrice::patlak
 {
@@ -13,7 +13,7 @@ namespace cthrice::patlak
     };
 
     /* Parse the pattern. */
-    [[nodiscard]] Tree parse(View<const B8> ptrn)
+    [[nodiscard]] Tree parse(Slice<const B8> ptrn)
     {
         return {};
     }

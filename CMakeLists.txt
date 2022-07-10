@@ -18,9 +18,9 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     src/prelude/file.cc
     src/prelude/list.cc
     src/prelude/map.cc
+    src/prelude/slice.cc
     src/prelude/tree.cc
     src/prelude/types.cc
-    src/prelude/view.cc
     src/patlak/api.cc
     src/patlak/code.cc
     src/patlak/hash.cc

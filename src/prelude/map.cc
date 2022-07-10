@@ -6,7 +6,7 @@
 #include "array.cc"
 #include "error.cc"
 #include "list.cc"
-#include "view.cc"
+#include "slice.cc"
 
 #include <algorithm>
 #include <cmath>
@@ -65,7 +65,7 @@ namespace cthrice
 
         /* Pairs corresponding to the hash. */
         template<typename K, typename V>
-        View<const Pair<K, V>> view(Map<K, V> map, Hash hsh)
+        Slice<const Pair<K, V>> slice(Map<K, V> map, Hash hsh)
         {
             Ix sze = array::size(map.ixs);
 
@@ -75,7 +75,7 @@ namespace cthrice
                 debug(
                     list::size(map.prs) == 0,
                     "Indicies are empty but not the pairs!");
-                return list::view(map.prs);
+                return list::slice(map.prs);
             }
 
             // Find the indicies that correspond to current and the next hashes.
@@ -83,21 +83,21 @@ namespace cthrice
             Ix* next    = current + 1;
 
             // The current hash might be the last one; thus, check the next one.
-            // If the next hash is valid, limit the search view from the end.
+            // If the next hash is valid, limit the search slice from the end.
             if (next < map.ixs.end) {
-                return list::view_part(map.prs, *current, *next);
+                return list::slice_part(map.prs, *current, *next);
             }
 
-            return list::view_end(map.prs, *current);
+            return list::slice_end(map.prs, *current);
         }
 
         /* Reference to the value that corresponds to the key. */
         template<typename K, typename V>
         V& at(Map<K, V> map, K key)
         {
-            View<const Pair<K, V>> prs = view(map, hash(key));
+            Slice<const Pair<K, V>> prs = slice(map, hash(key));
 
-            const Pair<K, V>* pos = view::first_fit(prs, [key](Pair<K, V> p) {
+            const Pair<K, V>* pos = slice::first_fit(prs, [key](Pair<K, V> p) {
                 return equal(p.key, key);
             });
 
@@ -109,9 +109,9 @@ namespace cthrice
         template<typename K, typename V>
         V* get(Map<K, V> map, K key)
         {
-            View<const Pair<K, V>> prs = view(map, hash(key));
+            Slice<const Pair<K, V>> prs = slice(map, hash(key));
 
-            const Pair<K, V>* pos = view::first_fit(prs, [key](Pair<K, V> p) {
+            const Pair<K, V>* pos = slice::first_fit(prs, [key](Pair<K, V> p) {
                 return equal(p.key, key);
             });
 
@@ -150,7 +150,7 @@ namespace cthrice
         bool need_rehash(Map<K, V> map)
         {
             for (Ix i = 0; i < array::size(map.ixs); i++) {
-                if (view::size(view(map, i)) > MAX_COLLISION) {
+                if (slice::size(slice(map, i)) > MAX_COLLISION) {
                     return true;
                 }
             }
@@ -199,13 +199,13 @@ namespace cthrice
         template<typename K, typename V>
         [[nodiscard]] Map<K, V> add(Map<K, V> map, K key, V val)
         {
-            // Get the corresponding view for the hash.
-            Hash                   hsh = hash(key);
-            View<const Pair<K, V>> prs = view(map, hsh);
+            // Get the corresponding slice for the hash.
+            Hash                    hsh = hash(key);
+            Slice<const Pair<K, V>> prs = slice(map, hsh);
 
             // Check if it already exists.
             check(
-                !view::contains_fit(
+                !slice::contains_fit(
                     prs,
                     [key](Pair<K, V> p) {
                         return equal(p.key, key);
@@ -216,9 +216,9 @@ namespace cthrice
             Ix         sze = array::size(map.ixs);
 
             // If it would not create too many collisions.
-            if (view::size(prs) <= MAX_COLLISION && sze != 0) {
+            if (slice::size(prs) <= MAX_COLLISION && sze != 0) {
                 if (prs.end < map.prs.end) {
-                    // Put at the end of the view.
+                    // Put at the end of the slice.
                     Ix end  = prs.end - map.prs.bgn;
                     map.prs = list::put(map.prs, end, p);
                 } else {

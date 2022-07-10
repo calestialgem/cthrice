@@ -5,8 +5,8 @@
 
 #include "error.cc"
 #include "list.cc"
+#include "slice.cc"
 #include "types.cc"
-#include "view.cc"
 
 #include <cstdio>
 
@@ -17,11 +17,11 @@ namespace cthrice::file
         /* Memory buffer that the contents of the file were loaded. */
         List<B8> bfr;
         /* Contents of the file. */
-        View<const B8> file;
+        Slice<const B8> file;
     };
 
     /* Load the contents of a file to the buffer. Returns the resulting buffer
-     * and a view to the contents of the file. */
+     * and a slice to the contents of the file. */
     [[nodiscard]] Result load(List<B8> bfr, const B8* path)
     {
         std::FILE* file = std::fopen(path, "r");
@@ -40,6 +40,6 @@ namespace cthrice::file
         check(std::feof(file) != 0, "Problem while reading!");
         check(std::fclose(file) != -1, "Could not close the file!");
 
-        return {.bfr = bfr, .file = list::view_end(bfr, bix)};
+        return {.bfr = bfr, .file = list::slice_end(bfr, bix)};
     }
 } // namespace cthrice::file

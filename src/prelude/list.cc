@@ -4,8 +4,8 @@
 #pragma once
 
 #include "error.cc"
+#include "slice.cc"
 #include "types.cc"
-#include "view.cc"
 
 #include <cstdlib>
 #include <cstring>
@@ -67,11 +67,11 @@ namespace cthrice
             return ix >= 0 && ix < size(list);
         }
 
-        /* Whether the view is valid. */
+        /* Whether the slice is valid. */
         template<typename T>
-        bool valid_view(List<T> list, View<const T> view)
+        bool valid_slice(List<T> list, Slice<const T> slice)
         {
-            return view.bgn >= list.bgn && view.end <= list.end;
+            return slice.bgn >= list.bgn && slice.end <= list.end;
         }
 
         /* Reference to the value at the index. */
@@ -93,30 +93,30 @@ namespace cthrice
             return nullptr;
         }
 
-        /* Immutable view of a part of the list from the element at the begin
+        /* Immutable slice of a part of the list from the element at the begin
          * index to the element one before the end index. */
         template<typename T>
-        View<const T> view_part(List<T> list, Ix bix, Ix eix)
+        Slice<const T> slice_part(List<T> list, Ix bix, Ix eix)
         {
-            View<const T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
-            debug(valid_view(list, res), "Creating invalid view!");
+            Slice<const T> res = {.bgn = list.bgn + bix, .end = list.bgn + eix};
+            debug(valid_slice(list, res), "Creating invalid slice!");
             return res;
         }
 
-        /* Immutable view of the end of the list from the element at the begin
+        /* Immutable slice of the end of the list from the element at the begin
          * index to the last valid element. */
         template<typename T>
-        View<const T> view_end(List<T> list, Ix bix)
+        Slice<const T> slice_end(List<T> list, Ix bix)
         {
-            View<const T> res = {.bgn = list.bgn + bix, .end = list.end};
-            debug(valid_view(list, res), "Creating invalid view!");
+            Slice<const T> res = {.bgn = list.bgn + bix, .end = list.end};
+            debug(valid_slice(list, res), "Creating invalid slice!");
             return res;
         }
 
-        /* Immutable view of the list from the first element to the last
+        /* Immutable slice of the list from the first element to the last
          * valid element. */
         template<typename T>
-        View<const T> view(List<T> list)
+        Slice<const T> slice(List<T> list)
         {
             return {.bgn = list.bgn, .end = list.end};
         }
@@ -173,13 +173,13 @@ namespace cthrice
             return list;
         }
 
-        /* Add the view to the end of the list. */
+        /* Add the slice to the end of the list. */
         template<typename T>
-        [[nodiscard]] List<T> add_view(List<T> list, View<const T> view)
+        [[nodiscard]] List<T> add_slice(List<T> list, Slice<const T> slice)
         {
-            Ix len = view::size(view);
+            Ix len = slice::size(slice);
             list   = reserve(list, len);
-            std::memmove((void*)list.end, (void*)view.bgn, len);
+            std::memmove((void*)list.end, (void*)slice.bgn, len);
             list.end += len;
             return list;
         }
@@ -189,8 +189,8 @@ namespace cthrice
         template<typename T>
         [[nodiscard]] List<T> open(List<T> list, Ix i, Ix len)
         {
-            list                 = reserve(list, len);
-            View<const T> opened = view_part(list, i, i + len);
+            list                  = reserve(list, len);
+            Slice<const T> opened = slice_part(list, i, i + len);
             std::memmove((void*)opened.end, (void*)opened.bgn, len);
             list.end += len;
             return list;
@@ -205,13 +205,14 @@ namespace cthrice
             return list;
         }
 
-        /* Put the view to the list at the index. */
+        /* Put the slice to the list at the index. */
         template<typename T>
-        [[nodiscard]] List<T> put_view(List<T> list, Ix i, View<const T> view)
+        [[nodiscard]] List<T>
+        put_slice(List<T> list, Ix i, Slice<const T> slice)
         {
-            Ix len = view::size(view);
+            Ix len = slice::size(slice);
             list   = open(list, i, len);
-            std::memmove((void*)(list.bgn + i), (void*)view.bgn, len);
+            std::memmove((void*)(list.bgn + i), (void*)slice.bgn, len);
             return list;
         }
     } // namespace list
