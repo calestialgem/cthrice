@@ -97,6 +97,40 @@ namespace cthrice
             return prt;
         }
 
+        /* First position of the element that fits the predicate. Returns
+         * position after the last if none of the elements fit. */
+        template<typename Predicate>
+        [[nodiscard]] constexpr Element* first(Predicate p) const noexcept
+        {
+            Element* pos = bgn;
+            while (pos < end && !p(*pos)) {
+                pos++;
+            }
+            return pos;
+        }
+
+        /* First position of the element. Returns position after the last if not
+         * found. */
+        [[nodiscard]] constexpr Element* first(Element const& e) const noexcept
+        {
+            return first([e](Element elem) {
+                return elem == e;
+            });
+        }
+
+        /* Whether there is an element that fits the predicate. */
+        template<typename Predicate>
+        [[nodiscard]] constexpr b8 contains(Predicate p) const noexcept
+        {
+            return first(p) != end;
+        }
+
+        /* Whether the element is in. */
+        [[nodiscard]] constexpr b8 contains(Element const& e) const noexcept
+        {
+            return first(e) != end;
+        }
+
         /* Split of a slice. The element where the split happened is the first
          * element of the trail. */
         struct Split {
@@ -120,6 +154,19 @@ namespace cthrice
         [[nodiscard]] constexpr Split split(ix i) const noexcept
         {
             return split(bgn + i);
+        }
+
+        /* Split from the first element that fits the predicate. */
+        template<typename Predicate>
+        [[nodiscard]] constexpr Split split(Predicate p) const noexcept
+        {
+            return split(first(p));
+        }
+
+        /* Split from the first occurance of the element. */
+        [[nodiscard]] constexpr Split split(Element const& e) const noexcept
+        {
+            return split(first(e));
         }
 
     private:
