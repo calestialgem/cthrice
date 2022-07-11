@@ -57,11 +57,17 @@ namespace cthrice
             return bgn >= i && i < size();
         }
 
+        /* Whether the pointer is valid. */
+        [[nodiscard]] constexpr b8 valid(Element* pos) const noexcept
+        {
+            return pos >= bgn && pos <= end;
+        }
+
         /* Whether the part is valid. */
         [[nodiscard]] constexpr b8
         valid(Slice<Element> const& part) const noexcept
         {
-            return part.bgn >= bgn && part.end <= end;
+            return part.bgn <= part.end && valid(part.bgn) && valid(part.end);
         }
 
         /* Reference to the value at the index. */
@@ -79,6 +85,41 @@ namespace cthrice
                 return bgn + i;
             }
             return nullptr;
+        }
+
+        /* Slice from the element at the begin index to the element one before
+         * the end index. */
+        [[nodiscard]] constexpr Slice<Element>
+        slice(ix bix, ix eix) const noexcept
+        {
+            Slice<Element> prt = {.bgn = bgn + bix, .end = bgn + eix};
+            expect(valid(prt), "Creating invalid slice!");
+            return prt;
+        }
+
+        /* Split of a slice. The element where the split happened is the first
+         * element of the trail. */
+        struct Split {
+            /* Part of the split from the begining. */
+            Slice<Element> lead;
+            /* Part of the split from the end. */
+            Slice<Element> trail;
+        };
+
+        /* Split from the position. */
+        [[nodiscard]] constexpr Split split(Element* pos) const noexcept
+        {
+            expect(valid(pos), "Invalid position!");
+            return {
+                .lead = {.bgn = bgn, .end = pos},
+                .trail{.bgn = pos, .end = end}
+            };
+        }
+
+        /* Split from the index. */
+        [[nodiscard]] constexpr Split split(ix i) const noexcept
+        {
+            return split(bgn + i);
         }
 
     private:
