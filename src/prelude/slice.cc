@@ -14,10 +14,15 @@ namespace cthrice
     /* Pointers to contiguously placed elements. */
     template<typename Element>
     struct Slice {
+        /* Pointer to the first element. */
+        Element* bgn{nullptr};
+        /* Pointer to the element after the last one. */
+        Element* end{nullptr};
+
         /* Amount of elements. */
         [[nodiscard]] constexpr ix size() const noexcept
         {
-            ix const sze{end_ - bgn_};
+            ix const sze{end - bgn};
             expect(sze >= 0, "Negative size!");
             return sze;
         }
@@ -37,7 +42,7 @@ namespace cthrice
                 return false;
             }
             for (ix i{0}; i < sze; i++) {
-                if (bgn_[i] != rhs.bgn_[i]) {
+                if (bgn[i] != rhs.bgn[i]) {
                     return false;
                 }
             }
@@ -53,29 +58,28 @@ namespace cthrice
         /* Whether the pointer is valid. */
         [[nodiscard]] constexpr b8 valid(Element* const pos) const noexcept
         {
-            return pos >= bgn_ && pos <= end_;
+            return pos >= bgn && pos <= end;
         }
 
         /* Whether the part is valid. */
         [[nodiscard]] constexpr b8
         valid(Slice<Element> const& part) const noexcept
         {
-            return part.bgn_ <= part.end_ && valid(part.bgn_) &&
-                   valid(part.end_);
+            return part.bgn <= part.end && valid(part.bgn) && valid(part.end);
         }
 
         /* Reference to the value at the index. */
         [[nodiscard]] constexpr Element& at(ix const i) noexcept
         {
             expect(valid(i), "Invalid index!");
-            return bgn_[i];
+            return bgn[i];
         }
 
         /* Immutable reference to the value at the index. */
         [[nodiscard]] constexpr Element const& at(ix const i) const noexcept
         {
             expect(valid(i), "Invalid index!");
-            return bgn_[i];
+            return bgn[i];
         }
 
         /* Pointer to the value at the index. Returns nullptr if the index is
@@ -83,7 +87,7 @@ namespace cthrice
         [[nodiscard]] constexpr Element* get(ix const i) noexcept
         {
             if (valid(i)) {
-                return bgn_ + i;
+                return bgn + i;
             }
             return nullptr;
         }
@@ -93,7 +97,7 @@ namespace cthrice
         [[nodiscard]] constexpr Element const* get(ix const i) const noexcept
         {
             if (valid(i)) {
-                return bgn_ + i;
+                return bgn + i;
             }
             return nullptr;
         }
@@ -103,7 +107,7 @@ namespace cthrice
         [[nodiscard]] constexpr Slice<Element>
         slice(ix const bix, ix const eix) noexcept
         {
-            Slice<Element> const prt{bgn_ + bix, bgn_ + eix};
+            Slice<Element> const prt{bgn + bix, bgn + eix};
             expect(valid(prt), "Creating invalid slice!");
             return prt;
         }
@@ -113,7 +117,7 @@ namespace cthrice
         [[nodiscard]] constexpr Slice<Element const>
         slice(ix const bix, ix const eix) const noexcept
         {
-            Slice<Element const> const prt{bgn_ + bix, bgn_ + eix};
+            Slice<Element const> const prt{bgn + bix, bgn + eix};
             expect(valid(prt), "Creating invalid slice!");
             return prt;
         }
@@ -123,8 +127,8 @@ namespace cthrice
         template<typename Predicate>
         [[nodiscard]] constexpr Element* first(Predicate p) noexcept
         {
-            Element* pos{bgn_};
-            while (pos < end_ && !p(*pos)) {
+            Element* pos{bgn};
+            while (pos < end && !p(*pos)) {
                 pos++;
             }
             return pos;
@@ -135,8 +139,8 @@ namespace cthrice
         template<typename Predicate>
         [[nodiscard]] constexpr Element const* first(Predicate p) const noexcept
         {
-            Element const* pos{bgn_};
-            while (pos < end_ && !p(*pos)) {
+            Element const* pos{bgn};
+            while (pos < end && !p(*pos)) {
                 pos++;
             }
             return pos;
@@ -165,13 +169,13 @@ namespace cthrice
         template<typename Predicate>
         [[nodiscard]] constexpr b8 contains(Predicate p) const noexcept
         {
-            return first(p) != end_;
+            return first(p) != end;
         }
 
         /* Whether the element is in. */
         [[nodiscard]] constexpr b8 contains(Element const& e) const noexcept
         {
-            return first(e) != end_;
+            return first(e) != end;
         }
 
         /* Split of a slice. The element where the split happened is the first
@@ -197,8 +201,8 @@ namespace cthrice
         {
             expect(valid(pos), "Invalid position!");
             return {
-                {bgn_,  pos},
-                { pos, end_}
+                {bgn, pos},
+                {pos, end}
             };
         }
 
@@ -208,21 +212,21 @@ namespace cthrice
         {
             expect(valid(pos), "Invalid position!");
             return {
-                {bgn_,  pos},
-                { pos, end_}
+                {bgn, pos},
+                {pos, end}
             };
         }
 
         /* Split from the index. */
         [[nodiscard]] constexpr Split split(ix const i) noexcept
         {
-            return split(bgn_ + i);
+            return split(bgn + i);
         }
 
         /* Immutable split from the index. */
         [[nodiscard]] constexpr ImmutableSplit split(ix const i) const noexcept
         {
-            return split(bgn_ + i);
+            return split(bgn + i);
         }
 
         /* Split from the first element that fits the predicate. */
@@ -252,37 +256,13 @@ namespace cthrice
             return split(first(e));
         }
 
-        /* Pointer to the first element. */
-        [[nodiscard]] constexpr Element* begin() noexcept
-        {
-            return bgn_;
-        }
-
-        /* Pointer to the element after the last one. */
-        [[nodiscard]] constexpr Element* end() noexcept
-        {
-            return end_;
-        }
-
-        /* Immutable pointer to the first element. */
-        [[nodiscard]] constexpr Element const* cbegin() const noexcept
-        {
-            return bgn_;
-        }
-
-        /* Immutable pointer to the element after the last one. */
-        [[nodiscard]] constexpr Element const* cend() const noexcept
-        {
-            return end_;
-        }
-
         /* Create pointing to a null terminated array. */
         [[nodiscard]] constexpr explicit Slice(Element* const nta) noexcept
-            : bgn_{nta}
-            , end_{nta}
+            : bgn{nta}
+            , end{nta}
         {
-            while (*end_) {
-                end_++;
+            while (*end) {
+                end++;
             }
         }
 
@@ -290,8 +270,8 @@ namespace cthrice
         template<size_t len>
         [[nodiscard]] constexpr explicit Slice(
             std::array<Element, len>& arr) noexcept
-            : bgn_{arr.data()}
-            , end_{arr.data() + len}
+            : bgn{arr.data()}
+            , end{arr.data() + len}
         {
         }
 
@@ -299,8 +279,8 @@ namespace cthrice
         template<size_t len>
         [[nodiscard]] constexpr explicit Slice(
             std::array<Element, len> const& arr) noexcept
-            : bgn_{arr.data()}
-            , end_{arr.data() + len}
+            : bgn{arr.data()}
+            , end{arr.data() + len}
         {
         }
 
@@ -308,8 +288,8 @@ namespace cthrice
         [[nodiscard]] constexpr explicit Slice(
             Slice<typename std::remove_const<Element>::type> const&
                 other) noexcept
-            : bgn_{other.bgn_}
-            , end_{other.end_}
+            : bgn{other.bgn}
+            , end{other.end}
         {
         }
 
@@ -317,18 +297,14 @@ namespace cthrice
         [[nodiscard]] constexpr Slice(
             Element* const bgn,
             Element* const end) noexcept
-            : bgn_{bgn}
-            , end_{end}
+            : bgn{bgn}
+            , end{end}
         {
-            expect(bgn_ <= end_, "Creating invalid slice!");
+            expect(bgn <= end, "Creating invalid slice!");
         }
 
-    private:
-
-        /* Pointer to the first element. */
-        Element* bgn_;
-        /* Pointer to the element after the last one. */
-        Element* end_;
+        /* Create empty slice. */
+        [[nodiscard]] constexpr Slice() noexcept = default;
 
         /* Friend immutable element version of the slice for creating immutable
          * slices from mutable ones. */

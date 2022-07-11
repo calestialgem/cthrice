@@ -14,6 +14,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
     src/prelude/expect.cc
+    src/prelude/list.cc
     src/prelude/scalar.cc
     src/prelude/slice.cc
     <cmath>
@@ -23,12 +24,14 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <cstdio>
     <cstring>
     <algorithm>
+    <array>
     <exception>
+    <type_traits>
 )
 
 # Enable all warnings.
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /Wall)
 else(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-deprecated-declarations -Wno-gnu-anonymous-struct -Wno-nested-anon-types)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-deprecated-declarations -Wno-gnu-anonymous-struct -Wno-nested-anon-types -Wno-microsoft-template)
 endif(MSVC)
