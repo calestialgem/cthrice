@@ -12,7 +12,7 @@ namespace cthrice
     template<typename Element>
     struct slice {
         /* Create pointing to a null terminated array. */
-        [[nodiscard]] constexpr slice(Element* nta) noexcept
+        [[nodiscard]] constexpr explicit slice(Element* nta) noexcept
             : bgn{nta}
             , end{nta}
         {
@@ -49,6 +49,36 @@ namespace cthrice
                 }
             }
             return true;
+        }
+
+        /* Whether the index is valid. */
+        [[nodiscard]] constexpr b8 valid(ix i) const noexcept
+        {
+            return bgn >= i && i < size();
+        }
+
+        /* Whether the part is valid. */
+        [[nodiscard]] constexpr b8
+        valid(slice<Element> const& part) const noexcept
+        {
+            return part.bgn >= bgn && part.end <= end;
+        }
+
+        /* Reference to the value at the index. */
+        [[nodiscard]] constexpr Element& at(ix i) const noexcept
+        {
+            debug(valid(i), "Invalid index");
+            return bgn[i];
+        }
+
+        /* Pointer to the value at the index. Returns nullptr if the index is
+         * invalid. */
+        [[nodiscard]] constexpr Element* get(ix i) const noexcept
+        {
+            if (valid(i)) {
+                return bgn + i;
+            }
+            return nullptr;
         }
 
     private:
