@@ -10,9 +10,9 @@ namespace cthrice
 {
     /* Pointers to contiguously placed elements. */
     template<typename Element>
-    struct slice {
+    struct Slice {
         /* Create pointing to a null terminated array. */
-        [[nodiscard]] constexpr explicit slice(Element* nta) noexcept
+        [[nodiscard]] constexpr explicit Slice(Element* nta) noexcept
             : bgn{nta}
             , end{nta}
         {
@@ -37,7 +37,7 @@ namespace cthrice
 
         /* Whether the given slice have the same elements in the same order. */
         [[nodiscard]] constexpr b8
-        equals(slice<Element> const& rhs) const noexcept
+        equals(Slice<Element> const& rhs) const noexcept
         {
             ix sze = size();
             if (sze != rhs.size()) {
@@ -59,7 +59,7 @@ namespace cthrice
 
         /* Whether the part is valid. */
         [[nodiscard]] constexpr b8
-        valid(slice<Element> const& part) const noexcept
+        valid(Slice<Element> const& part) const noexcept
         {
             return part.bgn >= bgn && part.end <= end;
         }
