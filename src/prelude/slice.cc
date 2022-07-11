@@ -17,7 +17,7 @@ namespace cthrice
         /* Amount of elements. */
         [[nodiscard]] constexpr ix size() const noexcept
         {
-            ix const sze = end_ - bgn_;
+            ix const sze{end_ - bgn_};
             expect(sze >= 0, "Negative size!");
             return sze;
         }
@@ -30,13 +30,13 @@ namespace cthrice
 
         /* Whether the given slice have the same elements in the same order. */
         [[nodiscard]] constexpr b8
-        equals(Slice<Element> const& rhs) const noexcept
+        equals(Slice<Element const> const& rhs) const noexcept
         {
-            ix const sze = size();
+            ix const sze{size()};
             if (sze != rhs.size()) {
                 return false;
             }
-            for (ix i = 0; i < sze; i++) {
+            for (ix i{0}; i < sze; i++) {
                 if (bgn_[i] != rhs.bgn_[i]) {
                     return false;
                 }
@@ -103,7 +103,7 @@ namespace cthrice
         [[nodiscard]] constexpr Slice<Element>
         slice(ix const bix, ix const eix) noexcept
         {
-            Slice<Element> const prt = {.bgn = bgn_ + bix, .end = bgn_ + eix};
+            Slice<Element> const prt{bgn_ + bix, bgn_ + eix};
             expect(valid(prt), "Creating invalid slice!");
             return prt;
         }
@@ -113,9 +113,7 @@ namespace cthrice
         [[nodiscard]] constexpr Slice<Element const>
         slice(ix const bix, ix const eix) const noexcept
         {
-            Slice<Element const> const prt = {
-                .bgn = bgn_ + bix,
-                .end = bgn_ + eix};
+            Slice<Element const> const prt{bgn_ + bix, bgn_ + eix};
             expect(valid(prt), "Creating invalid slice!");
             return prt;
         }
@@ -125,7 +123,7 @@ namespace cthrice
         template<typename Predicate>
         [[nodiscard]] constexpr Element* first(Predicate p) noexcept
         {
-            Element* pos = bgn_;
+            Element* pos{bgn_};
             while (pos < end_ && !p(*pos)) {
                 pos++;
             }
@@ -137,7 +135,7 @@ namespace cthrice
         template<typename Predicate>
         [[nodiscard]] constexpr Element const* first(Predicate p) const noexcept
         {
-            Element const* pos = bgn_;
+            Element const* pos{bgn_};
             while (pos < end_ && !p(*pos)) {
                 pos++;
             }
@@ -148,7 +146,7 @@ namespace cthrice
          * found. */
         [[nodiscard]] constexpr Element* first(Element const& e) noexcept
         {
-            return first([e](Element const elem) {
+            return first<>([e](Element const elem) {
                 return elem == e;
             });
         }
@@ -158,7 +156,7 @@ namespace cthrice
         [[nodiscard]] constexpr Element const*
         first(Element const& e) const noexcept
         {
-            return first([e](Element const elem) {
+            return first<>([e](Element const elem) {
                 return elem == e;
             });
         }
@@ -199,8 +197,8 @@ namespace cthrice
         {
             expect(valid(pos), "Invalid position!");
             return {
-                .lead = {.bgn = bgn_,  .end = pos},
-                .trail{ .bgn = pos, .end = end_}
+                {bgn_,  pos},
+                { pos, end_}
             };
         }
 
@@ -210,8 +208,8 @@ namespace cthrice
         {
             expect(valid(pos), "Invalid position!");
             return {
-                .lead = {.bgn = bgn_,  .end = pos},
-                .trail{ .bgn = pos, .end = end_}
+                {bgn_,  pos},
+                { pos, end_}
             };
         }
 
@@ -313,6 +311,16 @@ namespace cthrice
             : bgn_{other.bgn_}
             , end_{other.end_}
         {
+        }
+
+        /* Create from the pointers. */
+        [[nodiscard]] constexpr Slice(
+            Element* const bgn,
+            Element* const end) noexcept
+            : bgn_{bgn}
+            , end_{end}
+        {
+            expect(bgn_ <= end_, "Creating invalid slice!");
         }
 
     private:

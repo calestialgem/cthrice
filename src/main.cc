@@ -15,8 +15,12 @@ constexpr void println(Slice<c8 const> const& str) noexcept
 }
 
 /* Entry to the compiler. */
-i32 main(i32, c8 const* const*) noexcept
+i32 main(i32 const, c8 const* const* const) noexcept
 {
-    println(Slice{"Hello, hello, hello!"});
+    println(Slice{"Hello, hello, hello!"}.split(',').lead);
+    println(Slice{"Hello, hello, hello!"}.split('h').trail);
+    println(Slice{"Hello, hello, hello!"}.split('!').trail);
+    println(Slice{"Hello, hello, hello!"}.split('a').lead);
+    println(Slice{"Hello, hello, hello!"}.split('a').trail);
     return 0;
 }
