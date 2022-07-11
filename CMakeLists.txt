@@ -13,7 +13,7 @@ add_executable(${PROJECT_NAME} src/main.cc)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
-    src/prelude/error.cc
+    src/prelude/expect.cc
     src/prelude/scalar.cc
     src/prelude/slice.cc
     <cmath>

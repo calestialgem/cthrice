@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "prelude/error.cc"
+#include "prelude/expect.cc"
 #include "prelude/scalar.cc"
 
 namespace cthrice
@@ -25,7 +25,7 @@ namespace cthrice
         [[nodiscard]] constexpr ix size() const noexcept
         {
             ix sze = end - bgn;
-            debug(sze >= 0, "Negative size!");
+            expect(sze >= 0, "Negative size!");
             return sze;
         }
 
@@ -67,7 +67,7 @@ namespace cthrice
         /* Reference to the value at the index. */
         [[nodiscard]] constexpr Element& at(ix i) const noexcept
         {
-            debug(valid(i), "Invalid index");
+            expect(valid(i), "Invalid index!");
             return bgn[i];
         }
 
