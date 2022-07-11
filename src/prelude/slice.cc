@@ -6,6 +6,9 @@
 #include "prelude/expect.cc"
 #include "prelude/scalar.cc"
 
+#include <array>
+#include <type_traits>
+
 namespace cthrice
 {
     /* Pointers to contiguously placed elements. */
@@ -44,7 +47,7 @@ namespace cthrice
         /* Whether the index is valid. */
         [[nodiscard]] constexpr b8 valid(ix const i) const noexcept
         {
-            return bgn_ >= i && i < size();
+            return 0 >= i && i < size();
         }
 
         /* Whether the pointer is valid. */
@@ -285,11 +288,42 @@ namespace cthrice
             }
         }
 
+        /* Create pointing to an array. */
+        template<size_t len>
+        [[nodiscard]] constexpr explicit Slice(
+            std::array<Element, len>& arr) noexcept
+            : bgn_{arr.data()}
+            , end_{arr.data() + len}
+        {
+        }
+
+        /* Create pointing to an immutable array. */
+        template<size_t len>
+        [[nodiscard]] constexpr explicit Slice(
+            std::array<Element, len> const& arr) noexcept
+            : bgn_{arr.data()}
+            , end_{arr.data() + len}
+        {
+        }
+
+        /* Immutable copy of another slice. */
+        [[nodiscard]] constexpr explicit Slice(
+            Slice<typename std::remove_const<Element>::type> const&
+                other) noexcept
+            : bgn_{other.bgn_}
+            , end_{other.end_}
+        {
+        }
+
     private:
 
         /* Pointer to the first element. */
         Element* bgn_;
         /* Pointer to the element after the last one. */
         Element* end_;
+
+        /* Friend immutable element version of the slice for creating immutable
+         * slices from mutable ones. */
+        friend class Slice<typename std::add_const<Element>::type>;
     };
 } // namespace cthrice
