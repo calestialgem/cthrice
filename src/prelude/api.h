@@ -6,6 +6,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// -----------------------------------------------------------------------------
+// --------------------------[   S  C  A  L  A  R   ]---------------------------
+// -----------------------------------------------------------------------------
+
 /* Index and pointer arithmetic integer. */
 typedef ptrdiff_t ix;
 
@@ -47,17 +51,95 @@ typedef _Bool b8;
 /* Pointer to nothing. */
 #define null ((void*)0)
 
+// -----------------------------------------------------------------------------
+// --------------------------[   E  X  P  E  C  T   ]---------------------------
+// -----------------------------------------------------------------------------
+
 /* If the condition does not hold, print the error message and abort with the
  * file and line number. */
-void expect_source_location(b8 cnd, c8 const* msg, c8 const* file, u32 line);
+void expectsl(b8 cnd, c8 const* msg, c8 const* file, u32 line);
 
 /* If the condition does not hold, print the error message and abort with the
  * file and line number. Provides source location by itself. */
-#define expect(cnd, msg) expect_source_location(cnd, msg, __FILE__, __LINE__)
+#define expect(cnd, msg) expectsl(cnd, msg, __FILE__, __LINE__)
 
 /* Print the error message and abort with the file and line number. */
-void unexpected_source_location(c8 const* msg, c8 const* file, u32 line);
+void unexpectedsl(c8 const* msg, c8 const* file, u32 line);
 
 /* Print the error message and abort with the file and line number. Provides
  * source location by itself. */
-#define unexpected(msg) unexpected_source_location(msg, __FILE__, __LINE__)
+#define unexpected(msg) unexpectedsl(msg, __FILE__, __LINE__)
+
+// -----------------------------------------------------------------------------
+// ----------------------------[   S  L  I  C  E   ]----------------------------
+// -----------------------------------------------------------------------------
+
+/* Pointers to contiguous elements. */
+typedef struct {
+    /* Pointer to the element at the begining. */
+    c8* bgn;
+    /* Pointer to the element one after the last one. */
+    c8* end;
+} Slice;
+
+/* Parts of a slice, which was splitted at an element. The element where the
+ * split happens is the first element of the trail. */
+typedef struct {
+    /* Part of the slice from the begining to the split. */
+    Slice lead;
+    /* Part of the slice from the split to the end. */
+    Slice trail;
+} Split;
+
+/* Create pointing to the null terminated array. */
+Slice slice_terminated(c8* a);
+
+/* Amount of elements. */
+ix slice_size(Slice s);
+
+/* Whether there are any elements. */
+b8 slice_finite(Slice s);
+
+/* Whether the slices point to equal elements in the same order. */
+b8 slice_equal(Slice lhs, Slice rhs);
+
+/* Whether the position is valid. */
+b8 slice_validp(Slice s, c8* p);
+
+/* Whether the index is valid. */
+b8 slice_validi(Slice s, ix i);
+
+/* Whether the part is valid. */
+b8 slice_valids(Slice s, Slice p);
+
+/* Pointer to the value at the index. Returns null if the index is invalid. */
+c8* slice_get(Slice s, ix i);
+
+/* Value at the index. */
+c8 slice_at(Slice s, ix i);
+
+/* First position of the element that fits the predicate. Returns the pointer to
+ * the element one after the last one if none of the elements fits. */
+c8* slice_firstf(Slice s, b8 (*p)(c8));
+
+/* Whether there is an element that fits the predicate. */
+b8 slice_containsf(Slice s, b8 (*p)(c8));
+
+/* First position of the element. Returns the pointer to the element one after
+ * the last one if the element does not exist. */
+c8* slice_firste(Slice s, c8 e);
+
+/* Whether the element exists. */
+b8 slice_containse(Slice s, c8 e);
+
+/* Split the slice at the position. */
+Split slice_splitp(Slice s, c8* p);
+
+/* Split the slice at the index. */
+Split slice_spliti(Slice s, ix i);
+
+/* Split the slice at the first element that fits the predicate. */
+Split slice_splitf(Slice s, b8 (*p)(c8));
+
+/* Split the slice at the first occurance of element. */
+Split slice_splite(Slice s, c8 e);
