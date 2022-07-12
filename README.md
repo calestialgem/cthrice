@@ -3,7 +3,7 @@
 
 # cthrice
 
-This is the C transpiler for the Thrice language, written in C++.
+This is the C transpiler for the Thrice language, written in C.
 
 ---
 
