@@ -46,3 +46,18 @@ typedef _Bool b8;
 
 /* Pointer to nothing. */
 #define null ((void*)0)
+
+/* If the condition does not hold, print the error message and abort with the
+ * file and line number. */
+void expect_source_location(b8 cnd, c8 const* msg, c8 const* file, u32 line);
+
+/* If the condition does not hold, print the error message and abort with the
+ * file and line number. Provides source location by itself. */
+#define expect(cnd, msg) expect_source_location(cnd, msg, __FILE__, __LINE__)
+
+/* Print the error message and abort with the file and line number. */
+void unexpected_source_location(c8 const* msg, c8 const* file, u32 line);
+
+/* Print the error message and abort with the file and line number. Provides
+ * source location by itself. */
+#define unexpected(msg) unexpected_source_location(msg, __FILE__, __LINE__)
