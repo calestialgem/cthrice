@@ -3,16 +3,14 @@
 
 #pragma once
 
-#include "prelude/border.cc"
-
 namespace cthrice
 {
 /* Nonowning view of another range. */
 template<typename Element>
 struct View {
     /* Border at the begining. */
-    Border<Element> begin;
+    Element* begin;
     /* Border at the end. */
-    Border<Element> end;
+    Element* end;
 };
 } // namespace cthrice

@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "prelude/border.cc"
 #include "prelude/expect.cc"
 #include "prelude/scalar.cc"
 
@@ -17,18 +16,18 @@ concept Range = requires(RangeType range)
 {
     {
         range.begin
-        } -> std::convertible_to<Border<Element>>;
+        } -> std::convertible_to<Element*>;
     {
         range.end
-        } -> std::convertible_to<Border<Element>>;
+        } -> std::convertible_to<Element*>;
 };
 
 /* Amount of elements. */
 template<typename Element, Range<Element> RangeType>
 [[nodiscard]] constexpr ix size(RangeType const& range) noexcept
 {
-    ix size = distance(range.begin, range.end);
-    expect(size >= 0, "Negative size!");
+    ix size = range.end - range.begin;
+    expect(size >= 0, "Range has negative size!");
     return size;
 }
 
@@ -41,20 +40,22 @@ template<typename Element, Range<Element> RangeType>
 
 /* Pointer to the value at the index. Returns null if the index is invalid. */
 template<typename Element, Range<Element> RangeType>
-[[nodiscard]] constexpr Element* get(RangeType const& range, ix const index)
+[[nodiscard]] constexpr Element*
+get(RangeType const& range, ix const index) noexcept
 {
     if (index >= 0 && index < size(range)) {
-        return range.begin.after + index;
+        return range.begin + index;
     }
     return nullptr;
 }
 
 /* Reference to the value at the index. */
 template<typename Element, Range<Element> RangeType>
-[[nodiscard]] constexpr Element& at(RangeType const& range, ix const index)
+[[nodiscard]] constexpr Element&
+at(RangeType const& range, ix const index) noexcept
 {
     Element* pointer = get(range, index);
-    expect(pointer != nullptr, "Invalid index!");
+    expect(pointer != nullptr, "Index out of range bounds!");
     return *pointer;
 }
 
