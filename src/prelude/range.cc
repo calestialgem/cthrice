@@ -39,18 +39,11 @@ template<typename Element, Range<Element> RangeType>
     return size(range) > 0;
 }
 
-/* Whether the index is valid. */
-template<typename Element, Range<Element> RangeType>
-[[nodiscard]] constexpr b8 valid(RangeType const& range, ix const index)
-{
-    return index >= 0 && index < size(range);
-}
-
 /* Pointer to the value at the index. Returns null if the index is invalid. */
 template<typename Element, Range<Element> RangeType>
 [[nodiscard]] constexpr Element* get(RangeType const& range, ix const index)
 {
-    if (valid(range, index)) {
+    if (index >= 0 && index < size(range)) {
         return range.begin.after + index;
     }
     return nullptr;
