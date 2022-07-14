@@ -39,6 +39,32 @@ template<typename Element, Range<Element> RangeType>
     return size(range) > 0;
 }
 
+/* Whether the index is valid. */
+template<typename Element, Range<Element> RangeType>
+[[nodiscard]] constexpr b8 valid(RangeType const& range, ix const index)
+{
+    return index >= 0 && index < size(range);
+}
+
+/* Pointer to the value at the index. Returns null if the index is invalid. */
+template<typename Element, Range<Element> RangeType>
+[[nodiscard]] constexpr Element* get(RangeType const& range, ix const index)
+{
+    if (valid(range, index)) {
+        return range.begin.after + index;
+    }
+    return nullptr;
+}
+
+/* Reference to the value at the index. */
+template<typename Element, Range<Element> RangeType>
+[[nodiscard]] constexpr Element& at(RangeType const& range, ix const index)
+{
+    Element* pointer = get(range, index);
+    expect(pointer != nullptr, "Invalid index!");
+    return *pointer;
+}
+
 /* Whether the ranges have equal elements with the same order. */
 template<typename Element, Range<Element> RangeType>
 [[nodiscard]] constexpr b8
@@ -48,8 +74,8 @@ equal(RangeType const& left, RangeType const& right) noexcept
     if (size != size(right)) {
         return false;
     }
-    for (ix i = 0; i < size; i++) {
-        if (after(left.begin, i) != after(right.begin, i)) {
+    for (ix index = 0; index < size; index++) {
+        if (at(left, index) != at(right, index)) {
             return false;
         }
     }
