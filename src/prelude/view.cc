@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "border.cc"
+#include "prelude/border.cc"
 
 namespace cthrice
 {
