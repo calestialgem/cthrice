@@ -12,6 +12,10 @@ add_executable(${PROJECT_NAME}
     src/main.cc
 )
 
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    src/prelude/scalar.cc
+)
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 # Enable all warnings.
