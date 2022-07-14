@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <cstdint>
 
+namespace cthrice
+{
 /* Signed, 8-bit integer. */
 using i8 = std::int8_t;
 /* Signed, 16-bit integer. */
@@ -37,3 +39,4 @@ using c8 = char;
 
 /* Boolean algebraic, 8-bit integer. */
 using b8 = bool;
+} // namespace cthrice
