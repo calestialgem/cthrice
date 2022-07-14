@@ -14,7 +14,6 @@ add_executable(${PROJECT_NAME} src/main.cc)
 add_library(headers
     src/prelude/border.cc
     src/prelude/expect.cc
-    src/prelude/place.cc
     src/prelude/range.cc
     src/prelude/scalar.cc
     src/prelude/view.cc
