@@ -6,6 +6,7 @@
 #include "prelude/scalar.cc"
 
 #include <array>
+#include <cstddef>
 
 namespace cthrice
 {
@@ -30,9 +31,17 @@ template<typename Element>
 }
 
 /* View of a static array. */
-template<typename Element, ix Size>
+template<typename Element, std::size_t Size>
 [[nodiscard]] constexpr View<Element>
 view_static(std::array<Element, Size>& array) noexcept
+{
+    return {.begin = array.data(), .end = array.data() + Size};
+}
+
+/* View of an immutable static array. */
+template<typename Element, std::size_t Size>
+[[nodiscard]] constexpr View<Element const>
+view_static(std::array<Element, Size> const& array) noexcept
 {
     return {.begin = array.data(), .end = array.data() + Size};
 }

@@ -34,5 +34,11 @@ int main(int const argc, char const* const* const argv)
 
     println(view_terminated("Hello, hello, hello!"));
 
+    std::array text = {'H', 'e', 'l', 'l', 'o', '!'};
+    println(view_static(text));
+
+    std::array const consttext = {'H', 'e', 'l', 'l', 'o', '!'};
+    println(view_static(consttext));
+
     return 0;
 }
