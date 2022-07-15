@@ -13,9 +13,7 @@ add_executable(${PROJECT_NAME} src/main.cc)
 # Create compile commands for the header files as well.
 add_library(headers
     src/prelude/expect.cc
-    src/prelude/range.cc
     src/prelude/scalar.cc
-    src/prelude/view.cc
 )
 
 function(setup_target target)
