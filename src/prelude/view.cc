@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "prelude/expect.hh"
-#include "prelude/function.hh"
-#include "prelude/scalar.hh"
+#include "prelude/expect.cc"
+#include "prelude/function.cc"
+#include "prelude/scalar.cc"
 
 namespace cthrice
 {

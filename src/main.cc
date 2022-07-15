@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "prelude/expect.hh"
-#include "prelude/scalar.hh"
-#include "prelude/view.hh"
+#include "prelude/expect.cc"
+#include "prelude/scalar.cc"
+#include "prelude/view.cc"
 
 #include <array>
 #include <iostream>
