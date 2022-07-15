@@ -15,43 +15,43 @@ struct View {
     /* Amount of elements. */
     [[nodiscard]] constexpr ix size() const noexcept
     {
-        return right - left;
+        return last - first;
     }
 
     /* Call the consumer for all the elements in the view. */
     template<Function<void, Element> Consumer>
     constexpr void consume(Consumer consumer) const noexcept
     {
-        for (Element const* i{left}; i < right; i++) {
+        for (Element const* i{first}; i < last; i++) {
             consumer(*i);
         }
     }
 
     /* View from the pointers. */
     [[nodiscard]] constexpr View(
-        Element const* const left,
-        Element const* const right) noexcept
-        : left{left}
-        , right{right}
+        Element const* const first,
+        Element const* const last) noexcept
+        : first{first}
+        , last{last}
     {
-        expect(left <= right, "Illegal view!");
+        expect(first <= last, "Illegal view!");
     }
 
     /* View of a null terminated array. */
     [[nodiscard]] constexpr explicit View(Element const* const array) noexcept
-        : left{array}
-        , right{array}
+        : first{array}
+        , last{array}
     {
-        while (*right) {
-            right++;
+        while (*last) {
+            last++;
         }
     }
 
 private:
 
-    /* Border at the begining. */
-    Element const* left;
-    /* Border at the end. */
-    Element const* right;
+    /* Border before the first element. */
+    Element const* first;
+    /* Border after the last element. */
+    Element const* last;
 };
 } // namespace cthrice
