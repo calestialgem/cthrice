@@ -13,7 +13,7 @@ namespace cthrice
 /* Location of code in a source file. */
 struct SourceLocation {
     /* Source file. */
-    c8 const* file;
+    char const* file;
     /* Line in the file. */
     u32 line;
 };
@@ -21,8 +21,8 @@ struct SourceLocation {
 /* Create a source location at the caller. Do not provide arguments for this to
  * work. */
 [[nodiscard]] constexpr SourceLocation callerSourceLocation(
-    c8 const* const file = __builtin_FILE(),
-    u32 const       line = __builtin_LINE()) noexcept
+    char const* const file = __builtin_FILE(),
+    u32 const         line = __builtin_LINE()) noexcept
 {
     return {.file = file, .line = line};
 }
@@ -30,8 +30,8 @@ struct SourceLocation {
 /* If the condition does not hold, print the error message with the file and
  * line number and terminate. */
 constexpr void expect(
-    b8 const             condition,
-    c8 const* const      message,
+    bool const           condition,
+    char const* const    message,
     SourceLocation const location = callerSourceLocation()) noexcept
 {
     if (!condition) {
@@ -43,7 +43,7 @@ constexpr void expect(
 
 /* Print the error message with the file and line number then terminate. */
 constexpr void unexpected(
-    c8 const* const      message,
+    char const* const    message,
     SourceLocation const location = callerSourceLocation()) noexcept
 {
     expect(false, message, location);
