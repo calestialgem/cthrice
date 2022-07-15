@@ -9,8 +9,8 @@ namespace cthrice
 template<typename Element>
 struct View {
     /* Border at the begining. */
-    Element* left;
+    Element const* left;
     /* Border at the end. */
-    Element* right;
+    Element const* right;
 };
 } // namespace cthrice
