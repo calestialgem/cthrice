@@ -12,12 +12,12 @@
 using namespace cthrice;
 
 /* Print the characters in the range. */
-template<Range<const c8> RangeType>
+template<Range<c8 const> RangeType>
 constexpr void println(RangeType const& range) noexcept
 {
-    for (const c8* i = range.begin; i < range.end; i++) {
-        std::cout << *i;
-    }
+    for_each<c8 const>(range, [](c8 const& character) {
+        std::cout << character;
+    });
     std::cout << std::endl;
 }
 

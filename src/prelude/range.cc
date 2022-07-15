@@ -22,6 +22,15 @@ concept Range = requires(RangeType range)
         } -> std::convertible_to<Element*>;
 };
 
+/* Call the consumer for each element in the range. */
+template<typename Element, Range<Element> RangeType, typename Consumer>
+constexpr void for_each(RangeType const& range, Consumer consumer) noexcept
+{
+    for (Element* i = range.begin; i < range.end; i++) {
+        consumer(*i);
+    }
+}
+
 /* Amount of elements. */
 template<typename Element, Range<Element> RangeType>
 [[nodiscard]] constexpr ix size(RangeType const& range) noexcept
