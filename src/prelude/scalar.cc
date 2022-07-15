@@ -26,7 +26,7 @@ using u32 = std::uint32_t;
 /* Signed, 64-bit integer. */
 using u64 = std::uint64_t;
 
-/* Unsigned index and pointer arithmetic integer. */
+/* Signed, index and pointer arithmetic integer. */
 using ix = std::ptrdiff_t;
 
 /* Floating-point, 32-bit real. */
