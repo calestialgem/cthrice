@@ -18,6 +18,24 @@ struct View {
         return last - first;
     }
 
+    /* Pointer to the value at the index. Returns nullptr if the index is
+     * invalid. */
+    [[nodiscard]] constexpr Element* get(ix index) const noexcept
+    {
+        if (index >= 0 && index < size()) {
+            return first + index;
+        }
+        return nullptr;
+    }
+
+    /* Reference to the element at the index. */
+    [[nodiscard]] constexpr Element& at(ix index) const noexcept
+    {
+        Element* pointer = get(index);
+        expect(pointer != nullptr, "Index out of bounds!");
+        return *pointer;
+    }
+
     /* Call the consumer for all the elements in the view. */
     template<Function<void, Element> Consumer>
     constexpr void consume(Consumer consumer) const noexcept
