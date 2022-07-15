@@ -2,8 +2,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "prelude/expect.cc"
+#include "prelude/range.cc"
+#include "prelude/scalar.cc"
+#include "prelude/view.cc"
 
+#include <array>
 #include <iostream>
+
+using namespace cthrice;
+
+/* Print the characters in the range. */
+template<Range<const c8> RangeType>
+constexpr void println(RangeType const& range) noexcept
+{
+    for (const c8* i = range.begin; i < range.end; i++) {
+        std::cout << *i;
+    }
+    std::cout << std::endl;
+}
 
 /* Entry to the compiler. */
 int main(int const argc, char const* const* const argv)
@@ -16,6 +32,7 @@ int main(int const argc, char const* const* const argv)
     }
     std::cout << std::endl;
 
-    cthrice::unexpected("Hello, hello, hello!");
+    println(view_terminated("Hello, hello, hello!"));
+
     return 0;
 }
