@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "prelude/scalar.cc"
+#include "prelude/scalar.hh"
 
 #include <exception>
 #include <iostream>

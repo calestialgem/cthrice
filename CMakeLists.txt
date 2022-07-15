@@ -11,11 +11,12 @@ project(cthrice)
 add_executable(${PROJECT_NAME} src/main.cc)
 
 # Create compile commands for the header files as well.
-add_library(headers
-    src/prelude/expect.cc
-    src/prelude/scalar.cc
-    src/prelude/view.cc
+add_library(headers OBJECT
+    src/prelude/expect.hh
+    src/prelude/scalar.hh
+    src/prelude/view.hh
 )
+set_target_properties(headers PROPERTIES LINKER_LANGUAGE CXX)
 
 function(setup_target target)
     target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}/src)
