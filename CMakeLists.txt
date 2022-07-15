@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME} src/main.cc)
 add_library(headers
     src/prelude/expect.cc
     src/prelude/scalar.cc
+    src/prelude/view.cc
 )
 
 function(setup_target target)
