@@ -3,14 +3,24 @@
 
 #include "prelude/expect.hh"
 #include "prelude/scalar.hh"
+#include "prelude/view.hh"
 
 #include <array>
 #include <iostream>
 
 using namespace cthrice;
 
+/* Print the characters in the view. */
+void println(View<char> const& string) noexcept
+{
+    string.consume([](char const& character) {
+        std::cout << character;
+    });
+    std::cout << std::endl;
+}
+
 /* Entry to the compiler. */
-int main(int const argc, char const* const* const argv)
+int main(int const argc, char const* const* const argv) noexcept
 {
     // Print arguments.
     std::cout << "Thrice C Transpiler\n"
@@ -20,7 +30,7 @@ int main(int const argc, char const* const* const argv)
     }
     std::cout << std::endl;
 
-    unexpected("Hello, hello, hello!");
+    println(View{"Hello, hello, hello!"});
 
     return 0;
 }

@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME} src/main.cc)
 # Create compile commands for the header files as well.
 add_library(headers OBJECT
     src/prelude/expect.hh
+    src/prelude/function.hh
     src/prelude/scalar.hh
     src/prelude/view.hh
 )
