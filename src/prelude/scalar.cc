@@ -33,10 +33,4 @@ using ix = std::ptrdiff_t;
 using f32 = float;
 /* Floating-point, 64-bit real. */
 using f64 = double;
-
-/* Smallest memory unit, which is a signed, 8-bit integer. */
-using c8 = char;
-
-/* Boolean algebraic, 8-bit integer. */
-using b8 = bool;
 } // namespace cthrice
