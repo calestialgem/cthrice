@@ -2,23 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "prelude/expect.cc"
-#include "prelude/list.cc"
 #include "prelude/scalar.cc"
-#include "prelude/view.cc"
 
 #include <array>
 #include <iostream>
 
 using namespace cthrice;
-
-/* Print the characters in the view. */
-void println(View<char> const& string) noexcept
-{
-    string.consume([](char const& character) {
-        std::cout << character;
-    });
-    std::cout << std::endl;
-}
 
 /* Entry to the compiler. */
 int main(int const argc, char const* const* const argv) noexcept
@@ -30,15 +19,6 @@ int main(int const argc, char const* const* const argv) noexcept
         std::cout << "[" << i << "] {" << argv[i] << "}\n";
     }
     std::cout << std::endl;
-
-    List<View<char>> strings{};
-    strings.add(View{"Hello,"});
-    strings.add(View{"hello,"});
-    strings.add(View{"hello!"});
-
-    strings.consume([](View<char> const& string) {
-        println(string);
-    });
 
     return 0;
 }
