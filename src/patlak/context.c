@@ -4,6 +4,7 @@
 #pragma once
 
 #include "patlak/code.c"
+#include "patlak/pattern.c"
 #include "prelude/string.c"
 
 /* All pattern related data. */

@@ -34,5 +34,6 @@ add_library(headers OBJECT
 
     src/patlak/code.c
     src/patlak/context.c
+    src/patlak/pattern.c
 )
 setup_target(headers)
