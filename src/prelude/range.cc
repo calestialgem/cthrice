@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "prelude/scalar.cc"
+
 #include <concepts>
 
 namespace cthrice
@@ -18,4 +20,11 @@ concept Range = requires(Type const& range)
         last(range)
         } -> std::convertible_to<Element*>;
 };
+
+/* Amount of elements. */
+template<Range<void> RangeType>
+[[nodiscard]] constexpr ix size(RangeType const& range) noexcept
+{
+    return last(range) - first(range);
+}
 } // namespace cthrice

@@ -5,6 +5,7 @@
 
 #include "prelude/expect.cc"
 #include "prelude/list.cc"
+#include "prelude/range.cc"
 #include "prelude/scalar.cc"
 #include "prelude/view.cc"
 
@@ -15,11 +16,12 @@ namespace cthrice
 /* Load the contents of the file at the given path to the buffer. Returns a view
  * to the loaded contents. */
 [[nodiscard]] constexpr View<char>
-load(List<char>& buffer, char const* const path)
+load(List<char>& buffer, char const* const path) noexcept
 {
     std::FILE* file = std::fopen(path, "r");
     expect(file != nullptr, "Could not open the file!");
 
     ix begining = size(buffer);
+    return {};
 }
 } // namespace cthrice
