@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "patlak/code.c"
 #include "prelude/string.c"
 
 /* All pattern related data. */
@@ -27,4 +28,7 @@ CTString ct_patlak_match(
 }
 
 /* Deallocate the memory. */
-void ct_patlak_free(CTPatlakContext* context) {}
+void ct_patlak_free(CTPatlakContext* context)
+{
+    ct_patlak_codes_free(&context->codes);
+}
