@@ -79,7 +79,8 @@ bool ct_patlak_lexer_quote(CTPatlakTokens* tokens, CTString* pattern)
 /* Whether the character is not part of an identifier. */
 bool ct_patlak_lexer_not_identifier(char character)
 {
-    return character < '0' || character > '9';
+    return (character < 'a' || character > 'z') &&
+           (character < 'A' || character > 'Z') && character != '_';
 }
 
 /* Try to lex a identifier. */
