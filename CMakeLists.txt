@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME} src/main.cc)
 add_library(headers OBJECT
     src/prelude/equalable.cc
     src/prelude/expect.cc
+    src/prelude/file.cc
     src/prelude/function.cc
     src/prelude/hashable.cc
     src/prelude/list.cc
