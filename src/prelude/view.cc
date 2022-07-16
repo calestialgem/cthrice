@@ -5,6 +5,8 @@
 
 #include "prelude/scalar.cc"
 
+#include <ostream>
+
 namespace cthrice
 {
 /* Nonowning range. */
@@ -21,5 +23,16 @@ template<typename Element>
 [[nodiscard]] constexpr ix size(View<Element> const& view) noexcept
 {
     return view.last - view.first;
+}
+
+/* Stream the elements to the standard output. */
+template<typename Element>
+constexpr std::ostream&
+operator<<(std::ostream& out, View<Element> const& view) noexcept
+{
+    for (Element* i = view.first; i < view.last; i++) {
+        out << *i;
+    }
+    return out;
 }
 } // namespace cthrice

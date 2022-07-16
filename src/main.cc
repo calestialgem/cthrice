@@ -15,24 +15,22 @@ using namespace cthrice;
 /* Compile the file. */
 void compile(char const* const path) noexcept
 {
-    std::cout << "Compiling " << path << std::endl;
+    format("Compiling {%}.\n", path);
+
     List<char> buffer{};
-    View<char> file = load(buffer, path);
-    for (const char* i = file.first; i < file.last; i++) {
-        std::cout << *i;
-    }
-    std::cout << std::endl;
+    format("%\n", load(buffer, path));
     free(buffer);
+
+    std::cout.flush();
 }
 
 /* Entry to the compiler. */
 int main(int const argc, char const* const* const argv) noexcept
 {
     // Print arguments.
-    std::cout << "Thrice C Transpiler\n"
-              << "Running with arguments:\n";
+    format("Thrice C Transpiler\nRunning with arguments:\n");
     for (int i{0}; i < argc; i++) {
-        std::cout << "[" << i << "] {" << argv[i] << "}\n";
+        format("[%] {%}\n", i, argv[i]);
     }
     std::cout << std::endl;
 
@@ -41,7 +39,6 @@ int main(int const argc, char const* const* const argv) noexcept
         compile(argv[i]);
     }
 
-    format("Hello, hello, hello!\n");
-    format("That is a string: %, and this is a number: %!\n", "A string.", 42);
+    std::cout.flush();
     return 0;
 }
