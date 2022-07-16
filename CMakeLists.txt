@@ -24,5 +24,7 @@ add_executable(${PROJECT_NAME} src/main.c)
 setup_target(${PROJECT_NAME})
 
 # Create compile commands for the header files as well.
-# add_library(headers OBJECT)
-# setup_target(headers)
+add_library(headers OBJECT
+    src/prelude/expect.c
+)
+setup_target(headers)

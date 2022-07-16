@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "prelude/expect.c"
+
 #include <stdio.h>
 
 /* Compile the source file at the path. */
@@ -19,11 +21,7 @@ int main(int const argumentCount, char const* const* const arguments)
     }
     printf("\n");
 
-    if (argumentCount < 2) {
-        fprintf(stderr, "Provide a thrice file!");
-        return -1;
-    }
-
+    cthrice_expect(argumentCount >= 2, "Provide a thrice file!");
     for (int i = 1; i < argumentCount; i++) {
         compile(arguments[i]);
     }
