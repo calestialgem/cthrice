@@ -14,7 +14,7 @@ function(setup_target target)
         target_compile_options(${target} PRIVATE /Wall)
     else(MSVC)
         target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic
-        -Wno-pragma-once-outside-header)
+        -Wno-pragma-once-outside-header -Wno-empty-translation-unit)
     endif(MSVC)
 endfunction(setup_target target)
 
@@ -26,5 +26,6 @@ setup_target(${PROJECT_NAME})
 # Create compile commands for the header files as well.
 add_library(headers OBJECT
     src/prelude/expect.c
+    src/prelude/scalar.c
 )
 setup_target(headers)
