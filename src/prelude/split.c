@@ -15,14 +15,32 @@ typedef struct {
     CTString after;
 } CTSplit;
 
+/* Split at the border before the position. */
+CTSplit ct_split_position(CTString const* string, char const* position)
+{
+    ct_expect(
+        ct_string_valid_position(string, position),
+        "Position out of string bounds!");
+    return (CTSplit){
+        .before = {.first = string->first,     .last = position},
+        .after  = {     .first = position, .last = string->last}
+    };
+}
+
 /* Split at the border before the index. */
 CTSplit ct_split(CTString const* string, CTIndex index)
 {
-    ct_expect(
-        index >= 0 && index < ct_string_size(string),
-        "Index out of string bounds!");
-    return (CTSplit){
-        .before = {        .first = string->first, .last = string->first + index},
-        .after  = {.first = string->first + index,          .last = string->last}
-    };
+    return ct_split_position(string, string->first + index);
+}
+
+/* Split at the first character that fits the predicate. */
+CTSplit ct_split_first_fit(CTString const* string, bool (*predicate)(char))
+{
+    return ct_split_position(string, ct_string_first_fit(string, predicate));
+}
+
+/* Split at the first occurance of the character. */
+CTSplit ct_split_first(CTString const* string, char character)
+{
+    return ct_split_position(string, ct_string_first(string, character));
 }

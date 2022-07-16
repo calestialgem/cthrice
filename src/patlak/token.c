@@ -8,41 +8,44 @@
 
 #include <stdlib.h>
 
+/* Type of a token in patterns. */
+typedef enum {
+    /* Equal sign: "=". */
+    CT_PATLAK_TOKEN_EQUAL,
+    /* Period: ".". */
+    CT_PATLAK_TOKEN_DOT,
+    /* Vertical bar: "|". */
+    CT_PATLAK_TOKEN_PIPE,
+    /* Comma: ",". */
+    CT_PATLAK_TOKEN_COMMA,
+    /* Question mark: "?". */
+    CT_PATLAK_TOKEN_QUESTION_MARK,
+    /* Asterisk: "*". */
+    CT_PATLAK_TOKEN_STAR,
+    /* Plus sign: "+". */
+    CT_PATLAK_TOKEN_PLUS,
+    /* Opening curly bracket: "{". */
+    CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET,
+    /* Closing curly bracket: "}". */
+    CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET,
+    /* Opening square bracket: "[". */
+    CT_PATLAK_TOKEN_OPENING_SQUARE_BRACKET,
+    /* Closing square bracket: "]". */
+    CT_PATLAK_TOKEN_CLOSING_SQUARE_BRACKET,
+    /* Any amount of consecutive, nonseparated decimal digits without a
+     * sign character. */
+    CT_PATLAK_TOKEN_NUMBER,
+    /* Any amount of consecutive characters inside quotation marks. */
+    CT_PATLAK_TOKEN_QUOTE,
+    /* Any amount of consecutive characters from the English alphabet
+     * and underscores. */
+    CT_PATLAK_TOKEN_IDENTIFIER
+} CTPatlakTokenType;
+
 /* Parts of a pattern string. */
 typedef struct {
-    /* Type. */
-    enum Type {
-        /* Equal sign: "=". */
-        CT_PATLAK_TOKEN_EQUAL,
-        /* Period: ".". */
-        CT_PATLAK_TOKEN_DOT,
-        /* Vertical bar: "|". */
-        CT_PATLAK_TOKEN_PIPE,
-        /* Comma: ",". */
-        CT_PATLAK_TOKEN_COMMA,
-        /* Question mark: "?". */
-        CT_PATLAK_TOKEN_QUESTION_MARK,
-        /* Asterisk: "*". */
-        CT_PATLAK_TOKEN_STAR,
-        /* Plus sign: "+". */
-        CT_PATLAK_TOKEN_PLUS,
-        /* Opening curly bracket: "{". */
-        CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET,
-        /* Closing curly bracket: "}". */
-        CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET,
-        /* Opening square bracket: "[". */
-        CT_PATLAK_TOKEN_OPENING_SQUARE_BRACKET,
-        /* Closing square bracket: "]". */
-        CT_PATLAK_TOKEN_CLOSING_SQUARE_BRACKET,
-        /* Any amount of consecutive, nonseparated decimal digits without a
-         * sign character. */
-        CT_PATLAK_TOKEN_NUMBER,
-        /* Any amount of consecutive characters inside quotation marks. */
-        CT_PATLAK_TOKEN_QUOTE,
-        /* Any amount of consecutive characters from the English alphabet
-         * and underscores. */
-        CT_PATLAK_TOKEN_IDENTIFIER
-    } type;
+    /* Token type. */
+    CTPatlakTokenType type;
     /* Token string. */
     CTString value;
 } CTPatlakToken;
