@@ -7,7 +7,7 @@
 
 namespace cthrice
 {
-/* Nonowning range. */
+/* Dynamic array. */
 template<typename Element>
 struct List {
     /* Border before the first element. */
