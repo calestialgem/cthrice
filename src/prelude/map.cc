@@ -27,7 +27,7 @@ struct Map {
 
 /* Border before the first pair of the map. */
 template<Hashable Key, typename Value>
-[[nodiscard]] typename Map<Key, Value>::Pair*
+[[nodiscard]] constexpr typename Map<Key, Value>::Pair*
 first(Map<Key, Value> const& map) noexcept
 {
     return first(map.pairs);
@@ -35,7 +35,7 @@ first(Map<Key, Value> const& map) noexcept
 
 /* Border after the last pair of the map. */
 template<Hashable Key, typename Value>
-[[nodiscard]] typename Map<Key, Value>::Pair*
+[[nodiscard]] constexpr typename Map<Key, Value>::Pair*
 last(Map<Key, Value> const& map) noexcept
 {
     return last(map.pairs);

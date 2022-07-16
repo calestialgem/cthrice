@@ -16,14 +16,14 @@ struct View {
 
 /* Border before the first element of the view. */
 template<typename Element>
-[[nodiscard]] Element* first(View<Element> const& view) noexcept
+[[nodiscard]] constexpr Element* first(View<Element> const& view) noexcept
 {
     return view.first;
 }
 
 /* Border after the last element of the view. */
 template<typename Element>
-[[nodiscard]] Element* last(View<Element> const& view) noexcept
+[[nodiscard]] constexpr Element* last(View<Element> const& view) noexcept
 {
     return view.last;
 }
