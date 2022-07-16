@@ -37,6 +37,7 @@ add_library(headers OBJECT
     src/patlak/decode.c
     src/patlak/lexer.c
     src/patlak/pattern.c
+    src/patlak/printer.c
     src/patlak/state.c
     src/patlak/token.c
 )
