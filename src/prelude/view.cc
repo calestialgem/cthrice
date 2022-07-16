@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "prelude/scalar.cc"
+
 namespace cthrice
 {
 /* Nonowning range. */
@@ -14,17 +16,10 @@ struct View {
     Element* last;
 };
 
-/* Border before the first element of the view. */
+/* Amount of elements. */
 template<typename Element>
-[[nodiscard]] constexpr Element* first(View<Element> const& view) noexcept
+[[nodiscard]] constexpr ix size(View<Element> const& view) noexcept
 {
-    return view.first;
-}
-
-/* Border after the last element of the view. */
-template<typename Element>
-[[nodiscard]] constexpr Element* last(View<Element> const& view) noexcept
-{
-    return view.last;
+    return view.last - view.first;
 }
 } // namespace cthrice

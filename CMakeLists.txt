@@ -19,7 +19,6 @@ add_library(headers OBJECT
     src/prelude/hashable.cc
     src/prelude/list.cc
     src/prelude/map.cc
-    src/prelude/range.cc
     src/prelude/scalar.cc
     src/prelude/tree.cc
     src/prelude/view.cc

@@ -4,10 +4,9 @@
 #pragma once
 
 #include "prelude/expect.cc"
-#include "prelude/range.cc"
 #include "prelude/scalar.cc"
+#include "prelude/view.cc"
 
-#include <algorithm>
 #include <cstdlib>
 
 namespace cthrice
@@ -23,18 +22,18 @@ struct List {
     Element* allocated;
 };
 
-/* Border before the first element of the list. */
+/* View of the list. */
 template<typename Element>
-[[nodiscard]] constexpr Element* first(List<Element> const& list) noexcept
+[[nodiscard]] constexpr View<Element> view(List<Element> const& list) noexcept
 {
-    return list.first;
+    return {.first = list.first, .last = list.last};
 }
 
-/* Border after the last element of the list. */
+/* Amount of elements. */
 template<typename Element>
-[[nodiscard]] constexpr Element* last(List<Element> const& list) noexcept
+[[nodiscard]] constexpr ix size(List<Element> const& list) noexcept
 {
-    return list.last;
+    return list.last - list.first;
 }
 
 /* Amount of allocated elements. */

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "prelude/expect.cc"
-#include "prelude/range.cc"
 #include "prelude/view.cc"
 
 namespace cthrice
@@ -19,14 +18,14 @@ struct Split {
 };
 
 /* Split the range at the border, which sits at the index. */
-template<typename Element, Range<Element> RangeType>
+template<typename Element>
 [[nodiscard]] constexpr Split<Element>
-split(RangeType const& range, ix const index) noexcept
+split(View<Element> const& view, ix const index) noexcept
 {
-    expect(index >= 0 && index < size(range), "Index out of bounds!");
+    expect(index >= 0 && index < size(view), "Index out of bounds!");
     return {
-        .before = {        .first = first(range), .last = first(range) + index},
-        .after  = {.first = first(range) + index,          .last = last(range)}
+        .before = {        .first = view.first, .last = view.first + index},
+        .after  = {.first = view.first + index,          .last = view.last}
     };
 }
 } // namespace cthrice

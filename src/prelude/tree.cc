@@ -21,20 +21,4 @@ struct Tree {
     /* Data. */
     List<Node> nodes;
 };
-
-/* Border before the first node of the tree. */
-template<typename Element>
-[[nodiscard]] constexpr typename Tree<Element>::Node*
-first(Tree<Element> const& tree) noexcept
-{
-    return first(tree.nodes);
-}
-
-/* Border after the last node of the tree. */
-template<typename Element>
-[[nodiscard]] constexpr typename Tree<Element>::Node*
-last(Tree<Element> const& tree) noexcept
-{
-    return last(tree.nodes);
-}
 } // namespace cthrice
