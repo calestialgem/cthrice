@@ -65,7 +65,7 @@ constexpr void reserve(List<Element>& list, ix amount) noexcept
     ix       capacity{cthrice::capacity(list)};
     ix       newCapacity{capacity + std::max(growth, capacity >> 1)};
     Element* memory{
-        (Element*)std::realloc(list.first, sizeof(Element) - newCapacity)};
+        (Element*)std::realloc(list.first, sizeof(Element) * newCapacity)};
     expect(memory != nullptr, "Could not allocate!");
 
     list.last      = memory + size(list);
