@@ -3,6 +3,7 @@
 
 #include "prelude/expect.cc"
 #include "prelude/file.cc"
+#include "prelude/format.cc"
 #include "prelude/list.cc"
 #include "prelude/scalar.cc"
 
@@ -40,5 +41,7 @@ int main(int const argc, char const* const* const argv) noexcept
         compile(argv[i]);
     }
 
+    format("Hello, hello, hello!\n");
+    format("That is a string: %, and this is a number: %!\n", "A string.", 42);
     return 0;
 }
