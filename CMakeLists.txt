@@ -12,10 +12,16 @@ add_executable(${PROJECT_NAME} src/main.cc)
 
 # Create compile commands for the header files as well.
 add_library(headers OBJECT
+    src/prelude/equalable.cc
     src/prelude/expect.cc
     src/prelude/function.cc
+    src/prelude/hashable.cc
+    src/prelude/list.cc
+    src/prelude/map.cc
     src/prelude/range.cc
     src/prelude/scalar.cc
+    src/prelude/tree.cc
+    src/prelude/view.cc
 )
 
 function(setup_target target)
