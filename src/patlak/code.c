@@ -79,6 +79,19 @@ CTIndex ct_patlak_codes_space(CTPatlakCodes const* codes)
     return codes->allocated - codes->last;
 }
 
+/* Whether the index is valid. */
+bool ct_patlak_codes_valid(CTPatlakCodes const* codes, CTIndex index)
+{
+    return index >= 0 && index < ct_patlak_codes_size(codes);
+}
+
+/* Pointer to the code at the index. */
+CTPatlakCode* ct_patlak_codes_get(CTPatlakCodes const* codes, CTIndex index)
+{
+    ct_expect(ct_patlak_codes_valid(codes, index), "Index out of bounds!");
+    return codes->first + index;
+}
+
 /* Make sure the amount of codes will fit. Grows by at least the half of
  * the current capacity if necessary. */
 void ct_patlak_codes_reserve(CTPatlakCodes* codes, CTIndex amount)

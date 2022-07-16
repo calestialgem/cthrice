@@ -21,6 +21,12 @@ CTIndex ct_string_size(CTString const* string)
     return string->last - string->first;
 }
 
+/* Whether there are ant characters. */
+bool ct_string_finite(CTString const* string)
+{
+    return ct_string_size(string) > 0;
+}
+
 /* Whether the strings are the same. */
 bool ct_string_equal(CTString const* lhs, CTString const* rhs)
 {

@@ -47,6 +47,21 @@ CTIndex ct_patlak_states_space(CTPatlakStates const* states)
     return states->allocated - states->last;
 }
 
+/* Whether there are any states. */
+bool ct_patlak_states_finite(CTPatlakStates const* states)
+{
+    return ct_patlak_states_size(states) > 0;
+}
+
+/* Pointer to the state at the index. */
+CTPatlakState* ct_patlak_states_get(CTPatlakStates const* states, CTIndex index)
+{
+    ct_expect(
+        index >= 0 && index < ct_patlak_states_size(states),
+        "Index out of bounds!");
+    return states->first + index;
+}
+
 /* Make sure the amount of states will fit. Grows by at least the half of
  * the current capacity if necessary. */
 void ct_patlak_states_reserve(CTPatlakStates* states, CTIndex amount)
@@ -78,6 +93,12 @@ void ct_patlak_states_add(CTPatlakStates* states, CTPatlakState state)
 {
     ct_patlak_states_reserve(states, 1);
     *states->last++ = state;
+}
+
+/* Remove the states. Keeps the memory. */
+void ct_patlak_states_clear(CTPatlakStates* states)
+{
+    states->last = states->first;
 }
 
 /* Deallocate memory. */
