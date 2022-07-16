@@ -11,8 +11,11 @@
 
 /* Dynamic array of characters. */
 typedef struct {
+    /* Border before the first character. */
     char* first;
+    /* Border after the last character. */
     char* last;
+    /* Border after the last allocated character. */
     char* allocated;
 } CTBuffer;
 
