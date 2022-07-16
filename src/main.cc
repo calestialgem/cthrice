@@ -21,6 +21,7 @@ void compile(char const* const path) noexcept
         std::cout << *i;
     }
     std::cout << std::endl;
+    free(buffer);
 }
 
 /* Entry to the compiler. */

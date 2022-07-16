@@ -71,4 +71,14 @@ constexpr void reserve(List<Element>& list, ix amount) noexcept
     list.first     = memory;
     list.allocated = memory + newCapacity;
 }
+
+/* Deallocate the memory. */
+template<typename Element>
+constexpr void free(List<Element>& list) noexcept
+{
+    std::free(list.first);
+    list.first     = nullptr;
+    list.last      = nullptr;
+    list.allocated = nullptr;
+}
 } // namespace cthrice
