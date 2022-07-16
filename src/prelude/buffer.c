@@ -19,7 +19,7 @@ typedef struct {
     char* allocated;
 } CTBuffer;
 
-/* Amount of characters in the buffer. */
+/* Amount of characters. */
 CTIndex ct_buffer_size(CTBuffer const* buffer)
 {
     return buffer->last - buffer->first;
