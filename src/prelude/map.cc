@@ -3,14 +3,13 @@
 
 #pragma once
 
-#include "prelude/hashable.cc"
 #include "prelude/list.cc"
 #include "prelude/scalar.cc"
 
 namespace cthrice
 {
 /* Mapping from hashable keys to values. */
-template<Hashable Key, typename Value>
+template<typename Key, typename Value>
 struct Map {
     /* Pair of a key and its value. */
     struct Pair {
