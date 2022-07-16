@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <concepts>
-
 namespace cthrice
 {
 /* Dynamic array. */
