@@ -7,6 +7,7 @@
 #include "prelude/list.cc"
 #include "prelude/range.cc"
 #include "prelude/scalar.cc"
+#include "prelude/split.cc"
 #include "prelude/view.cc"
 
 #include <cstdio>
@@ -34,6 +35,6 @@ load(List<char>& buffer, char const* const path) noexcept
     expect(std::feof(file) != 0, "Problem while reading!");
     expect(std::fclose(file) != -1, "Could not close the file!");
 
-    return view_end(buffer, begining);
+    return split<char>(buffer, begining).after;
 }
 } // namespace cthrice
