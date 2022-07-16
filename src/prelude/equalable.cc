@@ -9,10 +9,10 @@ namespace cthrice
 {
 /* Equality comparible to each other. */
 template<typename Type>
-concept EqualityComparible = requires(Type const& equalityComparible)
+concept Equalable = requires(Type const& equalable)
 {
     {
-        equal(equalityComparible, equalityComparible)
+        equal(equalable, equalable)
         } -> std::same_as<bool>;
 };
 } // namespace cthrice

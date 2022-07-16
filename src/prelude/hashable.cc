@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "prelude/equality_comparible.cc"
+#include "prelude/equalable.cc"
 #include "prelude/scalar.cc"
 
 #include <concepts>
@@ -13,7 +13,7 @@ namespace cthrice
 /* Convertible to a number, called hash. Must be equality comparible. Equal
  * objects should give the same hash. */
 template<typename Type>
-concept Hashable = EqualityComparible<Type> && requires(Type const& hashable)
+concept Hashable = Equalable<Type> && requires(Type const& hashable)
 {
     {
         hash(hashable)
