@@ -27,6 +27,7 @@ setup_target(${PROJECT_NAME})
 add_library(headers OBJECT
     src/prelude/buffer.c
     src/prelude/expect.c
+    src/prelude/file.c
     src/prelude/scalar.c
     src/prelude/split.c
     src/prelude/string.c
