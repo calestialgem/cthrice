@@ -1,26 +1,12 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "prelude/expect.cc"
-#include "prelude/file.cc"
-#include "prelude/format.cc"
-#include "prelude/list.cc"
-#include "prelude/scalar.cc"
-
-#include <array>
 #include <iostream>
-
-using namespace cthrice;
 
 /* Compile the file. */
 void compile(char const* const path) noexcept
 {
-    format("Compiling {%}.\n", path);
-
-    List<char> buffer{};
-    format("%\n", load(buffer, path));
-    free(buffer);
-
+    std::cout << "Compiling " << path << "...\n";
     std::cout.flush();
 }
 
@@ -28,14 +14,16 @@ void compile(char const* const path) noexcept
 int main(int const argc, char const* const* const argv) noexcept
 {
     // Print arguments.
-    format("Thrice C Transpiler\nRunning with arguments:\n");
+    std::cout << "Thrice C Transpiler\nRunning with arguments:\n";
     for (int i{0}; i < argc; i++) {
-        format("[%] {%}\n", i, argv[i]);
+        std::cout << "[" << i << "] {" << argv[i] << "}\n";
     }
     std::cout << std::endl;
 
-    expect(argc >= 2, "Provide at least a file!");
-    for (int i{1}; i < argc; i++) {
+    if (argc < 2) {
+        return 1;
+    }
+    for (int i = 1; i < argc; i++) {
         compile(argv[i]);
     }
 
