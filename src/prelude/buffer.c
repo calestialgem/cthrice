@@ -5,6 +5,7 @@
 
 #include "prelude/expect.c"
 #include "prelude/scalar.c"
+#include "prelude/string.c"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -49,9 +50,12 @@ void ct_buffer_reserve(CTBuffer* buffer, CTIndex amount)
 
     CTIndex capacity      = ct_buffer_capacity(buffer);
     CTIndex half_capacity = capacity >> 1;
-    CTIndex new_capacity =
-        capacity + growth > half_capacity ? growth : half_capacity;
-    char* memory = reallocarray(buffer->first, new_capacity, sizeof(char));
+    if (growth < half_capacity) {
+        growth = half_capacity;
+    }
+
+    CTIndex new_capacity = capacity + growth;
+    char*   memory = reallocarray(buffer->first, new_capacity, sizeof(char));
     ct_expect(memory != NULL, "Could not allocate!");
 
     buffer->last      = memory + ct_buffer_size(buffer);
@@ -66,4 +70,10 @@ void ct_buffer_free(CTBuffer* buffer)
     buffer->first     = NULL;
     buffer->last      = NULL;
     buffer->allocated = NULL;
+}
+
+/* View all characters in the buffer. */
+CTString ct_buffer_view(CTBuffer* buffer)
+{
+    return (CTString){.first = buffer->first, .last = buffer->last};
 }
