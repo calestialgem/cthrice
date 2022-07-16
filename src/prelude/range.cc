@@ -12,10 +12,10 @@ template<typename Type, typename Element>
 concept Range = requires(Type range)
 {
     {
-        range.first
+        first(range)
         } -> std::convertible_to<Element*>;
     {
-        range.last
+        last(range)
         } -> std::convertible_to<Element*>;
 };
 } // namespace cthrice
