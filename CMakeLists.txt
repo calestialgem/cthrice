@@ -25,6 +25,7 @@ setup_target(${PROJECT_NAME})
 
 # Create compile commands for the header files as well.
 add_library(headers OBJECT
+    src/prelude/buffer.c
     src/prelude/expect.c
     src/prelude/scalar.c
 )
