@@ -4,7 +4,10 @@
 #pragma once
 
 #include "patlak/code.c"
+#include "patlak/decode.c"
 #include "patlak/pattern.c"
+#include "patlak/state.c"
+#include "prelude/scalar.c"
 #include "prelude/string.c"
 
 /* All pattern related data. */
@@ -26,10 +29,14 @@ CTString ct_patlak_match(
     CTString const*        name,
     CTString const*        input)
 {
+    CTIndex*      start   = ct_patlak_patterns_get(&context->patterns, name);
+    CTPatlakState initial = {.input = *input, .code = *start, .dead = false};
+    return ct_patlak_decode_test(&context->codes, initial);
 }
 
 /* Deallocate the memory. */
 void ct_patlak_free(CTPatlakContext* context)
 {
     ct_patlak_codes_free(&context->codes);
+    ct_patlak_patterns_free(&context->patterns);
 }

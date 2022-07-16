@@ -12,7 +12,8 @@
 #include <stdbool.h>
 
 // Prototype for call before definition.
-CTString ct_patlak_decode_test(CTPatlakCodes const* codes, CTPatlakState init);
+CTString
+ct_patlak_decode_test(CTPatlakCodes const* codes, CTPatlakState initial);
 
 /* Decode the state using the codes and add the states come after it to
  * the next states. */
@@ -81,15 +82,16 @@ end:
  * initial portion of the input that was accepted by the
  * nondeterministic finite automaton first. Empty match means none of
  * the states were accepted before all states died. */
-CTString ct_patlak_decode_test(CTPatlakCodes const* codes, CTPatlakState init)
+CTString
+ct_patlak_decode_test(CTPatlakCodes const* codes, CTPatlakState initial)
 {
     CTString       match  = {0};
     CTPatlakStates active = {0};
     CTPatlakStates next   = {0};
 
     // Put the initial state.
-    ct_expect(!init.dead, "Initial state is dead!");
-    ct_patlak_states_add(&active, init);
+    ct_expect(!initial.dead, "Initial state is dead!");
+    ct_patlak_states_add(&active, initial);
 
     // Until all states die.
     while (ct_patlak_states_finite(&active)) {
@@ -100,7 +102,7 @@ CTString ct_patlak_decode_test(CTPatlakCodes const* codes, CTPatlakState init)
 
             // Return early if matched.
             if (matched) {
-                match.first = init.input.first;
+                match.first = initial.input.first;
                 match.last  = i->input.first;
                 ct_expect(
                     ct_string_finite(&match),

@@ -120,9 +120,7 @@ ct_patlak_patterns_get(CTPatlakPatterns const* patterns, CTString const* name)
     CTPatlakPatternRange range =
         ct_patlak_patterns_range(patterns, ct_string_hash(name));
     CTPatlakPattern* information = ct_patlak_patterns_find(&range, name);
-    if (information == NULL) {
-        return NULL;
-    }
+    ct_expect(information != NULL, "Pattern does not exist!");
     return &information->start;
 }
 
