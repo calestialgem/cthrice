@@ -3,17 +3,8 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-project(cthrice)
-
-add_executable(${PROJECT_NAME} src/main.cc)
-
-# Create compile commands for the header files as well.
-add_library(headers OBJECT
-    src/prelude/scalar.cc
-)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED True)
 
 function(setup_target target)
     target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}/src)
@@ -27,5 +18,11 @@ function(setup_target target)
     endif(MSVC)
 endfunction(setup_target target)
 
+project(cthrice)
+
+add_executable(${PROJECT_NAME} src/main.c)
 setup_target(${PROJECT_NAME})
-setup_target(headers)
+
+# Create compile commands for the header files as well.
+# add_library(headers OBJECT)
+# setup_target(headers)

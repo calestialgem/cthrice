@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-Checks: "bugprone-*,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,cert-*,-cert-err09-cpp.MaxSize,-cert-err61-cpp.MaxSize,clang-*,concurrency-*,cppcoreguidelines-*,-cppcoreguidelines-no-malloc,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-pointer-arithmetic,hicpp-*,-hicpp-signed-bitwise,-hicpp-use-auto,-hicpp-no-malloc,llvm-*,misc-*,-misc-throw-by-value-catch-by-reference.MaxSize,modernize-*,-modernize-use-auto,-modernize-use-trailing-return-type,performance-*,portability-*,readability-*"
+Checks: "bugprone-*,cert-*,-cert-err09-cpp.MaxSize,-cert-err61-cpp.MaxSize,clang-*,concurrency-*,cppcoreguidelines-*,hicpp-*,llvm-*,misc-*,-misc-throw-by-value-catch-by-reference.MaxSize,modernize-*,performance-*,portability-*,readability-*"
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 AnalyzeTemporaryDtors: false
