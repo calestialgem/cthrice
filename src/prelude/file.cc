@@ -18,10 +18,22 @@ namespace cthrice
 [[nodiscard]] constexpr View<char>
 load(List<char>& buffer, char const* const path) noexcept
 {
-    std::FILE* file = std::fopen(path, "r");
+    std::FILE* file{std::fopen(path, "r")};
     expect(file != nullptr, "Could not open the file!");
 
-    ix begining = size(buffer);
-    return {};
+    ix           begining{size(buffer)};
+    constexpr ix CHUNK{1024};
+    ix           written{0};
+
+    do {
+        reserve(buffer, CHUNK);
+        written = (ix)std::fread(buffer.last, 1, CHUNK, file);
+        buffer.last += written;
+    } while (CHUNK == written);
+
+    expect(std::feof(file) != 0, "Problem while reading!");
+    expect(std::fclose(file) != -1, "Could not close the file!");
+
+    return view_end(buffer, begining);
 }
 } // namespace cthrice
