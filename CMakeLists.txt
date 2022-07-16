@@ -28,5 +28,6 @@ add_library(headers OBJECT
     src/prelude/buffer.c
     src/prelude/expect.c
     src/prelude/scalar.c
+    src/prelude/string.c
 )
 setup_target(headers)
