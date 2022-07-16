@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 /* Compile the source file at the path. */
-void compile(char const* const path)
+void ct_compile(char const* const path)
 {
     printf("Compiling %s...\n", path);
 }
@@ -21,9 +21,9 @@ int main(int const argumentCount, char const* const* const arguments)
     }
     printf("\n");
 
-    cthrice_expect(argumentCount >= 2, "Provide a thrice file!");
+    ct_expect(argumentCount >= 2, "Provide a thrice file!");
     for (int i = 1; i < argumentCount; i++) {
-        compile(arguments[i]);
+        ct_compile(arguments[i]);
     }
 
     return 0;

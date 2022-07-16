@@ -9,7 +9,7 @@
 
 /* If the condition does not hold, print the error message with the
  * file and line information and abort. */
-void cthrice_expect_source_location(
+void ct_expect_source_location(
     bool         condition,
     char const*  message,
     char const*  file,
@@ -23,5 +23,5 @@ void cthrice_expect_source_location(
 
 /* If the condition does not hold, print the error message with the file and
  * line information and abort. Takes the file and line information itself. */
-#define cthrice_expect(condition, message) \
-    cthrice_expect_source_location(condition, message, __FILE__, __LINE__)
+#define ct_expect(condition, message) \
+    ct_expect_source_location(condition, message, __FILE__, __LINE__)
