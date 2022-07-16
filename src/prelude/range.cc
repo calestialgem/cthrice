@@ -9,7 +9,7 @@ namespace cthrice
 {
 /* Pointers to contiguous range of elements. */
 template<typename Type, typename Element>
-concept Range = requires(Type range)
+concept Range = requires(Type const& range)
 {
     {
         first(range)
