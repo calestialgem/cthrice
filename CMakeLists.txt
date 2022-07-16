@@ -37,5 +37,6 @@ add_library(headers OBJECT
     src/patlak/decode.c
     src/patlak/pattern.c
     src/patlak/state.c
+    src/patlak/token.c
 )
 setup_target(headers)
