@@ -56,11 +56,11 @@ void ct_patlak_parser_unit(
 {
     ct_expect(ct_patlak_parser_finite(tokens), "Pattern ends unexpectedly!");
     switch (ct_patlak_parser_first(tokens)) {
-        case CT_PATLAK_TOKEN_DOT:
+        case CT_PATLAK_TOKEN_IDENTIFIER:
             ct_patlak_builder_add(
                 builder,
                 (CTPatlakObject){
-                    .type  = CT_PATLAK_OBJECT_LITERAL_WILDCARD,
+                    .type  = CT_PATLAK_OBJECT_LITERAL_REFERENCE,
                     .value = ct_patlak_parser_next(tokens)});
             return;
         case CT_PATLAK_TOKEN_QUOTE:
@@ -70,11 +70,11 @@ void ct_patlak_parser_unit(
                     .type  = CT_PATLAK_OBJECT_LITERAL_STRING,
                     .value = ct_patlak_parser_next(tokens)});
             return;
-        case CT_PATLAK_TOKEN_IDENTIFIER:
+        case CT_PATLAK_TOKEN_DOT:
             ct_patlak_builder_add(
                 builder,
                 (CTPatlakObject){
-                    .type  = CT_PATLAK_OBJECT_LITERAL_REFERENCE,
+                    .type  = CT_PATLAK_OBJECT_LITERAL_WILDCARD,
                     .value = ct_patlak_parser_next(tokens)});
             return;
         default:
