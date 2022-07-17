@@ -59,13 +59,14 @@ int main(int argument_count, char const* const* arguments)
     }
 
     CTString pattern = ct_string_terminated(
-        "hello = [  545  ,  666]  { 4546 ?'Hello!'} 'some other text' ");
+        "hello = [5]{ 'Hello!'} 'some other text' {'after' 'that' 'text' } ");
     CTPatlakTokens tokens = {0};
     CTPatlakTree   tree   = {0};
 
     ct_patlak_lexer(&tokens, pattern);
     ct_patlak_parser(&tree, &tokens);
     ct_patlak_printer_tree(&tree);
+    ct_patlak_printer_objects(&tree);
 
     ct_patlak_tree_free(&tree);
     ct_patlak_tokens_free(&tokens);

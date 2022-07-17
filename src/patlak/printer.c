@@ -116,7 +116,7 @@ void ct_patlak_printer_objects(CTPatlakTree const* objects)
 {
     for (CTPatlakNode const* i = objects->first; i < objects->last; i++) {
         ct_patlak_printer_object(&i->object);
-        printf("\n");
+        printf(" {%lu} \n", i->childeren);
     }
 }
 

@@ -96,11 +96,58 @@ void ct_patlak_parser_wildcard(
             .value = ct_patlak_parser_next(tokens)});
 }
 
-// For use in prefix.
-void ct_patlak_parser_binary_operators(
+/* Get the tokens inside the group and consume them. */
+CTPatlakParserTokens ct_patlak_parser_group_tokens(CTPatlakParserTokens* tokens)
+{
+    CTIndex closing_bracket = 1;
+    for (CTIndex i = 1; i < ct_patlak_parser_size(tokens); i++) {
+        switch (ct_patlak_parser_type(tokens, i)) {
+            case CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET:
+                closing_bracket++;
+                break;
+            case CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET:
+                closing_bracket--;
+                if (closing_bracket == 0) {
+                    CTPatlakParserTokens result = {
+                        .first = tokens->first + 1,
+                        .last  = tokens->first + i};
+                    tokens->first += i + 1;
+                    return result;
+                }
+            default:
+                break;
+        }
+    }
+    ct_unexpected("No closing curly bracket!");
+    return (CTPatlakParserTokens){0};
+}
+
+// For recursing from the group.
+void ct_patlak_parser_units(
     CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens,
-    CTPatlakTokenType     until);
+    CTPatlakParserTokens* tokens);
+
+/* Parse the next group unit. */
+void ct_patlak_parser_group(
+    CTPatlakTreeBuilder*  builder,
+    CTPatlakParserTokens* tokens)
+{
+    CTPatlakParserTokens inside = ct_patlak_parser_group_tokens(tokens);
+    ct_patlak_builder_add(
+        builder,
+        (CTPatlakObject){
+            .type  = CT_PATLAK_OBJECT_GROUP,
+            .value = {
+                      .first = (inside.first - 1)->value.first,
+                      .last  = inside.last->value.last}
+    });
+    ct_patlak_parser_units(builder, &inside);
+}
+
+// For use in prefix.
+void ct_patlak_parser_unit(
+    CTPatlakTreeBuilder*  builder,
+    CTPatlakParserTokens* tokens);
 
 /* Parse units that are formed by prefixing another unit with the given amount
  * of tokens. */
@@ -108,8 +155,7 @@ void ct_patlak_parser_prefix(
     CTPatlakTreeBuilder*  builder,
     CTPatlakParserTokens* tokens,
     CTPatlakObjectType    type,
-    CTIndex               amount,
-    CTPatlakTokenType     until)
+    CTIndex               amount)
 {
     CTString value = ct_patlak_parser_next(tokens);
     for (CTIndex i = 1; i < amount; i++) {
@@ -119,25 +165,8 @@ void ct_patlak_parser_prefix(
         builder,
         (CTPatlakObject){.type = type, .value = value});
     ct_patlak_builder_push(builder);
-    ct_patlak_parser_binary_operators(builder, tokens, until);
+    ct_patlak_parser_unit(builder, tokens);
     ct_patlak_builder_pop(builder);
-}
-
-/* Parse the next group unit. */
-void ct_patlak_parser_group(
-    CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens)
-{
-    ct_patlak_parser_prefix(
-        builder,
-        tokens,
-        CT_PATLAK_OBJECT_GROUP,
-        1,
-        CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET);
-    ct_expect(
-        ct_patlak_parser_starts(tokens, CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET),
-        "No closing curly bracket!");
-    ct_patlak_parser_next(tokens);
 }
 
 /* Parse repeat units with one token in the square brackets. */
@@ -145,8 +174,7 @@ bool ct_patlak_parser_repeat_one(
     CTPatlakTreeBuilder*  builder,
     CTPatlakParserTokens* tokens,
     CTIndex               amount,
-    bool                  bracketed,
-    CTPatlakTokenType     until)
+    bool                  bracketed)
 {
     switch (ct_patlak_parser_type(tokens, amount)) {
         case CT_PATLAK_TOKEN_NUMBER:
@@ -154,16 +182,14 @@ bool ct_patlak_parser_repeat_one(
                 builder,
                 tokens,
                 CT_PATLAK_OBJECT_REPEAT_FIXED,
-                1 + bracketed * 2,
-                until);
+                1 + bracketed * 2);
             return true;
         case CT_PATLAK_TOKEN_QUESTION_MARK:
             ct_patlak_parser_prefix(
                 builder,
                 tokens,
                 CT_PATLAK_OBJECT_REPEAT_RANGE,
-                1 + bracketed * 2,
-                until);
+                1 + bracketed * 2);
             return true;
         case CT_PATLAK_TOKEN_STAR:
         case CT_PATLAK_TOKEN_PLUS:
@@ -171,8 +197,7 @@ bool ct_patlak_parser_repeat_one(
                 builder,
                 tokens,
                 CT_PATLAK_OBJECT_REPEAT_INFINITE,
-                1 + bracketed * 2,
-                until);
+                1 + bracketed * 2);
             return true;
         default:
             return false;
@@ -182,8 +207,7 @@ bool ct_patlak_parser_repeat_one(
 /* Parse repeat units with two tokens in the square brackets. */
 void ct_patlak_parser_repeat_two(
     CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens,
-    CTPatlakTokenType     until)
+    CTPatlakParserTokens* tokens)
 {
     switch (ct_patlak_parser_type(tokens, 1)) {
         case CT_PATLAK_TOKEN_NUMBER:
@@ -192,8 +216,7 @@ void ct_patlak_parser_repeat_two(
                     builder,
                     tokens,
                     CT_PATLAK_OBJECT_REPEAT_INFINITE,
-                    4,
-                    until);
+                    4);
                 return;
             }
             break;
@@ -203,8 +226,7 @@ void ct_patlak_parser_repeat_two(
                     builder,
                     tokens,
                     CT_PATLAK_OBJECT_REPEAT_RANGE,
-                    4,
-                    until);
+                    4);
                 return;
             }
             break;
@@ -217,27 +239,20 @@ void ct_patlak_parser_repeat_two(
 /* Parse repeat units with three tokens in the square brackets. */
 void ct_patlak_parser_repeat_three(
     CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens,
-    CTPatlakTokenType     until)
+    CTPatlakParserTokens* tokens)
 {
     ct_expect(
         ct_patlak_parser_type(tokens, 1) == CT_PATLAK_TOKEN_NUMBER &&
             ct_patlak_parser_type(tokens, 2) == CT_PATLAK_TOKEN_COMMA &&
             ct_patlak_parser_type(tokens, 3) == CT_PATLAK_TOKEN_NUMBER,
         "Unexpected token in the square brackets!");
-    ct_patlak_parser_prefix(
-        builder,
-        tokens,
-        CT_PATLAK_OBJECT_REPEAT_RANGE,
-        5,
-        until);
+    ct_patlak_parser_prefix(builder, tokens, CT_PATLAK_OBJECT_REPEAT_RANGE, 5);
 }
 
 /* Parse the next repeat unit. */
 void ct_patlak_parser_repeat(
     CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens,
-    CTPatlakTokenType     until)
+    CTPatlakParserTokens* tokens)
 {
     CTIndex avalible = ct_patlak_parser_size(tokens);
     ct_expect(
@@ -248,6 +263,7 @@ void ct_patlak_parser_repeat(
         if (ct_patlak_parser_type(tokens, i) ==
             CT_PATLAK_TOKEN_CLOSING_SQUARE_BRACKET) {
             insideBrackets = i - 1;
+            break;
         }
     }
     switch (insideBrackets) {
@@ -257,31 +273,25 @@ void ct_patlak_parser_repeat(
             ct_unexpected("No tokens inside the square bracket!");
         case 1:
             ct_expect(
-                ct_patlak_parser_repeat_one(builder, tokens, 1, true, until),
+                ct_patlak_parser_repeat_one(builder, tokens, 1, true),
                 "Unexpected token in the square brackets!");
             return;
         case 2:
-            ct_patlak_parser_repeat_two(builder, tokens, until);
+            ct_patlak_parser_repeat_two(builder, tokens);
             return;
         case 3:
-            ct_patlak_parser_repeat_three(builder, tokens, until);
+            ct_patlak_parser_repeat_three(builder, tokens);
             return;
         default:
             ct_unexpected("Too many tokens inside the square bracket!");
     }
 }
 
-/* Parse the next unit. */
+/* Parse a single unit into the stack. */
 void ct_patlak_parser_unit(
     CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens,
-    CTPatlakTokenType     until)
+    CTPatlakParserTokens* tokens)
 {
-    ct_expect(ct_patlak_parser_finite(tokens), "Pattern ends unexpectedly!");
-    // DEBUG: Print the token.
-    printf("Parsing Token: \"");
-    ct_patlak_printer_token(tokens->first);
-    printf("\"\n");
     switch (ct_patlak_parser_first(tokens)) {
         case CT_PATLAK_TOKEN_IDENTIFIER:
             ct_patlak_parser_reference(builder, tokens);
@@ -296,10 +306,10 @@ void ct_patlak_parser_unit(
             ct_patlak_parser_group(builder, tokens);
             return;
         case CT_PATLAK_TOKEN_OPENING_SQUARE_BRACKET:
-            ct_patlak_parser_repeat(builder, tokens, until);
+            ct_patlak_parser_repeat(builder, tokens);
             return;
         default:
-            if (ct_patlak_parser_repeat_one(builder, tokens, 0, false, until)) {
+            if (ct_patlak_parser_repeat_one(builder, tokens, 0, false)) {
                 return;
             }
             break;
@@ -311,42 +321,16 @@ void ct_patlak_parser_unit(
     ct_unexpected("Unexpected token!");
 }
 
-/* Parse the next units with binary operators in mind. */
-void ct_patlak_parser_binary_operators(
+/* Parse the all the avalible units. */
+void ct_patlak_parser_units(
     CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens,
-    CTPatlakTokenType     until)
+    CTPatlakParserTokens* tokens)
 {
-    CTPatlakTree        subtree    = {0};
-    CTPatlakTreeBuilder subbuilder = {.tree = &subtree};
-
+    ct_patlak_builder_push(builder);
     while (ct_patlak_parser_finite(tokens)) {
-        ct_patlak_tree_clear(&subtree);
-        ct_patlak_parser_unit(&subbuilder, tokens, until);
-        if (ct_patlak_parser_starts(tokens, until) ||
-            !ct_patlak_parser_finite(tokens)) {
-            ct_patlak_builder_add_subtree(builder, subtree.first);
-            break;
-        }
-        if (ct_patlak_parser_starts(tokens, CT_PATLAK_TOKEN_PIPE)) {
-            ct_patlak_builder_add(
-                builder,
-                (CTPatlakObject){
-                    .type  = CT_PATLAK_OBJECT_OR,
-                    .value = ct_patlak_parser_next(tokens)});
-            ct_patlak_builder_add_subtree(builder, subtree.first);
-            ct_patlak_parser_unit(builder, tokens, until);
-        } else {
-            ct_patlak_builder_add(
-                builder,
-                (CTPatlakObject){.type = CT_PATLAK_OBJECT_AND});
-            ct_patlak_builder_add_subtree(builder, subtree.first);
-            ct_patlak_parser_unit(builder, tokens, until);
-        }
+        ct_patlak_parser_unit(builder, tokens);
     }
-
-    ct_patlak_builder_free(&subbuilder);
-    ct_patlak_tree_free(&subtree);
+    ct_patlak_builder_pop(builder);
 }
 
 /* Parse the tokens. */
@@ -378,6 +362,16 @@ void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokens const* tokens)
     // Create the root of the tree.
     ct_patlak_builder_add_root(&builder, definition);
     ct_patlak_builder_add(&builder, decleration);
-    ct_patlak_parser_binary_operators(&builder, &remaining, -1);
+
+    // Parse all the units into an implicit group.
+    ct_patlak_builder_add(
+        &builder,
+        (CTPatlakObject){
+            .type  = CT_PATLAK_OBJECT_GROUP,
+            .value = {
+                      .first = remaining.first->value.first,
+                      .last  = remaining.last->value.last}
+    });
+    ct_patlak_parser_units(&builder, &remaining);
     ct_patlak_builder_free(&builder);
 }
