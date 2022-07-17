@@ -95,32 +95,11 @@ void ct_patlak_printer_tokens(CTPatlakTokens const* tokens)
 /* Format string from the object type. */
 char const* ct_patlak_printer_object_type(CTPatlakObjectType type)
 {
-    switch (type) {
-        case CT_PATLAK_OBJECT_DEFINITION:
-            return "definition";
-        case CT_PATLAK_OBJECT_LITERAL_WILDCARD:
-            return ".";
-        case CT_PATLAK_OBJECT_AND:
-            return "&";
-        case CT_PATLAK_OBJECT_OR:
-            return "|";
-        case CT_PATLAK_OBJECT_GROUP:
-            return "{}";
-        case CT_PATLAK_OBJECT_REPEAT_FIXED:
-            return "[.]";
-        case CT_PATLAK_OBJECT_REPEAT_RANGE:
-            return "[~]";
-        case CT_PATLAK_OBJECT_REPEAT_INFINITE:
-            return "[*]";
-        case CT_PATLAK_OBJECT_DECLERATION:
-        case CT_PATLAK_OBJECT_LITERAL_REFERENCE:
-        case CT_PATLAK_OBJECT_LITERAL_CHARACTER:
-        case CT_PATLAK_OBJECT_LITERAL_STRING:
-        case CT_PATLAK_OBJECT_LITERAL_RANGE:
-            return "%.*s";
-        default:
-            return "!(%.*s)";
+    if (type >= CT_PATLAK_OBJECT_DEFINITION &&
+        type <= CT_PATLAK_OBJECT_REPEAT_INFINITE) {
+        return "%.*s";
     }
+    return "!(%.*s)";
 }
 
 /* Print the object. */

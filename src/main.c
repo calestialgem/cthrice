@@ -58,9 +58,10 @@ int main(int argument_count, char const* const* arguments)
         ct_compile(arguments[i]);
     }
 
-    CTString       pattern = ct_string_terminated("hello = [+]{'Hello!'}");
-    CTPatlakTokens tokens  = {0};
-    CTPatlakTree   tree    = {0};
+    CTString pattern =
+        ct_string_terminated("hello = [  545  ,  666]  { 4546 ?'Hello!'}");
+    CTPatlakTokens tokens = {0};
+    CTPatlakTree   tree   = {0};
 
     ct_patlak_lexer(&tokens, pattern);
     ct_patlak_parser(&tree, &tokens);
