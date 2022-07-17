@@ -321,6 +321,7 @@ void ct_patlak_parser_binary_operators(
     CTPatlakTreeBuilder subbuilder = {.tree = &subtree};
 
     while (ct_patlak_parser_finite(tokens)) {
+        ct_patlak_tree_clear(&subtree);
         ct_patlak_parser_unit(&subbuilder, tokens, until);
         if (ct_patlak_parser_starts(tokens, until) ||
             !ct_patlak_parser_finite(tokens)) {
