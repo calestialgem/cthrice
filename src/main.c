@@ -4,6 +4,7 @@
 #include "patlak/builder.c"
 #include "patlak/lexer.c"
 #include "patlak/object.c"
+#include "patlak/parser.c"
 #include "patlak/printer.c"
 #include "patlak/token.c"
 #include "prelude/buffer.c"
@@ -57,43 +58,15 @@ int main(int argument_count, char const* const* arguments)
         ct_compile(arguments[i]);
     }
 
-    CTPatlakTree        tree    = {0};
-    CTPatlakTreeBuilder builder = {.tree = &tree};
+    CTString       pattern = ct_string_terminated("hello = [+]{'Hello!'}");
+    CTPatlakTokens tokens  = {0};
+    CTPatlakTree   tree    = {0};
 
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_DEFINITION});
-    ct_patlak_builder_push(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
-    ct_patlak_builder_push(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_AND});
-    ct_patlak_builder_pop(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
-    ct_patlak_builder_push(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_OR});
-    ct_patlak_builder_pop(&builder);
-    ct_patlak_builder_push(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_REPEAT_FIXED});
-    ct_patlak_builder_pop(&builder);
-    ct_patlak_builder_push(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_REPEAT_INFINITE});
-    ct_patlak_builder_pop(&builder);
-
-    ct_patlak_builder_free(&builder);
+    ct_patlak_lexer(&tokens, pattern);
+    ct_patlak_parser(&tree, &tokens);
     ct_patlak_printer_tree(&tree);
     ct_patlak_tree_free(&tree);
+    ct_patlak_tokens_free(&tokens);
 
     return 0;
 }
