@@ -270,10 +270,10 @@ void ct_patlak_parser_unit(
             ct_patlak_parser_repeat(builder, tokens);
             return;
         default:
+            if (ct_patlak_parser_repeat_one(builder, tokens, 0, false)) {
+                return;
+            }
             break;
-    }
-    if (ct_patlak_parser_repeat_one(builder, tokens, 0, false)) {
-        return;
     }
     ct_unexpected("Unexpected token!");
 }
