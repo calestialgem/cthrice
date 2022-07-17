@@ -4,6 +4,9 @@
 #pragma once
 
 #include "patlak/object.c"
+#include "prelude/expect.c"
+
+#include <stdio.h>
 
 /* Tree builder. */
 typedef struct {
@@ -83,6 +86,7 @@ void ct_patlak_builder_reserve(CTPatlakTreeBuilder* builder, CTIndex amount)
 /* Push the last added node as the parent. */
 void ct_patlak_builder_push(CTPatlakTreeBuilder* builder)
 {
+    ct_expect(ct_patlak_tree_finite(builder->tree), "There is no parent node!");
     ct_patlak_builder_reserve(builder, 1);
     *builder->parents.last++ = ct_patlak_tree_size(builder->tree) - 1;
 }
@@ -90,6 +94,7 @@ void ct_patlak_builder_push(CTPatlakTreeBuilder* builder)
 /* Pop the last parent. */
 void ct_patlak_builder_pop(CTPatlakTreeBuilder* builder)
 {
+    ct_expect(ct_patlak_builder_finite(builder), "There is no parent node!");
     builder->parents.last--;
 }
 
@@ -97,8 +102,10 @@ void ct_patlak_builder_pop(CTPatlakTreeBuilder* builder)
 void ct_patlak_builder_add(CTPatlakTreeBuilder* builder, CTPatlakObject object)
 {
     ct_patlak_tree_add(builder->tree, object);
-    ct_patlak_tree_get(builder->tree, *(builder->parents.last - 1))
-        ->childeren++;
+    if (ct_patlak_builder_finite(builder)) {
+        ct_patlak_tree_get(builder->tree, *(builder->parents.last - 1))
+            ->childeren++;
+    }
 }
 
 /* Remove the parents. Keeps the memory. */

@@ -60,13 +60,10 @@ int main(int argument_count, char const* const* arguments)
     CTPatlakTree        tree    = {0};
     CTPatlakTreeBuilder builder = {.tree = &tree};
 
-    ct_patlak_tree_add(
-        &tree,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_DEFINITION});
-    ct_patlak_builder_push(&builder);
     ct_patlak_builder_add(
         &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_DEFINITION});
+    ct_patlak_builder_push(&builder);
     ct_patlak_builder_add(
         &builder,
         (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
@@ -74,10 +71,7 @@ int main(int argument_count, char const* const* arguments)
     ct_patlak_builder_add(
         &builder,
         (CTPatlakObject){.type = CT_PATLAK_OBJECT_AND});
-    ct_patlak_builder_push(&builder);
-    ct_patlak_builder_add(
-        &builder,
-        (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
+    ct_patlak_builder_pop(&builder);
     ct_patlak_builder_add(
         &builder,
         (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
