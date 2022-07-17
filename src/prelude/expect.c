@@ -25,3 +25,8 @@ void ct_expect_source_location(
  * line information and abort. Takes the file and line information itself. */
 #define ct_expect(condition, message) \
     ct_expect_source_location(condition, message, __FILE__, __LINE__)
+
+/* Print the error message with the file and line information and abort. Takes
+ * the file and line information itself. */
+#define ct_unexpected(message) \
+    ct_expect_source_location(false, message, __FILE__, __LINE__)
