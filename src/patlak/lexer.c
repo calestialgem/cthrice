@@ -124,6 +124,11 @@ void ct_patlak_lexer_next(CTPatlakTokens* tokens, CTString* pattern)
     pattern->first =
         ct_string_first_fit(pattern, &ct_patlak_lexer_not_whitespace);
 
+    // If nothing is left after trimming, stop lexing.
+    if (!ct_string_finite(pattern)) {
+        return;
+    }
+
     // If cannot lex any of these in the given order, the token is unknown.
     if (!ct_patlak_lexer_mark(tokens, pattern) &&
         !ct_patlak_lexer_number(tokens, pattern) &&
