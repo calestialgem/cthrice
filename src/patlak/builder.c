@@ -97,7 +97,8 @@ void ct_patlak_builder_pop(CTPatlakTreeBuilder* builder)
 void ct_patlak_builder_add(CTPatlakTreeBuilder* builder, CTPatlakObject object)
 {
     ct_patlak_tree_add(builder->tree, object);
-    ct_patlak_tree_get(builder->tree, *builder->parents.last)->childeren++;
+    ct_patlak_tree_get(builder->tree, *(builder->parents.last - 1))
+        ->childeren++;
 }
 
 /* Remove the parents. Keeps the memory. */
