@@ -4,7 +4,9 @@
 #pragma once
 
 #include "patlak/code.c"
+#include "patlak/object.c"
 #include "patlak/token.c"
+#include "prelude/scalar.c"
 
 #include <stdio.h>
 
@@ -88,4 +90,69 @@ void ct_patlak_printer_tokens(CTPatlakTokens const* tokens)
         ct_patlak_printer_token(i);
     }
     printf("\n");
+}
+
+/* Format string from the object type. */
+char const* ct_patlak_printer_object_type(CTPatlakObjectType type)
+{
+    switch (type) {
+        case CT_PATLAK_OBJECT_DEFINITION:
+            return "definition";
+        case CT_PATLAK_OBJECT_PATTERN:
+            return "pattern";
+        case CT_PATLAK_OBJECT_LITERAL_WILDCARD:
+            return ".";
+        case CT_PATLAK_OBJECT_AND:
+            return "&";
+        case CT_PATLAK_OBJECT_OR:
+            return "|";
+        case CT_PATLAK_OBJECT_GROUP:
+            return "{}";
+        case CT_PATLAK_OBJECT_REPEAT_FIXED:
+            return "[.]";
+        case CT_PATLAK_OBJECT_REPEAT_RANGE:
+            return "[~]";
+        case CT_PATLAK_OBJECT_REPEAT_INFINITE:
+            return "[*]";
+        case CT_PATLAK_OBJECT_DECLERATION:
+        case CT_PATLAK_OBJECT_LITERAL_REFERENCE:
+        case CT_PATLAK_OBJECT_LITERAL_CHARACTER:
+        case CT_PATLAK_OBJECT_LITERAL_STRING:
+        case CT_PATLAK_OBJECT_LITERAL_RANGE:
+            return "%.*s";
+        default:
+            return "!(%.*s)";
+    }
+}
+
+/* Print the object. */
+void ct_patlak_printer_object(CTPatlakObject const* object)
+{
+    printf(
+        ct_patlak_printer_object_type(object->type),
+        (int)ct_string_size(&object->value),
+        object->value.first);
+}
+
+/* Print the node with the indentation. */
+void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
+{
+    for (CTIndex i = 0; i < indentation - 2; i++) {
+        printf("|  ");
+    }
+    if (indentation > 1) {
+        printf("+- ");
+    }
+    ct_patlak_printer_object(&node->object);
+    for (CTIndex i = 0; i < node->childeren; i++) {
+        ct_patlak_printer_node(node + i, indentation + 1);
+    }
+}
+
+/* Print the object tree. */
+void ct_patlak_printer_tree(CTPatlakTree const* tree)
+{
+    if (ct_patlak_tree_finite(tree)) {
+        ct_patlak_printer_node(tree->first, 0);
+    }
 }
