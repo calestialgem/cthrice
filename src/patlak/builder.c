@@ -118,41 +118,41 @@ void ct_patlak_builder_add_root(
     ct_patlak_builder_push(builder);
 }
 
-/* Add the subtree as the childeren of the last pushed node. */
-void ct_patlak_builder_add_subtree(
-    CTPatlakTreeBuilder* builder,
-    CTPatlakNode const*  subtree)
-{
-    ct_patlak_builder_add(builder, subtree->object);
-    ct_patlak_builder_push(builder);
-    CTPatlakNode const* child = subtree;
-    for (CTIndex i = 0; i < subtree->childeren; i++) {
-        child++;
-        ct_patlak_builder_add_subtree(builder, child);
-        child += child->childeren;
-    }
-    ct_patlak_builder_pop(builder);
-}
+// /* Add the subtree as the childeren of the last pushed node. */
+// void ct_patlak_builder_add_subtree(
+//     CTPatlakTreeBuilder* builder,
+//     CTPatlakNode const*  subtree)
+// {
+//     ct_patlak_builder_add(builder, subtree->object);
+//     ct_patlak_builder_push(builder);
+//     CTPatlakNode const* child = subtree;
+//     for (CTIndex i = 0; i < subtree->childeren; i++) {
+//         child++;
+//         ct_patlak_builder_add_subtree(builder, child);
+//         child += child->childeren;
+//     }
+//     ct_patlak_builder_pop(builder);
+// }
 
-/* Move the last pushed subtree from the soure to the destination. */
-void ct_patlak_builder_move_subtree(
-    CTPatlakTreeBuilder* destination,
-    CTPatlakTreeBuilder* source)
-{
-    CTIndex moved = *(source->parents.last - 1);
-    ct_patlak_builder_add_subtree(
-        destination,
-        ct_patlak_tree_get(source->tree, moved));
-    ct_patlak_builder_pop(source);
-    source->tree->last = source->tree->first + moved;
+// /* Move the last pushed subtree from the soure to the destination. */
+// void ct_patlak_builder_move_subtree(
+//     CTPatlakTreeBuilder* destination,
+//     CTPatlakTreeBuilder* source)
+// {
+//     CTIndex moved = *(source->parents.last - 1);
+//     ct_patlak_builder_add_subtree(
+//         destination,
+//         ct_patlak_tree_get(source->tree, moved));
+//     ct_patlak_builder_pop(source);
+//     source->tree->last = source->tree->first + moved;
 
-    for (CTIndex i = moved - 1; i >= 0; i--) {
-        CTPatlakNode* candidate = source->tree->first + i;
-        if (candidate->childeren == moved - i) {
-            candidate->childeren--;
-        }
-    }
-}
+// for (CTIndex i = moved - 1; i >= 0; i--) {
+//     CTPatlakNode* candidate = source->tree->first + i;
+//     if (candidate->childeren == moved - i) {
+//         candidate->childeren--;
+//     }
+// }
+// }
 
 /* Remove the parents. Keeps the memory. */
 void ct_patlak_builder_clear(CTPatlakTreeBuilder* builder)
