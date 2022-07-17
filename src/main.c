@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "patlak/builder.c"
 #include "patlak/lexer.c"
+#include "patlak/object.c"
 #include "patlak/printer.c"
 #include "patlak/token.c"
 #include "prelude/buffer.c"
@@ -54,6 +56,21 @@ int main(int argument_count, char const* const* arguments)
     for (int i = 1; i < argument_count; i++) {
         ct_compile(arguments[i]);
     }
+
+    CTPatlakTree        tree    = {0};
+    CTPatlakTreeBuilder builder = {.tree = &tree};
+
+    ct_patlak_tree_add(
+        &tree,
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_DEFINITION});
+    ct_patlak_builder_push(&builder);
+    ct_patlak_builder_add(
+        &builder,
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
+
+    ct_patlak_builder_free(&builder);
+    ct_patlak_printer_tree(&tree);
+    ct_patlak_tree_free(&tree);
 
     return 0;
 }

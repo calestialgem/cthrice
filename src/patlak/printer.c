@@ -140,12 +140,13 @@ void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
     for (CTIndex i = 0; i < indentation - 2; i++) {
         printf("|  ");
     }
-    if (indentation > 1) {
+    if (indentation > 0) {
         printf("+- ");
     }
     ct_patlak_printer_object(&node->object);
+    printf("\n");
     for (CTIndex i = 0; i < node->childeren; i++) {
-        ct_patlak_printer_node(node + i, indentation + 1);
+        ct_patlak_printer_node(node + i + 1, indentation + 1);
     }
 }
 
