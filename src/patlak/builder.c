@@ -108,6 +108,16 @@ void ct_patlak_builder_add(CTPatlakTreeBuilder* builder, CTPatlakObject object)
     }
 }
 
+/* Add a root to the end of the tree, turning it into a forest. Directly pushes
+ * the new root. */
+void ct_patlak_builder_add_root(
+    CTPatlakTreeBuilder* builder,
+    CTPatlakObject       object)
+{
+    ct_patlak_tree_add(builder->tree, object);
+    ct_patlak_builder_push(builder);
+}
+
 /* Add the subtree as the childeren of the last pushed node. Returns the total
  * amount of traversed nodes, which equals to the total amount of nodes in the
  * subtree. */
