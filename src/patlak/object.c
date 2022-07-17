@@ -13,8 +13,6 @@ typedef enum {
     CT_PATLAK_OBJECT_DEFINITION,
     /* Name of the pattern. */
     CT_PATLAK_OBJECT_DECLERATION,
-    /* Body of the pattern. */
-    CT_PATLAK_OBJECT_PATTERN,
     /* Unit: Literal: reference to another pattern. */
     CT_PATLAK_OBJECT_LITERAL_REFERENCE,
     /* Unit: Literal: single character. */

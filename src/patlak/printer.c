@@ -98,8 +98,6 @@ char const* ct_patlak_printer_object_type(CTPatlakObjectType type)
     switch (type) {
         case CT_PATLAK_OBJECT_DEFINITION:
             return "definition";
-        case CT_PATLAK_OBJECT_PATTERN:
-            return "pattern";
         case CT_PATLAK_OBJECT_LITERAL_WILDCARD:
             return ".";
         case CT_PATLAK_OBJECT_AND:
