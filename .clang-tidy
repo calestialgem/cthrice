@@ -265,7 +265,7 @@ CheckOptions:
   - key: cert-err61-cpp.CheckThrowTemporaries
     value: "true"
   - key: cppcoreguidelines-avoid-magic-numbers.IgnoredIntegerValues
-    value: "1;2;3;4;"
+    value: "1;2;3;4;5;"
   - key: cppcoreguidelines-no-malloc.Allocations
     value: "::malloc;::calloc"
   - key: cppcoreguidelines-avoid-magic-numbers.IgnorePowersOf2IntegerValues
@@ -631,7 +631,7 @@ CheckOptions:
   - key: performance-inefficient-vector-operation.VectorLikeClasses
     value: "::std::vector"
   - key: readability-magic-numbers.IgnoredIntegerValues
-    value: "1;2;3;4;"
+    value: "1;2;3;4;5;"
   - key: modernize-use-auto.RemoveStars
     value: "false"
   - key: abseil-string-find-str-contains.IncludeStyle
