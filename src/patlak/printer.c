@@ -154,8 +154,11 @@ void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
     }
     ct_patlak_printer_object(&node->object);
     printf("\n");
+    CTPatlakNode const* child = node;
     for (CTIndex i = 0; i < node->childeren; i++) {
-        ct_patlak_printer_node(node + i + 1, indentation + 1);
+        child++;
+        ct_patlak_printer_node(child, indentation + 1);
+        child += child->childeren;
     }
 }
 

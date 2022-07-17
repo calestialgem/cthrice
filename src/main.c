@@ -75,10 +75,24 @@ int main(int argument_count, char const* const* arguments)
     ct_patlak_builder_add(
         &builder,
         (CTPatlakObject){.type = CT_PATLAK_OBJECT_PATTERN});
+    ct_patlak_builder_push(&builder);
+    ct_patlak_builder_add(
+        &builder,
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_OR});
+    ct_patlak_builder_pop(&builder);
+    ct_patlak_builder_push(&builder);
+    ct_patlak_builder_add(
+        &builder,
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_REPEAT_FIXED});
+    ct_patlak_builder_pop(&builder);
+    ct_patlak_builder_push(&builder);
+    ct_patlak_builder_add(
+        &builder,
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_REPEAT_INFINITE});
+    ct_patlak_builder_pop(&builder);
 
     ct_patlak_builder_free(&builder);
     ct_patlak_printer_tree(&tree);
-    ct_patlak_printer_objects(&tree);
     ct_patlak_tree_free(&tree);
 
     return 0;
