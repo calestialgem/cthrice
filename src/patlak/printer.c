@@ -137,7 +137,7 @@ void ct_patlak_printer_object(CTPatlakObject const* object)
 /* Print the node with the indentation. */
 void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
 {
-    for (CTIndex i = 0; i < indentation - 2; i++) {
+    for (CTIndex i = 0; i < indentation - 1; i++) {
         printf("|  ");
     }
     if (indentation > 0) {
