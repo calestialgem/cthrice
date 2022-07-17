@@ -66,6 +66,19 @@ int main(int argument_count, char const* const* arguments)
     ct_patlak_lexer(&tokens, pattern);
     ct_patlak_parser(&tree, &tokens);
     ct_patlak_printer_tree(&tree);
+
+    CTPatlakTree        new_tree = {0};
+    CTPatlakTreeBuilder builder  = {.tree = &new_tree};
+
+    ct_patlak_builder_add_subtree(&builder, tree.first);
+    ct_patlak_builder_add_subtree(&builder, tree.first);
+    ct_patlak_builder_push(&builder);
+    ct_patlak_builder_add_subtree(&builder, tree.first);
+    ct_patlak_printer_tree(&new_tree);
+
+    ct_patlak_tree_free(&new_tree);
+    ct_patlak_builder_free(&builder);
+
     ct_patlak_tree_free(&tree);
     ct_patlak_tokens_free(&tokens);
 

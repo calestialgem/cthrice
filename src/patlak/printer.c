@@ -120,8 +120,9 @@ void ct_patlak_printer_objects(CTPatlakTree const* objects)
     }
 }
 
-/* Print the node with the indentation. */
-void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
+/* Print the node with the indentation. Returns the total amount of traversed
+ * nodes. */
+CTIndex ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
 {
     for (CTIndex i = 0; i < indentation - 1; i++) {
         printf("|  ");
@@ -131,18 +132,21 @@ void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
     }
     ct_patlak_printer_object(&node->object);
     printf("\n");
-    CTPatlakNode const* child = node;
+    CTIndex             traversed = 1;
+    CTPatlakNode const* child     = node;
     for (CTIndex i = 0; i < node->childeren; i++) {
         child++;
-        ct_patlak_printer_node(child, indentation + 1);
+        traversed += ct_patlak_printer_node(child, indentation + 1);
         child += child->childeren;
     }
+    return traversed;
 }
 
-/* Print the object tree. */
+/* Print the object tree. Prints the tree as a forest; with multiple roots. */
 void ct_patlak_printer_tree(CTPatlakTree const* tree)
 {
-    if (ct_patlak_tree_finite(tree)) {
-        ct_patlak_printer_node(tree->first, 0);
+    CTPatlakNode const* root = tree->first;
+    while (root < tree->last) {
+        root += ct_patlak_printer_node(root, 0);
     }
 }
