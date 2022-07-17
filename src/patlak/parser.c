@@ -376,8 +376,7 @@ void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokens const* tokens)
         .value = ct_patlak_parser_next(&remaining)};
 
     // Create the root of the tree.
-    ct_patlak_builder_add(&builder, definition);
-    ct_patlak_builder_push(&builder);
+    ct_patlak_builder_add_root(&builder, definition);
     ct_patlak_builder_add(&builder, decleration);
     ct_patlak_parser_binary_operators(&builder, &remaining, -1);
     ct_patlak_builder_free(&builder);
