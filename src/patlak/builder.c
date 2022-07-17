@@ -108,20 +108,36 @@ void ct_patlak_builder_add(CTPatlakTreeBuilder* builder, CTPatlakObject object)
     }
 }
 
-/* Add the subtree as the childeren of the last pushed node. */
-void ct_patlak_builder_add_subtree(
+/* Add the subtree as the childeren of the last pushed node. Returns the total
+ * amount of traversed nodes, which equals to the total amount of nodes in the
+ * subtree. */
+CTIndex ct_patlak_builder_add_subtree(
     CTPatlakTreeBuilder* builder,
     CTPatlakNode const*  subtree)
 {
     ct_patlak_builder_add(builder, subtree->object);
     ct_patlak_builder_push(builder);
-    CTPatlakNode const* child = subtree;
+    CTIndex             traversed = 1;
+    CTPatlakNode const* child     = subtree;
     for (CTIndex i = 0; i < subtree->childeren; i++) {
         child++;
-        ct_patlak_builder_add_subtree(builder, child);
+        traversed += ct_patlak_builder_add_subtree(builder, child);
         child += child->childeren;
     }
     ct_patlak_builder_pop(builder);
+    return traversed;
+}
+
+/* Move the last pushed subtree from the soure to the destination. */
+void ct_patlak_builder_move_subtree(
+    CTPatlakTreeBuilder* destination,
+    CTPatlakTreeBuilder* source)
+{
+    CTIndex traversed = ct_patlak_builder_add_subtree(
+        destination,
+        ct_patlak_tree_get(source->tree, *(source->parents.last - 1)));
+    ct_patlak_builder_pop(source);
+    source->tree->last -= traversed;
 }
 
 /* Remove the parents. Keeps the memory. */
