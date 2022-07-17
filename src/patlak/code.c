@@ -13,7 +13,6 @@
 typedef struct {
     /* Amount of code to move forward. Zero means a match. */
     CTIndex movement;
-
     /* Type. */
     enum {
         /* Move regardless without consuming a character. */
@@ -29,12 +28,10 @@ typedef struct {
         /* End of a pattern, meaning a match. */
         CT_PATLAK_CODE_TERMINAL
     } type;
-
     /* Data. */
     union {
         /* Data of LITER AL type. A single literal to match. */
         char literal;
-
         /* Data of RANGE type. */
         struct {
             /* First character in the range. */
@@ -42,10 +39,8 @@ typedef struct {
             /* Last character in the range. */
             char last;
         };
-
         /* Data of REFERANCE type. Index of the reffered pattern. */
         CTIndex reffered;
-
         /* Data of BRANCH type. Amount of branches. */
         CTIndex branches;
     };
