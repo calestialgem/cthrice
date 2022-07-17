@@ -78,7 +78,7 @@ void ct_patlak_parser_unit(
                     .value = ct_patlak_parser_next(tokens)});
             return;
         default:
-            ct_expect(false, "Unexpected token!");
+            ct_unexpected("Unexpected token!");
     }
 }
 

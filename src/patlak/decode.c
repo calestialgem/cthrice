@@ -64,7 +64,7 @@ bool ct_patlak_decode(
         case CT_PATLAK_CODE_TERMINAL:
             return true;
         default:
-            ct_expect(false, "Unkown type!");
+            ct_unexpected("Unkown type!");
     }
 
     // Add the target state to the next states.
