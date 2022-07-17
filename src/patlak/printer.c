@@ -134,6 +134,15 @@ void ct_patlak_printer_object(CTPatlakObject const* object)
         object->value.first);
 }
 
+/* Print the object tree linearly. */
+void ct_patlak_printer_objects(CTPatlakTree const* objects)
+{
+    for (CTPatlakNode const* i = objects->first; i < objects->last; i++) {
+        ct_patlak_printer_object(&i->object);
+        printf("\n");
+    }
+}
+
 /* Print the node with the indentation. */
 void ct_patlak_printer_node(CTPatlakNode const* node, CTIndex indentation)
 {
