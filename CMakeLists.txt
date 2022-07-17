@@ -32,6 +32,7 @@ add_library(headers OBJECT
     src/prelude/split.c
     src/prelude/string.c
 
+    src/patlak/builder.c
     src/patlak/code.c
     src/patlak/context.c
     src/patlak/decode.c
