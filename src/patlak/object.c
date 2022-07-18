@@ -23,8 +23,6 @@ typedef enum {
     CT_PATLAK_OBJECT_LITERAL_RANGE,
     /* Unit: Literal: any character. */
     CT_PATLAK_OBJECT_LITERAL_WILDCARD,
-    /* Unit: and binary operator. */
-    CT_PATLAK_OBJECT_AND,
     /* Unit: or binary operator. */
     CT_PATLAK_OBJECT_OR,
     /* Unit: group of units. */
