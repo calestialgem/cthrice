@@ -29,7 +29,7 @@ constexpr auto compile(char const* path) noexcept
 
         tokens.clear();
         patlak::lex(tokens, line);
-        print("Tokens: %\n", tokens);
+        print("%\n", tokens);
     };
 
     file::process(path, tokenizer);

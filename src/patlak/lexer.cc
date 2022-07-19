@@ -73,8 +73,8 @@ struct Token {
 
 private:
 
-    Type        type_;
-    std::string value_;
+    Type             type_;
+    std::string_view value_;
 };
 
 /* Print a token. */
