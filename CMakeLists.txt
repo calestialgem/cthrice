@@ -28,5 +28,7 @@ add_library(headers OBJECT
     src/expect.cc
     src/format.cc
     src/source_location.cc
+
+    src/patlak/lexer.cc
 )
 setup_target(headers)
