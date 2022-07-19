@@ -29,6 +29,7 @@ add_library(headers OBJECT
     src/file.cc
     src/format.cc
     src/source_location.cc
+    src/tree.cc
 
     src/patlak/lexer.cc
     src/patlak/parser.cc
