@@ -23,7 +23,8 @@ project(cthrice)
 add_executable(${PROJECT_NAME} src/main.cc)
 setup_target(${PROJECT_NAME})
 
-# # Create compile commands for the header files as well.
-# add_library(headers OBJECT
-# )
-# setup_target(headers)
+# Create compile commands for the header files as well.
+add_library(headers OBJECT
+    src/source_location.cc
+)
+setup_target(headers)
