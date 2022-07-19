@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <ostream>
 #include <string_view>
 
 namespace cthrice
@@ -38,4 +39,13 @@ private:
     /* Line number. */
     std::size_t line_;
 };
+
+/* Print the source location. */
+constexpr auto
+operator<<(std::ostream& out, SourceLocation const& sourceLocation) noexcept
+    -> std::ostream&
+{
+    out << sourceLocation.file() << ':' << sourceLocation.line();
+    return out;
+}
 } // namespace cthrice

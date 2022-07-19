@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "expect.cc"
+
 #include <iostream>
 #include <span>
 #include <string_view>
@@ -26,6 +28,8 @@ auto main(
         argumentValues,
         static_cast<std::size_t>(argumentCount)};
     print_arguments(arguments);
+
+    cthrice::unexpected("Hello, hello, hello!");
 
     return 0;
 }
