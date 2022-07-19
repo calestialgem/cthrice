@@ -3,8 +3,8 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 function(setup_target target)
     target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}/src)
@@ -20,28 +20,10 @@ endfunction(setup_target target)
 
 project(cthrice)
 
-add_executable(${PROJECT_NAME} src/main.c)
+add_executable(${PROJECT_NAME} src/main.cc)
 setup_target(${PROJECT_NAME})
 
-# Create compile commands for the header files as well.
-add_library(headers OBJECT
-    src/prelude/buffer.c
-    src/prelude/expect.c
-    src/prelude/file.c
-    src/prelude/scalar.c
-    src/prelude/split.c
-    src/prelude/string.c
-
-    src/patlak/builder.c
-    src/patlak/code.c
-    src/patlak/context.c
-    src/patlak/decode.c
-    src/patlak/lexer.c
-    src/patlak/object.c
-    src/patlak/parser.c
-    src/patlak/pattern.c
-    src/patlak/printer.c
-    src/patlak/state.c
-    src/patlak/token.c
-)
-setup_target(headers)
+# # Create compile commands for the header files as well.
+# add_library(headers OBJECT
+# )
+# setup_target(headers)
