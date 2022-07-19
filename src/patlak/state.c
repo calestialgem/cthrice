@@ -80,7 +80,7 @@ void ct_patlak_states_reserve(CTPatlakStates* states, CTIndex amount)
 
     CTIndex        new_capacity = capacity + growth;
     CTPatlakState* memory =
-        reallocarray(states->first, new_capacity, sizeof(CTPatlakState));
+        realloc(states->first, new_capacity * sizeof(CTPatlakState));
     ct_expect(memory != NULL, "Could not allocate!");
 
     states->last      = memory + ct_patlak_states_size(states);

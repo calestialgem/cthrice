@@ -75,7 +75,7 @@ void ct_patlak_builder_reserve(CTPatlakTreeBuilder* builder, CTIndex amount)
 
     CTIndex  new_capacity = capacity + growth;
     CTIndex* memory =
-        reallocarray(builder->parents.first, new_capacity, sizeof(CTIndex));
+        realloc(builder->parents.first, new_capacity * sizeof(CTIndex));
     ct_expect(memory != NULL, "Could not allocate!");
 
     builder->parents.last      = memory + ct_patlak_builder_size(builder);

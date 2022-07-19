@@ -111,7 +111,7 @@ void ct_patlak_tokens_reserve(CTPatlakTokens* tokens, CTIndex amount)
 
     CTIndex        new_capacity = capacity + growth;
     CTPatlakToken* memory =
-        reallocarray(tokens->first, new_capacity, sizeof(CTPatlakToken));
+        realloc(tokens->first, new_capacity * sizeof(CTPatlakToken));
     ct_expect(memory != NULL, "Could not allocate!");
 
     tokens->last      = memory + ct_patlak_tokens_size(tokens);

@@ -115,7 +115,7 @@ void ct_patlak_tree_reserve(CTPatlakTree* tree, CTIndex amount)
 
     CTIndex       new_capacity = capacity + growth;
     CTPatlakNode* memory =
-        reallocarray(tree->first, new_capacity, sizeof(CTPatlakNode));
+        realloc(tree->first, new_capacity * sizeof(CTPatlakNode));
     ct_expect(memory != NULL, "Could not allocate!");
 
     tree->last      = memory + ct_patlak_tree_size(tree);
