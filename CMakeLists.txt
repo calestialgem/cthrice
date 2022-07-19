@@ -31,5 +31,6 @@ add_library(headers OBJECT
     src/source_location.cc
 
     src/patlak/lexer.cc
+    src/patlak/parser.cc
 )
 setup_target(headers)
