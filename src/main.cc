@@ -6,11 +6,8 @@
 #include <string_view>
 #include <vector>
 
-/* Arguments given to the program. */
-using Arguments = std::span<char const* const>;
-
 /* Print the arguments. */
-auto print_arguments(Arguments const& arguments) noexcept
+auto print_arguments(std::span<char const* const> const& arguments) noexcept
 {
     std::cout << "Thrice C Transpiler\n"
               << "Running with arguments:\n";
