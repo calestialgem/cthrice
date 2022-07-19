@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "expect.cc"
+#include "format.cc"
 
 #include <iostream>
 #include <span>
-#include <string_view>
-#include <vector>
 
 /* Print the arguments. */
 auto print_arguments(std::span<char const* const> const& arguments) noexcept
 {
-    std::cout << "Thrice C Transpiler\n"
-              << "Running with arguments:\n";
+    cthrice::print(
+        "Thrice C Transpiler\n"
+        "Running with arguments:\n");
     for (std::size_t i{0}; i < arguments.size(); i++) {
-        std::cout << '[' << i << "] {" << arguments[i] << "}\n";
+        cthrice::print("[%] {%}\n", i, arguments[i]);
     }
-    std::cout << std::endl;
+    cthrice::print("\n");
 }
 
 /* Launch the compiler. */

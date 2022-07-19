@@ -3,11 +3,10 @@
 
 #pragma once
 
+#include "format.cc"
 #include "source_location.cc"
 
-#include <cstddef>
 #include <exception>
-#include <iostream>
 #include <string_view>
 
 namespace cthrice
@@ -15,12 +14,12 @@ namespace cthrice
 /* If the condition does not hold, print the error message with the source
  * location information and terminate. */
 constexpr void expect(
-    bool const        condition,
-    char const* const message,
-    SourceLocation    sourceLocation = SourceLocation{}) noexcept
+    bool const              condition,
+    std::string_view const& message,
+    SourceLocation          sourceLocation = SourceLocation{}) noexcept
 {
     if (!condition) {
-        std::cout << sourceLocation << ": error: " << message << std::endl;
+        print("%: error: %\n", sourceLocation, message);
         std::terminate();
     }
 }
@@ -28,8 +27,8 @@ constexpr void expect(
 /* Print the error message with the source location information and terminate.
  */
 constexpr void unexpected(
-    char const* const message,
-    SourceLocation    sourceLocation = SourceLocation{}) noexcept
+    std::string_view const& message,
+    SourceLocation          sourceLocation = SourceLocation{}) noexcept
 {
     expect(false, message, sourceLocation);
 }
