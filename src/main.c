@@ -58,8 +58,8 @@ int main(int argument_count, char const* const* arguments)
     //     ct_compile(arguments[i]);
     // }
 
-    CTString pattern = ct_string_terminated(
-        "hello = [5]{ 'Hello!'} 'some other text' {'after' 'that' 'text' } ");
+    CTString pattern =
+        ct_string_terminated("int = ?{'+'|'-'} +{'0~9' ?{'_' +'0~9'}}");
     CTPatlakTokens tokens = {0};
     CTPatlakTree   tree   = {0};
 
