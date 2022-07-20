@@ -285,6 +285,7 @@ void ct_patlak_parser_afterwards(
                 ct_patlak_builder_push(builder);
                 ct_patlak_builder_add(builder, firstObject);
                 ct_patlak_parser_unit(builder, tokens);
+                ct_patlak_builder_pop(builder);
                 return;
             }
             case CT_PATLAK_TOKEN_OPENING_BRACKET: {

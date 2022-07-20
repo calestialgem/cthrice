@@ -58,17 +58,28 @@ int main(int argument_count, char const* const* arguments)
     //     ct_compile(arguments[i]);
     // }
 
-    CTString pattern = ct_string_terminated(
-        "int(digits, separator) = ?{'+'|'-'} number(+digits *{separator "
-        "+digits} some_function('0~9'), another_argument)");
+#define PATTERNS_LENGTH 4
+    CTString patterns[PATTERNS_LENGTH] = {
+        ct_string_terminated("pata(a,b)=?{a|b} b(a)"),
+        ct_string_terminated("kok = ?'kok' ?pata('k', o)"),
+        ct_string_terminated("weird(thing) = ?thing('weird')"),
+        ct_string_terminated(
+            "int(digits, separator) = ?{'+'|'-'} number(+digits *{separator "
+            "+digits} some_function('0~9'), another_argument)"),
+    };
+
     CTPatlakTokens tokens = {0};
     CTPatlakTree   tree   = {0};
 
-    ct_patlak_lexer(&tokens, pattern);
-    ct_patlak_printer_tokens(&tokens);
-
-    ct_patlak_parser(&tree, &tokens);
-    ct_patlak_printer_tree(&tree);
+    for (int i = 0; i < PATTERNS_LENGTH; i++) {
+        ct_patlak_tokens_clear(&tokens);
+        ct_patlak_tree_clear(&tree);
+        ct_patlak_lexer(&tokens, patterns[i]);
+        ct_patlak_printer_tokens(&tokens);
+        ct_patlak_parser(&tree, &tokens);
+        ct_patlak_printer_tree(&tree);
+        printf("\n");
+    }
 
     ct_patlak_tree_free(&tree);
     ct_patlak_tokens_free(&tokens);
