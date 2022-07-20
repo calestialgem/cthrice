@@ -152,7 +152,7 @@ void ct_patlak_patterns_grow_indicies(CTPatlakPatterns* patterns)
         new_size = 1;
     }
     CTIndex* memory =
-        reallocarray(patterns->indicies.first, new_size, sizeof(CTIndex*));
+        realloc(patterns->indicies.first, new_size * sizeof(CTIndex*));
     ct_expect(memory != NULL, "Could not allocate!");
 
     patterns->indicies.first = memory;
@@ -234,10 +234,9 @@ void ct_patlak_patterns_information_reserve(
     }
 
     CTIndex          new_capacity = capacity + growth;
-    CTPatlakPattern* memory       = reallocarray(
+    CTPatlakPattern* memory       = realloc(
         patterns->information.first,
-        new_capacity,
-        sizeof(CTPatlakPattern));
+        new_capacity * sizeof(CTPatlakPattern));
     ct_expect(memory != NULL, "Could not allocate!");
 
     patterns->information.last =

@@ -105,7 +105,7 @@ void ct_patlak_codes_reserve(CTPatlakCodes* codes, CTIndex amount)
 
     CTIndex       new_capacity = capacity + growth;
     CTPatlakCode* memory =
-        reallocarray(codes->first, new_capacity, sizeof(CTPatlakCode));
+        realloc(codes->first, new_capacity * sizeof(CTPatlakCode));
     ct_expect(memory != NULL, "Could not allocate!");
 
     codes->last      = memory + ct_patlak_codes_size(codes);

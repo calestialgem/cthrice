@@ -55,7 +55,7 @@ void ct_buffer_reserve(CTBuffer* buffer, CTIndex amount)
     }
 
     CTIndex new_capacity = capacity + growth;
-    char*   memory = reallocarray(buffer->first, new_capacity, sizeof(char));
+    char*   memory       = realloc(buffer->first, new_capacity * sizeof(char));
     ct_expect(memory != NULL, "Could not allocate!");
 
     buffer->last      = memory + ct_buffer_size(buffer);
