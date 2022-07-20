@@ -59,7 +59,8 @@ int main(int argument_count, char const* const* arguments)
     // }
 
     CTString pattern = ct_string_terminated(
-        "int(digits, separator) = ?{'+'|'-'} number(digits separator)");
+        "int(digits, separator) = ?{'+'|'-'} number(+digits *{separator "
+        "+digits} some_function('0~9'), another_argument)");
     CTPatlakTokens tokens = {0};
     CTPatlakTree   tree   = {0};
 

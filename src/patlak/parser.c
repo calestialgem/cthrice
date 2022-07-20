@@ -262,6 +262,11 @@ void ct_patlak_parser_unit(
     CTPatlakTreeBuilder*  builder,
     CTPatlakParserTokens* tokens);
 
+// For use by afterwards and unit.
+void ct_patlak_parser_units(
+    CTPatlakTreeBuilder*  builder,
+    CTPatlakParserTokens* tokens);
+
 /* Try to parse an object that looks like a simpler object. They differ by the
  * token that comes after the token that led to the creation of the first
  * object. */
@@ -283,21 +288,42 @@ void ct_patlak_parser_afterwards(
                 return;
             }
             case CT_PATLAK_TOKEN_OPENING_BRACKET: {
-                CTPatlakObject functionCall = {
-                    .type  = CT_PATLAK_OBJECT_FUNCTION_CALL,
-                    .value = ct_patlak_parser_next(tokens)};
+                ct_expect(
+                    firstObject.type == CT_PATLAK_OBJECT_LITERAL_REFERENCE,
+                    "Function call argument list after something that is not a "
+                    "function name!");
+                firstObject.type = CT_PATLAK_OBJECT_FUNCTION_CALL;
+                // Skip opening brackets.
+                tokens->first++;
                 CTPatlakParserTokens inside = ct_patlak_parser_bracket(
                     tokens,
                     CT_PATLAK_TOKEN_OPENING_BRACKET,
                     CT_PATLAK_TOKEN_CLOSING_BRACKET);
-                functionCall.value.first = firstObject.value.first;
-                functionCall.value.last  = inside.last->value.last;
-                ct_patlak_builder_add(builder, functionCall);
-                ct_patlak_builder_push(builder);
                 ct_patlak_builder_add(builder, firstObject);
+                ct_patlak_builder_push(builder);
                 while (ct_patlak_parser_finite(&inside)) {
-                    ct_patlak_parser_unit(builder, &inside);
+                    CTPatlakParserTokens argument = {
+                        .first = inside.first,
+                        .last  = inside.first};
+                    while (argument.last < inside.last) {
+                        if (argument.last->type == CT_PATLAK_TOKEN_COMMA) {
+                            break;
+                        }
+                        argument.last++;
+                    }
+                    inside.first = argument.last + 1;
+                    // Parse the argument to an implicit group.
+                    ct_patlak_builder_add(
+                        builder,
+                        (CTPatlakObject){
+                            .type  = CT_PATLAK_OBJECT_GROUP,
+                            .value = {
+                                      .first = argument.first->value.first,
+                                      .last  = (argument.last - 1)->value.last}
+                    });
+                    ct_patlak_parser_units(builder, &argument);
                 }
+                ct_patlak_builder_pop(builder);
                 return;
             }
             default:
@@ -308,11 +334,6 @@ void ct_patlak_parser_afterwards(
     // the first object is the correct outcome.
     ct_patlak_builder_add(builder, firstObject);
 }
-
-// For use by unit.
-void ct_patlak_parser_units(
-    CTPatlakTreeBuilder*  builder,
-    CTPatlakParserTokens* tokens);
 
 /* Parse a single unit into the stack. */
 void ct_patlak_parser_unit(
