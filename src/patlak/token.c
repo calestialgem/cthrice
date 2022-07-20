@@ -24,6 +24,10 @@ typedef enum {
     CT_PATLAK_TOKEN_STAR,
     /* Plus sign: "+". */
     CT_PATLAK_TOKEN_PLUS,
+    /* Opening bracket: "(". */
+    CT_PATLAK_TOKEN_OPENING_BRACKET,
+    /* Closing bracket: ")". */
+    CT_PATLAK_TOKEN_CLOSING_BRACKET,
     /* Opening curly bracket: "{". */
     CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET,
     /* Closing curly bracket: "}". */

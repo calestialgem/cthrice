@@ -11,7 +11,7 @@
 /* Try to lex a punctuation mark. */
 bool ct_patlak_lexer_mark(CTPatlakTokens* tokens, CTString* pattern)
 {
-    CTString const marks    = ct_string_terminated("=.|,?*+{}[]");
+    CTString const marks    = ct_string_terminated("=.|,?*+(){}[]");
     char const*    position = ct_string_first(&marks, ct_string_at(pattern, 0));
     if (position == marks.last) {
         return false;
