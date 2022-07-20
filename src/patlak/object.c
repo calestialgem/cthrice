@@ -32,7 +32,9 @@ typedef enum {
     /* Unit: between some numbers of repetition of a unit. */
     CT_PATLAK_OBJECT_REPEAT_RANGE,
     /* Unit: some number or more of repetition of a unit. */
-    CT_PATLAK_OBJECT_REPEAT_INFINITE
+    CT_PATLAK_OBJECT_REPEAT_INFINITE,
+    /* Unit: function call. */
+    CT_PATLAK_OBJECT_FUNCTION_CALL
 } CTPatlakObjectType;
 
 /* Object in the pattern source string. */

@@ -126,13 +126,13 @@ positive infinity.
 
 # Functions
 
-`<identifier>(parameters) = <pattern>`
+`<identifier>(<parameter1> <parameter2> <parameter3>) = <pattern>`
 
 Parameters can be used as references inside the function. They shadow global
-parameter namespace.
+parameter namespace. Parameters are just separated with spaces.
 
 ## Call
 
-`<function>(aguments)`
+`<function>(<argument1> <argument2> <argument3>)`
 
-Works similar to references.
+Works similar to references. Arguments are space separated like parameters.

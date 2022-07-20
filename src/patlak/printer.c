@@ -63,6 +63,10 @@ char const* ct_patlak_printer_token_type(CTPatlakTokenType type)
             return "* ";
         case CT_PATLAK_TOKEN_PLUS:
             return "+ ";
+        case CT_PATLAK_TOKEN_OPENING_BRACKET:
+            return "( ";
+        case CT_PATLAK_TOKEN_CLOSING_BRACKET:
+            return ") ";
         case CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET:
             return "{ ";
         case CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET:
@@ -102,7 +106,7 @@ void ct_patlak_printer_tokens(CTPatlakTokens const* tokens)
 char const* ct_patlak_printer_object_type(CTPatlakObjectType type)
 {
     if (type >= CT_PATLAK_OBJECT_DEFINITION &&
-        type <= CT_PATLAK_OBJECT_REPEAT_INFINITE) {
+        type <= CT_PATLAK_OBJECT_FUNCTION_CALL) {
         return "%.*s";
     }
     return "!(%.*s)";

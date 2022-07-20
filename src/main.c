@@ -58,12 +58,14 @@ int main(int argument_count, char const* const* arguments)
     //     ct_compile(arguments[i]);
     // }
 
-    CTString pattern =
-        ct_string_terminated("int = ?{'+'|'-'} +{'0~9' ?{'_' +'0~9'}}");
+    CTString pattern = ct_string_terminated(
+        "int(digits separator) = ?{'+'|'-'} number(digits separator)");
     CTPatlakTokens tokens = {0};
     CTPatlakTree   tree   = {0};
 
     ct_patlak_lexer(&tokens, pattern);
+    ct_patlak_printer_tokens(&tokens);
+
     ct_patlak_parser(&tree, &tokens);
     ct_patlak_printer_tree(&tree);
 

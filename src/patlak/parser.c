@@ -231,55 +231,82 @@ CTPatlakObject ct_patlak_parser_object(CTPatlakParserTokens* tokens)
     }
 }
 
-/* Get the tokens inside the group and consume them. */
-CTPatlakParserTokens ct_patlak_parser_group_tokens(CTPatlakParserTokens* tokens)
+/* Get the tokens inside the brackets and consume them. */
+CTPatlakParserTokens ct_patlak_parser_bracket(
+    CTPatlakParserTokens* tokens,
+    CTPatlakTokenType     opening,
+    CTPatlakTokenType     closing)
 {
     CTIndex closing_bracket = 1;
     for (CTIndex i = 0; i < ct_patlak_parser_size(tokens); i++) {
-        switch (ct_patlak_parser_type(tokens, i)) {
-            case CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET:
-                closing_bracket++;
-                break;
-            case CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET:
-                closing_bracket--;
-                if (closing_bracket == 0) {
-                    CTPatlakParserTokens result = {
-                        .first = tokens->first,
-                        .last  = tokens->first + i};
-                    tokens->first += i + 1;
-                    return result;
-                }
-            default:
-                break;
+        CTPatlakTokenType type = ct_patlak_parser_type(tokens, i);
+        if (type == opening) {
+            closing_bracket++;
+        } else if (type == closing) {
+            closing_bracket--;
+            if (closing_bracket == 0) {
+                CTPatlakParserTokens result = {
+                    .first = tokens->first,
+                    .last  = tokens->first + i};
+                tokens->first += i + 1;
+                return result;
+            }
         }
     }
-    ct_unexpected("No closing curly bracket!");
+    ct_unexpected("No closing bracket!");
     return (CTPatlakParserTokens){0};
 }
 
-// For use by binary operator.
+// For use by afterwards.
 void ct_patlak_parser_unit(
     CTPatlakTreeBuilder*  builder,
     CTPatlakParserTokens* tokens);
 
-/* Try to parse a binary operator. */
-void ct_patlak_parser_binary_operator(
+/* Try to parse an object that looks like a simpler object. They differ by the
+ * token that comes after the token that led to the creation of the first
+ * object. */
+void ct_patlak_parser_afterwards(
     CTPatlakTreeBuilder*  builder,
     CTPatlakParserTokens* tokens,
     CTPatlakObject        firstObject)
 {
-    if (ct_patlak_parser_finite(tokens) &&
-        ct_patlak_parser_starts(tokens, CT_PATLAK_TOKEN_PIPE)) {
-        CTPatlakObject binaryOperator = {
-            .type  = CT_PATLAK_OBJECT_OR,
-            .value = ct_patlak_parser_next(tokens)};
-        ct_patlak_builder_add(builder, binaryOperator);
-        ct_patlak_builder_push(builder);
-        ct_patlak_builder_add(builder, firstObject);
-        ct_patlak_parser_unit(builder, tokens);
-    } else {
-        ct_patlak_builder_add(builder, firstObject);
+    if (ct_patlak_parser_finite(tokens)) {
+        switch (ct_patlak_parser_first(tokens)) {
+            case CT_PATLAK_TOKEN_PIPE: {
+                CTPatlakObject binaryOperator = {
+                    .type  = CT_PATLAK_OBJECT_OR,
+                    .value = ct_patlak_parser_next(tokens)};
+                ct_patlak_builder_add(builder, binaryOperator);
+                ct_patlak_builder_push(builder);
+                ct_patlak_builder_add(builder, firstObject);
+                ct_patlak_parser_unit(builder, tokens);
+                return;
+            }
+            case CT_PATLAK_TOKEN_OPENING_BRACKET: {
+                CTPatlakObject functionCall = {
+                    .type  = CT_PATLAK_OBJECT_FUNCTION_CALL,
+                    .value = ct_patlak_parser_next(tokens)};
+                CTPatlakParserTokens inside = ct_patlak_parser_bracket(
+                    tokens,
+                    CT_PATLAK_TOKEN_OPENING_BRACKET,
+                    CT_PATLAK_TOKEN_CLOSING_BRACKET);
+                functionCall.value.first = firstObject.value.first;
+                functionCall.value.last  = inside.last->value.last;
+                ct_patlak_builder_add(builder, functionCall);
+                ct_patlak_builder_push(builder);
+                ct_patlak_builder_add(builder, firstObject);
+                while (ct_patlak_parser_finite(&inside)) {
+                    ct_patlak_parser_unit(builder, &inside);
+                }
+                return;
+            }
+            default:
+                break;
+        }
     }
+    // If there are no tokens or the next token does not makes a bigger object:
+    // the first object is the correct outcome.
+    ct_patlak_builder_add(builder, firstObject);
 }
 
 // For use by unit.
@@ -299,11 +326,14 @@ void ct_patlak_parser_unit(
         case CT_PATLAK_OBJECT_LITERAL_STRING:
         case CT_PATLAK_OBJECT_LITERAL_RANGE:
         case CT_PATLAK_OBJECT_LITERAL_WILDCARD:
-            ct_patlak_parser_binary_operator(builder, tokens, firstObject);
+            ct_patlak_parser_afterwards(builder, tokens, firstObject);
             return;
         case CT_PATLAK_OBJECT_GROUP: {
-            CTPatlakParserTokens inside = ct_patlak_parser_group_tokens(tokens);
-            firstObject.value.last      = inside.last->value.last;
+            CTPatlakParserTokens inside = ct_patlak_parser_bracket(
+                tokens,
+                CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET,
+                CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET);
+            firstObject.value.last = inside.last->value.last;
             ct_patlak_builder_add(builder, firstObject);
             ct_patlak_parser_units(builder, &inside);
             return;
