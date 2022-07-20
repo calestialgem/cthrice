@@ -123,3 +123,16 @@ positive infinity.
 | `? <unit>`        | `[?]<unit>`        | optional     |
 | `* <unit>`        | `[*]<unit>`        | zero or more |
 | `+ <unit>`        | `[+]<unit>`        | one or more  |
+
+# Functions
+
+`<identifier>(parameters) = <pattern>`
+
+Parameters can be used as references inside the function. They shadow global
+parameter namespace.
+
+## Call
+
+`<function>(aguments)`
+
+Works similar to references.
