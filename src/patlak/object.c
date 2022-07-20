@@ -13,6 +13,8 @@ typedef enum {
     CT_PATLAK_OBJECT_DEFINITION,
     /* Name of the pattern. */
     CT_PATLAK_OBJECT_DECLERATION,
+    /* Parameter of a function. */
+    CT_PATLAK_OBJECT_PARAMETER,
     /* Unit: Literal: reference to another pattern. */
     CT_PATLAK_OBJECT_LITERAL_REFERENCE,
     /* Unit: Literal: single character. */
@@ -34,7 +36,7 @@ typedef enum {
     /* Unit: some number or more of repetition of a unit. */
     CT_PATLAK_OBJECT_REPEAT_INFINITE,
     /* Unit: function call. */
-    CT_PATLAK_OBJECT_FUNCTION_CALL
+    CT_PATLAK_OBJECT_FUNCTION_CALL,
 } CTPatlakObjectType;
 
 /* Object in the pattern source string. */

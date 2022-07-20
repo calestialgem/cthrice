@@ -351,7 +351,7 @@ void ct_patlak_parser_unit(
             printf("Unexpected Token: \"");
             ct_patlak_printer_token(tokens->first);
             printf("\"\n");
-            ct_unexpected("Unexpected token!");
+            ct_unexpected("Unexpected token in the pattern definition!");
     }
 }
 
@@ -367,6 +367,73 @@ void ct_patlak_parser_units(
     ct_patlak_builder_pop(builder);
 }
 
+/* Parse the parameters in the decleration of pattern function. */
+CTPatlakParserTokens ct_patlak_parser_parameters(CTPatlakParserTokens* tokens)
+{
+    if (!ct_patlak_parser_finite(tokens) ||
+        !ct_patlak_parser_starts(tokens, CT_PATLAK_TOKEN_OPENING_BRACKET)) {
+        return (CTPatlakParserTokens){0};
+    }
+    // Consume the opening bracket.
+    tokens->first++;
+    return ct_patlak_parser_bracket(
+        tokens,
+        CT_PATLAK_TOKEN_OPENING_BRACKET,
+        CT_PATLAK_TOKEN_CLOSING_BRACKET);
+}
+
+/* Parse the decleration part of pattern definition. */
+void ct_patlak_parser_decleration(
+    CTPatlakTreeBuilder*  builder,
+    CTPatlakParserTokens* tokens)
+{
+    // Parse the name.
+    ct_expect(
+        ct_patlak_parser_finite(tokens) &&
+            ct_patlak_parser_starts(tokens, CT_PATLAK_TOKEN_IDENTIFIER),
+        "There is no pattern name!");
+    CTPatlakObject decleration = {
+        .type  = CT_PATLAK_OBJECT_DECLERATION,
+        .value = ct_patlak_parser_next(tokens)};
+
+    // Get the parameter tokens.
+    CTPatlakParserTokens parameters = ct_patlak_parser_parameters(tokens);
+
+    // Parse the equal sign.
+    ct_expect(
+        ct_patlak_parser_finite(tokens) &&
+            ct_patlak_parser_starts(tokens, CT_PATLAK_TOKEN_EQUAL),
+        "There is no pattern definition!");
+    CTPatlakObject definition = {
+        .type  = CT_PATLAK_OBJECT_DEFINITION,
+        .value = ct_patlak_parser_next(tokens)};
+
+    // Create the root of the tree.
+    ct_patlak_builder_add_root(builder, definition);
+    ct_patlak_builder_add(builder, decleration);
+
+    // Parse the parameter names.
+    ct_patlak_builder_push(builder);
+    while (ct_patlak_parser_finite(&parameters)) {
+        ct_expect(
+            ct_patlak_parser_starts(&parameters, CT_PATLAK_TOKEN_IDENTIFIER),
+            "Expected parameter name in pattern function decleration!");
+        ct_patlak_builder_add(
+            builder,
+            (CTPatlakObject){
+                .type  = CT_PATLAK_OBJECT_PARAMETER,
+                .value = ct_patlak_parser_next(&parameters)});
+        if (ct_patlak_parser_finite(&parameters)) {
+            ct_expect(
+                ct_patlak_parser_starts(&parameters, CT_PATLAK_TOKEN_COMMA),
+                "Expected a comma between parameter names in the "
+                "pattern function decleration!");
+            parameters.first++;
+        }
+    }
+    ct_patlak_builder_pop(builder);
+}
+
 /* Parse the tokens. */
 void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokens const* tokens)
 {
@@ -375,27 +442,8 @@ void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokens const* tokens)
         .first = tokens->first,
         .last  = tokens->last};
 
-    // Parse the name of the pattern.
-    ct_expect(
-        ct_patlak_parser_finite(&remaining) &&
-            ct_patlak_parser_starts(&remaining, CT_PATLAK_TOKEN_IDENTIFIER),
-        "There is no pattern name!");
-    CTPatlakObject decleration = {
-        .type  = CT_PATLAK_OBJECT_DECLERATION,
-        .value = ct_patlak_parser_next(&remaining)};
-
-    // Parse the equal sign.
-    ct_expect(
-        ct_patlak_parser_finite(&remaining) &&
-            ct_patlak_parser_starts(&remaining, CT_PATLAK_TOKEN_EQUAL),
-        "There is no pattern definition!");
-    CTPatlakObject definition = {
-        .type  = CT_PATLAK_OBJECT_DEFINITION,
-        .value = ct_patlak_parser_next(&remaining)};
-
-    // Create the root of the tree.
-    ct_patlak_builder_add_root(&builder, definition);
-    ct_patlak_builder_add(&builder, decleration);
+    // Parse the decleration.
+    ct_patlak_parser_decleration(&builder, &remaining);
 
     // Parse all the units into an implicit group.
     ct_patlak_builder_add(

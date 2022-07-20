@@ -126,13 +126,21 @@ positive infinity.
 
 # Functions
 
-`<identifier>(<parameter1> <parameter2> <parameter3>) = <pattern>`
+`<identifier>(<parameter>, <parameter>, <parameter>) = <pattern>`
+
+`<parameter>` are `<identifier>`.
+
+Functions are decleared with a comma separated list of parameters inside
+brackets after the name, before the equal sign.
 
 Parameters can be used as references inside the function. They shadow global
-parameter namespace. Parameters are just separated with spaces.
+references if they have the same name.
 
 ## Call
 
-`<function>(<argument1> <argument2> <argument3>)`
+`<function>(<argument>, <argument>, <argument>)`
+
+`<argument>` are `<unit>`.
 
 Works similar to references. Arguments are space separated like parameters.
+Arguments could be any unit.
