@@ -16,16 +16,22 @@ void ct_patlak_printer_code(CTPatlakCode const* code)
     switch (code->type) {
         case CT_PATLAK_CODE_EMPTY:
             printf("EMPTY");
+            break;
         case CT_PATLAK_CODE_LITERAL:
             printf("LITERAL {%c}", code->literal);
+            break;
         case CT_PATLAK_CODE_RANGE:
             printf("RANGE {%c~%c}", code->first, code->last);
+            break;
         case CT_PATLAK_CODE_REFERANCE:
             printf("REFERENCE {%05ld}", code->reffered);
+            break;
         case CT_PATLAK_CODE_BRANCH:
             printf("BRANCH {%ld}", code->branches);
+            break;
         case CT_PATLAK_CODE_TERMINAL:
             printf("TERMINAL");
+            break;
     }
     printf(" %+ld\n", code->movement);
 }

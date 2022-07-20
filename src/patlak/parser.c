@@ -190,8 +190,10 @@ CTPatlakObject ct_patlak_parser_repeat(CTPatlakParserTokens* tokens)
     switch (insideBrackets) {
         case -1:
             ct_unexpected("No closing square bracket!");
+            break;
         case 0:
             ct_unexpected("No tokens inside the square bracket!");
+            break;
         case 1: {
             CTPatlakObject result =
                 ct_patlak_parser_repeat_one(tokens, 1, true);
