@@ -68,6 +68,11 @@ int main(int argument_count, char const* const* arguments)
         printf("\n");
     }
 
+    CTString name  = ct_string_terminated("pata");
+    CTString input = ct_string_terminated("pata");
+    CTString match = ct_patlak_match(&context, &name, &input);
+    printf("Match: %.*s\n", (int)ct_string_size(&match), match.first);
+
     ct_patlak_free(&context);
 
     return 0;
