@@ -9,6 +9,7 @@
 #include "patlak/printer.c"
 #include "prelude/expect.c"
 #include "prelude/scalar.c"
+#include "prelude/string.c"
 
 #include <stdio.h>
 
@@ -124,6 +125,16 @@ void ct_patlak_compiler_repeat_fixed(
     CTIndex                 index,
     CTPatlakNode const*     node)
 {
+    // Remove brackets.
+    CTString inside = node->object.value;
+    if (ct_string_starts(&inside, '[')) {
+        inside.first++;
+        inside.last--;
+    }
+    unsigned long long number = ct_string_parse(&inside);
+    for (unsigned long long i = 0; i < number; i++) {
+        ct_patlak_compiler_object(codes, patterns, tree, index + 1);
+    }
 }
 
 /* Compile the ranged repeat. */

@@ -6,6 +6,7 @@
 #include "prelude/expect.c"
 #include "prelude/scalar.c"
 
+#include <math.h>
 #include <stdbool.h>
 
 /* Immutable pointers to contiguous characters. */
@@ -121,4 +122,16 @@ unsigned long long ct_string_hash(CTString const* string)
         hash += *i;
     }
     return hash;
+}
+
+/* Decimal number in the string. */
+unsigned long long ct_string_parse(CTString const* string)
+{
+    unsigned long long const BASE   = 10;
+    unsigned long long       result = 0;
+    for (char const* i = string->first; i < string->last; i++) {
+        result *= BASE;
+        result += (*i - '0');
+    }
+    return result;
 }
