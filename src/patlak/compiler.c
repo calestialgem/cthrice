@@ -14,127 +14,127 @@
 
 // For use by unit compilers.
 void ct_patlak_compiler_object(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index);
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index);
 
 /* Compile the reference literal. */
 void ct_patlak_compiler_reference(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the character literal. */
 void ct_patlak_compiler_character(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the string literal. */
 void ct_patlak_compiler_string(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the character range literal. */
 void ct_patlak_compiler_range(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the wildcard literal. */
 void ct_patlak_compiler_wildcard(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the OR binary operator. */
 void ct_patlak_compiler_or(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the group. */
 void ct_patlak_compiler_group(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the fixed repeat. */
 void ct_patlak_compiler_repeat_fixed(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the ranged repeat. */
 void ct_patlak_compiler_repeat_range(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the infinite repeat. */
 void ct_patlak_compiler_repeat_infinite(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the function call. */
 void ct_patlak_compiler_function_call(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index,
-    CTPatlakNode const* node)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index,
+    CTPatlakNode const*     node)
 {
 }
 
 /* Compile the object. */
 void ct_patlak_compiler_object(
-    CTPatlakCodes*      codes,
-    CTPatlakPatterns*   patterns,
-    CTPatlakTree const* tree,
-    CTIndex             index)
+    CTPatlakCodes*          codes,
+    CTPatlakPatterns const* patterns,
+    CTPatlakTree const*     tree,
+    CTIndex                 index)
 {
     CTPatlakNode const* node = ct_patlak_tree_get(tree, index);
     switch (node->object.type) {
