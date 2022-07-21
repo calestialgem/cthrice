@@ -26,7 +26,7 @@ typedef struct {
 /* Compile the pattern by searching for references in the context. */
 void ct_patlak_compile(CTPatlakContext* context, CTString const* pattern)
 {
-    CTPatlakTokens tokens = {0};
+    CTPatlakTokenList tokens = {0};
     ct_patlak_lexer(&tokens, *pattern);
 
     CTPatlakTree tree = {0};
@@ -35,7 +35,7 @@ void ct_patlak_compile(CTPatlakContext* context, CTString const* pattern)
     ct_patlak_compiler(&context->codes, &context->patterns, &tree);
 
     ct_patlak_tree_free(&tree);
-    ct_patlak_tokens_free(&tokens);
+    ct_patlak_token_list_free(&tokens);
 }
 
 /* Match the pattern with the name to the input. Returns the initial portion of

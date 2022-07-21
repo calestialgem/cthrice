@@ -457,7 +457,7 @@ void ct_patlak_parser_decleration(
 }
 
 /* Parse the tokens. */
-void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokens const* tokens)
+void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokenList const* tokens)
 {
     CTPatlakTreeBuilder  builder   = {.tree = tree};
     CTPatlakParserTokens remaining = {

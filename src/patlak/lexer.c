@@ -9,7 +9,7 @@
 #include "prelude/string.c"
 
 /* Try to lex a punctuation mark. */
-bool ct_patlak_lexer_mark(CTPatlakTokens* tokens, CTString* pattern)
+bool ct_patlak_lexer_mark(CTPatlakTokenList* tokens, CTString* pattern)
 {
     CTString const marks    = ct_string_terminated("=.|,?*+(){}[]");
     char const*    position = ct_string_first(&marks, ct_string_at(pattern, 0));
@@ -17,7 +17,7 @@ bool ct_patlak_lexer_mark(CTPatlakTokens* tokens, CTString* pattern)
         return false;
     }
     CTSplit split = ct_split(pattern, 1);
-    ct_patlak_tokens_add(
+    ct_patlak_token_list_add(
         tokens,
         (CTPatlakToken){
             .type  = CT_PATLAK_TOKEN_EQUAL + position - marks.first,
@@ -33,13 +33,13 @@ bool ct_patlak_lexer_not_number(char character)
 }
 
 /* Try to lex a number. */
-bool ct_patlak_lexer_number(CTPatlakTokens* tokens, CTString* pattern)
+bool ct_patlak_lexer_number(CTPatlakTokenList* tokens, CTString* pattern)
 {
     CTSplit split = ct_split_first_fit(pattern, &ct_patlak_lexer_not_number);
     if (!ct_string_finite(&split.before)) {
         return false;
     }
-    ct_patlak_tokens_add(
+    ct_patlak_token_list_add(
         tokens,
         (CTPatlakToken){.type = CT_PATLAK_TOKEN_NUMBER, .value = split.before});
     *pattern = split.after;
@@ -47,7 +47,7 @@ bool ct_patlak_lexer_number(CTPatlakTokens* tokens, CTString* pattern)
 }
 
 /* Try to lex a quote. */
-bool ct_patlak_lexer_quote(CTPatlakTokens* tokens, CTString* pattern)
+bool ct_patlak_lexer_quote(CTPatlakTokenList* tokens, CTString* pattern)
 {
     if (!ct_string_starts(pattern, '\'')) {
         return false;
@@ -69,7 +69,7 @@ bool ct_patlak_lexer_quote(CTPatlakTokens* tokens, CTString* pattern)
     CTSplit split = ct_split_position(pattern, end);
     ct_expect(ct_string_size(&split.before) > 2, "Quote is empty!");
     ct_expect(ct_string_finishes(&split.before, '\''), "No closing quote!");
-    ct_patlak_tokens_add(
+    ct_patlak_token_list_add(
         tokens,
         (CTPatlakToken){.type = CT_PATLAK_TOKEN_QUOTE, .value = split.before});
     *pattern = split.after;
@@ -84,14 +84,14 @@ bool ct_patlak_lexer_not_identifier(char character)
 }
 
 /* Try to lex a identifier. */
-bool ct_patlak_lexer_identifier(CTPatlakTokens* tokens, CTString* pattern)
+bool ct_patlak_lexer_identifier(CTPatlakTokenList* tokens, CTString* pattern)
 {
     CTSplit split =
         ct_split_first_fit(pattern, &ct_patlak_lexer_not_identifier);
     if (!ct_string_finite(&split.before)) {
         return false;
     }
-    ct_patlak_tokens_add(
+    ct_patlak_token_list_add(
         tokens,
         (CTPatlakToken){
             .type  = CT_PATLAK_TOKEN_IDENTIFIER,
@@ -108,17 +108,17 @@ bool ct_patlak_lexer_not_whitespace(char character)
 
 /* Lex away an unknown token. When unkown token appears, lex character by
  * character with -1 for unkown token type. */
-void ct_patlak_lexer_unkown(CTPatlakTokens* tokens, CTString* pattern)
+void ct_patlak_lexer_unkown(CTPatlakTokenList* tokens, CTString* pattern)
 {
     CTSplit split = ct_split(pattern, 1);
-    ct_patlak_tokens_add(
+    ct_patlak_token_list_add(
         tokens,
         (CTPatlakToken){.type = -1, .value = split.before});
     *pattern = split.after;
 }
 
 /* Lex the next token. */
-void ct_patlak_lexer_next(CTPatlakTokens* tokens, CTString* pattern)
+void ct_patlak_lexer_next(CTPatlakTokenList* tokens, CTString* pattern)
 {
     // Trim the whitespace at the begining.
     pattern->first =
@@ -139,7 +139,7 @@ void ct_patlak_lexer_next(CTPatlakTokens* tokens, CTString* pattern)
 }
 
 /* Lex the pattern and add its tokens to the list. */
-void ct_patlak_lexer(CTPatlakTokens* tokens, CTString pattern)
+void ct_patlak_lexer(CTPatlakTokenList* tokens, CTString pattern)
 {
     while (ct_string_finite(&pattern)) {
         ct_patlak_lexer_next(tokens, &pattern);

@@ -94,7 +94,7 @@ void ct_patlak_printer_token(CTPatlakToken const* token)
 }
 
 /* Print the tokens. */
-void ct_patlak_printer_tokens(CTPatlakTokens const* tokens)
+void ct_patlak_printer_tokens(CTPatlakTokenList const* tokens)
 {
     for (CTPatlakToken const* i = tokens->first; i < tokens->last; i++) {
         ct_patlak_printer_token(i);

@@ -62,52 +62,53 @@ typedef struct {
     CTPatlakToken* last;
     /* Border after the last allocated token. */
     CTPatlakToken* allocated;
-} CTPatlakTokens;
+} CTPatlakTokenList;
 
 /* Amount of tokens. */
-CTIndex ct_patlak_tokens_size(CTPatlakTokens const* tokens)
+CTIndex ct_patlak_tokens_list_size(CTPatlakTokenList const* tokens)
 {
     return tokens->last - tokens->first;
 }
 
 /* Amount of allocated tokens. */
-CTIndex ct_patlak_tokens_capacity(CTPatlakTokens const* tokens)
+CTIndex ct_patlak_token_list_capacity(CTPatlakTokenList const* tokens)
 {
     return tokens->allocated - tokens->first;
 }
 
 /* Amount of allocated but unused tokens. */
-CTIndex ct_patlak_tokens_space(CTPatlakTokens const* tokens)
+CTIndex ct_patlak_token_list_space(CTPatlakTokenList const* tokens)
 {
     return tokens->allocated - tokens->last;
 }
 
 /* Whether there are any tokens. */
-bool ct_patlak_tokens_finite(CTPatlakTokens const* tokens)
+bool ct_patlak_token_list_finite(CTPatlakTokenList const* tokens)
 {
-    return ct_patlak_tokens_size(tokens) > 0;
+    return ct_patlak_tokens_list_size(tokens) > 0;
 }
 
 /* Pointer to the token at the index. */
-CTPatlakToken* ct_patlak_tokens_get(CTPatlakTokens const* tokens, CTIndex index)
+CTPatlakToken*
+ct_patlak_token_list_get(CTPatlakTokenList const* tokens, CTIndex index)
 {
     ct_expect(
-        index >= 0 && index < ct_patlak_tokens_size(tokens),
+        index >= 0 && index < ct_patlak_tokens_list_size(tokens),
         "Index out of bounds!");
     return tokens->first + index;
 }
 
 /* Make sure the amount of tokens will fit. Grows by at least the half of
  * the current capacity if necessary. */
-void ct_patlak_tokens_reserve(CTPatlakTokens* tokens, CTIndex amount)
+void ct_patlak_token_list_reserve(CTPatlakTokenList* tokens, CTIndex amount)
 {
     ct_expect(amount >= 0, "Reserving negative amount!");
-    CTIndex growth = amount - ct_patlak_tokens_space(tokens);
+    CTIndex growth = amount - ct_patlak_token_list_space(tokens);
     if (growth <= 0) {
         return;
     }
 
-    CTIndex capacity      = ct_patlak_tokens_capacity(tokens);
+    CTIndex capacity      = ct_patlak_token_list_capacity(tokens);
     CTIndex half_capacity = capacity >> 1;
     if (growth < half_capacity) {
         growth = half_capacity;
@@ -118,26 +119,26 @@ void ct_patlak_tokens_reserve(CTPatlakTokens* tokens, CTIndex amount)
         realloc(tokens->first, new_capacity * sizeof(CTPatlakToken));
     ct_expect(memory != NULL, "Could not allocate!");
 
-    tokens->last      = memory + ct_patlak_tokens_size(tokens);
+    tokens->last      = memory + ct_patlak_tokens_list_size(tokens);
     tokens->first     = memory;
     tokens->allocated = memory + new_capacity;
 }
 
 /* Add to the end of tokens. */
-void ct_patlak_tokens_add(CTPatlakTokens* tokens, CTPatlakToken token)
+void ct_patlak_token_list_add(CTPatlakTokenList* tokens, CTPatlakToken token)
 {
-    ct_patlak_tokens_reserve(tokens, 1);
+    ct_patlak_token_list_reserve(tokens, 1);
     *tokens->last++ = token;
 }
 
 /* Remove the tokens. Keeps the memory. */
-void ct_patlak_tokens_clear(CTPatlakTokens* tokens)
+void ct_patlak_token_list_clear(CTPatlakTokenList* tokens)
 {
     tokens->last = tokens->first;
 }
 
 /* Deallocate memory. */
-void ct_patlak_tokens_free(CTPatlakTokens* tokens)
+void ct_patlak_token_list_free(CTPatlakTokenList* tokens)
 {
     free(tokens->first);
     tokens->first     = NULL;
