@@ -54,21 +54,21 @@ int main(int argument_count, char const* const* arguments)
     //     ct_compile(arguments[i]);
     // }
 
-#define PATTERNS_LENGTH 5
+#define PATTERNS_LENGTH 6
     CTString patterns[PATTERNS_LENGTH] = {
         ct_string_terminated("pata = 'pata'"),
         ct_string_terminated("pete = 'pete'"),
         ct_string_terminated("OR = 'pata' | 'pete' | 'piti'"),
         ct_string_terminated("fixed = 5'a'"),
+        ct_string_terminated("ranged = [4,7]'ab'"),
         ct_string_terminated("patapete = +{pata} *{pete} ?'!'")};
 
     CTPatlakContext context = {0};
 
     for (int i = 0; i < PATTERNS_LENGTH; i++) {
         ct_patlak_compile(&context, patterns + i);
-        ct_patlak_printer_codes(&context.codes);
-        printf("\n");
     }
+    ct_patlak_printer_codes(&context.codes);
 
     CTString name  = ct_string_terminated("pata");
     CTString input = ct_string_terminated("pata");

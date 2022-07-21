@@ -87,21 +87,17 @@ void ct_patlak_compiler_or(
         (CTPatlakCode){
             .type     = CT_PATLAK_CODE_BRANCH,
             .branches = node->childeren});
-
+    CTIndex branchStart = ct_patlak_codes_size(codes);
     for (CTIndex i = 0; i < node->childeren; i++) {
         ct_patlak_codes_add(
             codes,
-            (CTPatlakCode){
-                .movement = node->childeren - i,
-                .type     = CT_PATLAK_CODE_EMPTY});
+            (CTPatlakCode){.type = CT_PATLAK_CODE_EMPTY});
     }
-
     for (CTIndex i = 0; i < node->childeren; i++) {
-        // Compile the branch and skip the size of the branch.
         CTIndex start = ct_patlak_codes_size(codes);
         ct_patlak_compiler_object(codes, patterns, tree, index + 1 + i);
-        ct_patlak_codes_get(codes, start - 1)->movement +=
-            ct_patlak_codes_size(codes) - start;
+        CTIndex branch                               = branchStart + i;
+        ct_patlak_codes_get(codes, branch)->movement = start - branch;
     }
 }
 
@@ -132,8 +128,16 @@ void ct_patlak_compiler_repeat_fixed(
         &inside,
         CT_PATLAK_TOKEN_OPENING_SQUARE_BRACKET,
         CT_PATLAK_TOKEN_CLOSING_SQUARE_BRACKET);
-    CTString           joined = ct_patlak_tokens_join(&inside);
-    unsigned long long number = ct_string_parse(&joined);
+    ct_expect(
+        ct_patlak_tokens_size(&inside) > 0,
+        "No tokens in the fixed repeat!");
+    ct_expect(
+        ct_patlak_tokens_size(&inside) == 1,
+        "Too many tokens in the fixed repeat!");
+    ct_expect(
+        ct_patlak_tokens_starts(&inside, CT_PATLAK_TOKEN_NUMBER),
+        "Expected a number in the fixed repeat!");
+    unsigned long long number = ct_string_parse(&inside.first->value);
     for (unsigned long long i = 0; i < number; i++) {
         ct_patlak_compiler_object(codes, patterns, tree, index + 1);
     }
@@ -147,6 +151,78 @@ void ct_patlak_compiler_repeat_range(
     CTIndex                 index,
     CTPatlakNode const*     node)
 {
+    // Remove brackets.
+    CTPatlakTokens inside = node->object.value;
+    ct_patlak_tokens_unwrap(
+        &inside,
+        CT_PATLAK_TOKEN_OPENING_SQUARE_BRACKET,
+        CT_PATLAK_TOKEN_CLOSING_SQUARE_BRACKET);
+    ct_expect(
+        ct_patlak_tokens_size(&inside) > 0,
+        "No tokens in the ranged repeat!");
+    CTIndex lower = 0;
+    CTIndex upper = 1;
+    switch (ct_patlak_tokens_first(&inside))
+    case CT_PATLAK_TOKEN_NUMBER: {
+        ct_expect(
+            ct_patlak_tokens_size(&inside) == 3,
+            "Expected two more tokens after number in the ranged repeat!");
+        ct_expect(
+            ct_patlak_tokens_type(&inside, 1),
+            "Expected a comma between numbers in the ranged repeat!");
+        ct_expect(
+            ct_patlak_tokens_type(&inside, 2),
+            "Expected a number after comma in the ranged repeat!");
+        lower = (CTIndex)ct_string_parse(&inside.first[0].value);
+        upper = (CTIndex)ct_string_parse(&inside.first[2].value);
+        break;
+
+        case CT_PATLAK_TOKEN_COMMA:
+            ct_expect(
+                ct_patlak_tokens_size(&inside) == 2,
+                "Expected one more token after comma in the ranged repeat!");
+            ct_expect(
+                ct_patlak_tokens_type(&inside, 1),
+                "Expected a number after comma in the ranged repeat!");
+            upper = (CTIndex)ct_string_parse(&inside.first[1].value);
+            break;
+
+        case CT_PATLAK_TOKEN_QUESTION_MARK:
+            ct_expect(
+                ct_patlak_tokens_size(&inside) == 1,
+                "Expected no more tokens after question mark in the ranged "
+                "repeat!");
+            break;
+
+        default:
+            ct_unexpected("Unexpected token in the ranged repeat!");
+    }
+        for (CTIndex i = 0; i < lower; i++) {
+            ct_patlak_compiler_object(codes, patterns, tree, index + 1);
+        }
+    CTIndex window = upper - lower;
+    ct_expect(
+        window > 0,
+        "Upper bound must be bigger than the lower bound in the ranged "
+        "repeat!");
+    ct_patlak_codes_add(
+        codes,
+        (CTPatlakCode){.type = CT_PATLAK_CODE_BRANCH, .branches = window + 1});
+    CTIndex branchStart = ct_patlak_codes_size(codes);
+    for (CTIndex i = 0; i <= window; i++) {
+        ct_patlak_codes_add(
+            codes,
+            (CTPatlakCode){.type = CT_PATLAK_CODE_EMPTY});
+    }
+    for (CTIndex i = 0; i < window; i++) {
+        CTIndex start = ct_patlak_codes_size(codes);
+        ct_patlak_compiler_object(codes, patterns, tree, index + 1);
+        CTIndex branch                               = branchStart + i;
+        ct_patlak_codes_get(codes, branch)->movement = start - branch;
+    }
+    CTIndex start                                = ct_patlak_codes_size(codes);
+    CTIndex branch                               = branchStart + window;
+    ct_patlak_codes_get(codes, branch)->movement = start - branch;
 }
 
 /* Compile the infinite repeat. */
