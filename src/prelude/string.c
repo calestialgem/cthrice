@@ -135,3 +135,15 @@ unsigned long long ct_string_parse(CTString const* string)
     }
     return result;
 }
+
+/* Remove the characters from the ends if they exist. */
+void ct_patlak_string_unwrap(CTString* string, char opening, char closing)
+{
+    bool starts   = ct_string_starts(string, opening);
+    bool finishes = ct_string_finishes(string, closing);
+    ct_expect(starts == finishes, "Characters at the ends do not match up!");
+    if (starts) {
+        string->first++;
+        string->last--;
+    }
+}

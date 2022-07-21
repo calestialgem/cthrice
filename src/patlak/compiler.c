@@ -43,9 +43,10 @@ void ct_patlak_compiler_character(
 /* Compile the string literal. */
 void ct_patlak_compiler_string(CTPatlakCodes* codes, CTPatlakNode const* node)
 {
-    for (char const* i = node->object.value.first + 1;
-         i < node->object.value.last - 1;
-         i++) {
+    CTPatlakTokens inside = node->object.value;
+    CTString       joined = ct_patlak_tokens_join(&inside);
+    ct_patlak_string_unwrap(&joined, '\'', '\'');
+    for (char const* i = joined.first; i < joined.last; i++) {
         ct_patlak_codes_add(
             codes,
             (CTPatlakCode){
@@ -126,12 +127,13 @@ void ct_patlak_compiler_repeat_fixed(
     CTPatlakNode const*     node)
 {
     // Remove brackets.
-    CTString inside = node->object.value;
-    if (ct_string_starts(&inside, '[')) {
-        inside.first++;
-        inside.last--;
-    }
-    unsigned long long number = ct_string_parse(&inside);
+    CTPatlakTokens inside = node->object.value;
+    ct_patlak_tokens_unwrap(
+        &inside,
+        CT_PATLAK_TOKEN_OPENING_SQUARE_BRACKET,
+        CT_PATLAK_TOKEN_CLOSING_SQUARE_BRACKET);
+    CTString           joined = ct_patlak_tokens_join(&inside);
+    unsigned long long number = ct_string_parse(&joined);
     for (unsigned long long i = 0; i < number; i++) {
         ct_patlak_compiler_object(codes, patterns, tree, index + 1);
     }
@@ -251,5 +253,8 @@ void ct_patlak_compiler(
         (CTPatlakCode){.movement = 0, .type = CT_PATLAK_CODE_TERMINAL});
 
     // Put the pattern to the hashmap.
-    ct_patlak_patterns_add(patterns, &tree->first[1].object.value, start);
+    ct_patlak_patterns_add(
+        patterns,
+        &tree->first[1].object.value.first->value,
+        start);
 }

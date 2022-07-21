@@ -133,10 +133,11 @@ char const* ct_patlak_printer_object_type(CTPatlakObjectType type)
 /* Print the object. */
 void ct_patlak_printer_object(CTPatlakObject const* object)
 {
+    CTString value = ct_patlak_tokens_join(&object->value);
     printf(
         ct_patlak_printer_object_type(object->type),
-        (int)ct_string_size(&object->value),
-        object->value.first);
+        (int)ct_string_size(&value),
+        value.first);
 }
 
 /* Print the object tree linearly. */

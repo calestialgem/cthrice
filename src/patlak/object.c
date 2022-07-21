@@ -43,8 +43,8 @@ typedef enum {
 typedef struct {
     /* Type. */
     CTPatlakObjectType type;
-    /* Value. */
-    CTString value;
+    /* Tokens that make up the object. */
+    CTPatlakTokens value;
 } CTPatlakObject;
 
 /* Hierachical representation of an object in the pattern source string with its

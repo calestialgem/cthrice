@@ -52,11 +52,9 @@ CTPatlakObject ct_patlak_parser_prefix(
     CTPatlakObjectType type,
     CTIndex            amount)
 {
-    CTString value = ct_patlak_tokens_next(tokens);
-    for (CTIndex i = 1; i < amount; i++) {
-        value.last = ct_patlak_tokens_next(tokens).last;
-    }
-    return (CTPatlakObject){.type = type, .value = value};
+    return (CTPatlakObject){
+        .type  = type,
+        .value = ct_patlak_tokens_nexts(tokens, amount)};
 }
 
 /* Create a repeat with one token in or without the square brackets. */
@@ -271,10 +269,7 @@ void ct_patlak_parser_afterwards(
                         builder,
                         (CTPatlakObject){
                             .type  = CT_PATLAK_OBJECT_GROUP,
-                            .value = {
-                                      .first = argument.first->value.first,
-                                      .last  = (argument.last - 1)->value.last}
-                    });
+                            .value = argument});
                     ct_patlak_parser_units(builder, &argument);
                 }
                 ct_patlak_builder_pop(builder);
@@ -306,7 +301,7 @@ void ct_patlak_parser_unit(CTPatlakTreeBuilder* builder, CTPatlakTokens* tokens)
                 tokens,
                 CT_PATLAK_TOKEN_OPENING_CURLY_BRACKET,
                 CT_PATLAK_TOKEN_CLOSING_CURLY_BRACKET);
-            firstObject.value.last = inside.last->value.last;
+            firstObject.value.last = inside.last;
             ct_patlak_builder_add(builder, firstObject);
             ct_patlak_parser_units(builder, &inside);
             return;
@@ -419,12 +414,7 @@ void ct_patlak_parser(CTPatlakTree* tree, CTPatlakTokenList const* tokens)
     // Parse all the units into an implicit group.
     ct_patlak_builder_add(
         &builder,
-        (CTPatlakObject){
-            .type  = CT_PATLAK_OBJECT_GROUP,
-            .value = {
-                      .first = remaining.first->value.first,
-                      .last  = remaining.last->value.last}
-    });
+        (CTPatlakObject){.type = CT_PATLAK_OBJECT_GROUP, .value = remaining});
     ct_patlak_parser_units(&builder, &remaining);
     ct_patlak_builder_free(&builder);
 }

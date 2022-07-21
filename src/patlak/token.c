@@ -4,8 +4,10 @@
 #pragma once
 
 #include "prelude/expect.c"
+#include "prelude/scalar.c"
 #include "prelude/string.c"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 /* Type of a token in patterns. */
@@ -179,6 +181,12 @@ CTPatlakTokenType ct_patlak_tokens_first(CTPatlakTokens const* tokens)
     return ct_patlak_tokens_type(tokens, 0);
 }
 
+/* Type of the last token. */
+CTPatlakTokenType ct_patlak_tokens_last(CTPatlakTokens const* tokens)
+{
+    return (tokens->last - 1)->type;
+}
+
 /* Whether the next token is of the given type. */
 bool ct_patlak_tokens_starts(
     CTPatlakTokens const* tokens,
@@ -187,8 +195,49 @@ bool ct_patlak_tokens_starts(
     return ct_patlak_tokens_first(tokens) == type;
 }
 
-/* Consume the next token and return its value. */
-CTString ct_patlak_tokens_next(CTPatlakTokens* tokens)
+/* Whether the last token is of the given type. */
+bool ct_patlak_tokens_finishes(
+    CTPatlakTokens const* tokens,
+    CTPatlakTokenType     type)
 {
-    return tokens->first++->value;
+    return ct_patlak_tokens_last(tokens) == type;
+}
+
+/* Return the total string created by joining all the tokens. */
+CTString ct_patlak_tokens_join(CTPatlakTokens const* tokens)
+{
+    return (CTString){
+        .first = tokens->first->value.first,
+        .last  = (tokens->last - 1)->value.last};
+}
+
+/* Consume the given amount of next tokens and return them. */
+CTPatlakTokens ct_patlak_tokens_nexts(CTPatlakTokens* tokens, CTIndex amount)
+{
+    CTPatlakTokens result = {
+        .first = tokens->first,
+        .last  = tokens->first + amount};
+    tokens->first = result.last;
+    return result;
+}
+
+/* Consume the next token and return it as view. */
+CTPatlakTokens ct_patlak_tokens_next(CTPatlakTokens* tokens)
+{
+    return ct_patlak_tokens_nexts(tokens, 1);
+}
+
+/* Remove the brackets from the ends if they exist. */
+void ct_patlak_tokens_unwrap(
+    CTPatlakTokens*   tokens,
+    CTPatlakTokenType opening,
+    CTPatlakTokenType closing)
+{
+    bool starts   = ct_patlak_tokens_starts(tokens, opening);
+    bool finishes = ct_patlak_tokens_finishes(tokens, closing);
+    ct_expect(starts == finishes, "Brackets at the ends do not match up!");
+    if (starts) {
+        tokens->first++;
+        tokens->last--;
+    }
 }
