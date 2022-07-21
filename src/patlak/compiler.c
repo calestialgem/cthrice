@@ -168,10 +168,10 @@ void ct_patlak_compiler_repeat_range(
             ct_patlak_tokens_size(&inside) == 3,
             "Expected two more tokens after number in the ranged repeat!");
         ct_expect(
-            ct_patlak_tokens_type(&inside, 1),
+            ct_patlak_tokens_type(&inside, 1) == CT_PATLAK_TOKEN_COMMA,
             "Expected a comma between numbers in the ranged repeat!");
         ct_expect(
-            ct_patlak_tokens_type(&inside, 2),
+            ct_patlak_tokens_type(&inside, 2) == CT_PATLAK_TOKEN_NUMBER,
             "Expected a number after comma in the ranged repeat!");
         lower = (CTIndex)ct_string_parse(&inside.first[0].value);
         upper = (CTIndex)ct_string_parse(&inside.first[2].value);
@@ -182,7 +182,7 @@ void ct_patlak_compiler_repeat_range(
                 ct_patlak_tokens_size(&inside) == 2,
                 "Expected one more token after comma in the ranged repeat!");
             ct_expect(
-                ct_patlak_tokens_type(&inside, 1),
+                ct_patlak_tokens_type(&inside, 1) == CT_PATLAK_TOKEN_NUMBER,
                 "Expected a number after comma in the ranged repeat!");
             upper = (CTIndex)ct_string_parse(&inside.first[1].value);
             break;
