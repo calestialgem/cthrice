@@ -87,6 +87,9 @@ void ct_patlak_compiler_group(
     CTIndex                 index,
     CTPatlakNode const*     node)
 {
+    for (CTIndex i = 0; i < node->childeren; i++) {
+        ct_patlak_compiler_object(codes, patterns, tree, index + 1 + i);
+    }
 }
 
 /* Compile the fixed repeat. */
