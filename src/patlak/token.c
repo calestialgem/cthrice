@@ -145,3 +145,50 @@ void ct_patlak_token_list_free(CTPatlakTokenList* tokens)
     tokens->last      = NULL;
     tokens->allocated = NULL;
 }
+
+/* Immutable view of tokens. */
+typedef struct {
+    /* Border before the first token. */
+    CTPatlakToken const* first;
+    /* Border after the last token. */
+    CTPatlakToken const* last;
+} CTPatlakTokens;
+
+/* Amount of tokens. */
+CTIndex ct_patlak_tokens_size(CTPatlakTokens const* tokens)
+{
+    return tokens->last - tokens->first;
+}
+
+/* Whether there are any tokens. */
+bool ct_patlak_tokens_finite(CTPatlakTokens const* tokens)
+{
+    return ct_patlak_tokens_size(tokens) > 0;
+}
+
+/* Type of the token after the next one by the given amount. */
+CTPatlakTokenType
+ct_patlak_tokens_type(CTPatlakTokens const* tokens, CTIndex amount)
+{
+    return tokens->first[amount].type;
+}
+
+/* Type of the next token. */
+CTPatlakTokenType ct_patlak_tokens_first(CTPatlakTokens const* tokens)
+{
+    return ct_patlak_tokens_type(tokens, 0);
+}
+
+/* Whether the next token is of the given type. */
+bool ct_patlak_tokens_starts(
+    CTPatlakTokens const* tokens,
+    CTPatlakTokenType     type)
+{
+    return ct_patlak_tokens_first(tokens) == type;
+}
+
+/* Consume the next token and return its value. */
+CTString ct_patlak_tokens_next(CTPatlakTokens* tokens)
+{
+    return tokens->first++->value;
+}
