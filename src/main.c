@@ -54,15 +54,11 @@ int main(int argument_count, char const* const* arguments)
     //     ct_compile(arguments[i]);
     // }
 
-#define PATTERNS_LENGTH 4
+#define PATTERNS_LENGTH 3
     CTString patterns[PATTERNS_LENGTH] = {
-        ct_string_terminated("pata(a,b)=?{a|b} b(a)"),
-        ct_string_terminated("kok = ?'kok' ?pata('k', o)"),
-        ct_string_terminated("weird(thing) = ?thing('weird')"),
-        ct_string_terminated(
-            "int(digits, separator) = ?{'+'|'-'} number(+digits *{separator "
-            "+digits} some_function('0~9'), another_argument)"),
-    };
+        ct_string_terminated("pata = 'pata'"),
+        ct_string_terminated("pete = 'pete'"),
+        ct_string_terminated("patapete = +{pata} *{pete} ?'!'")};
 
     CTPatlakContext context = {0};
 
