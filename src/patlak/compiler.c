@@ -65,13 +65,11 @@ void ct_patlak_compiler_range(
 }
 
 /* Compile the wildcard literal. */
-void ct_patlak_compiler_wildcard(
-    CTPatlakCodes*          codes,
-    CTPatlakPatterns const* patterns,
-    CTPatlakTree const*     tree,
-    CTIndex                 index,
-    CTPatlakNode const*     node)
+void ct_patlak_compiler_wildcard(CTPatlakCodes* codes)
 {
+    ct_patlak_codes_add(
+        codes,
+        (CTPatlakCode){.movement = 1, .type = CT_PATLAK_CODE_EMPTY});
 }
 
 /* Compile the OR binary operator. */
@@ -159,7 +157,7 @@ void ct_patlak_compiler_object(
             ct_patlak_compiler_range(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_WILDCARD:
-            ct_patlak_compiler_wildcard(codes, patterns, tree, index, node);
+            ct_patlak_compiler_wildcard(codes);
             return;
         case CT_PATLAK_OBJECT_OR:
             ct_patlak_compiler_or(codes, patterns, tree, index, node);
