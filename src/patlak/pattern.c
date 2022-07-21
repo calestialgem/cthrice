@@ -127,17 +127,23 @@ ct_patlak_patterns_get(CTPatlakPatterns const* patterns, CTString const* name)
 /* Maximum allowed amount of keys whose hashes give the same index after
  * modulus operation. Decreases the speed of the hashmap, but also
  * the memory usage. */
-#define PATLAK_PATTERNS_MAX_COLLISION 4
+#define PATLAK_PATTERNS_MAX_COLLISION 1
 
 /* Whether the map should be rehashed to fit the maximum collision
  * restriction. */
 bool ct_patlak_patterns_need_rehash(CTPatlakPatterns const* map)
 {
-    for (CTIndex i = 0; i < ct_patlak_patterns_indicies_size(map); i++) {
+    CTIndex indicies    = ct_patlak_patterns_indicies_size(map);
+    CTIndex information = ct_patlak_patterns_information_size(map);
+    for (CTIndex i = 0; i < indicies; i++) {
         CTPatlakPatternRange range = ct_patlak_patterns_range(map, i);
-        if (ct_patlak_patterns_range_size(&range) >
-            PATLAK_PATTERNS_MAX_COLLISION) {
+        CTIndex              size  = ct_patlak_patterns_range_size(&range);
+        if (size > PATLAK_PATTERNS_MAX_COLLISION) {
             return true;
+        }
+        information -= size;
+        if (information <= PATLAK_PATTERNS_MAX_COLLISION) {
+            break;
         }
     }
     return false;
@@ -159,10 +165,18 @@ void ct_patlak_patterns_grow_indicies(CTPatlakPatterns* patterns)
     patterns->indicies.last  = memory + new_size;
 }
 
+// For taking modulus of hashes when sorting.
+static CTIndex ct_patlak_patterns_size;
+
 /* Compare pattern information. */
 int ct_patlak_patterns_information_compare(void const* lhs, void const* rhs)
 {
-    return (int)(ct_string_hash(lhs) - ct_string_hash(rhs));
+    unsigned long long leftHash =
+        ct_string_hash(&((CTPatlakPattern*)lhs)->name);
+    unsigned long long rightHash =
+        ct_string_hash(&((CTPatlakPattern*)rhs)->name);
+    return (
+        int)(leftHash % ct_patlak_patterns_size - rightHash % ct_patlak_patterns_size);
 }
 
 /* Recalculate indicies. */
@@ -192,6 +206,7 @@ void ct_patlak_patterns_rehash(CTPatlakPatterns* patterns)
         ct_patlak_patterns_grow_indicies(patterns);
 
         // Sort the pairs by hash.
+        ct_patlak_patterns_size = ct_patlak_patterns_indicies_size(patterns);
         qsort(
             patterns->information.first,
             ct_patlak_patterns_information_size(patterns),
@@ -253,9 +268,9 @@ void ct_patlak_patterns_information_put(
 {
     ct_patlak_patterns_information_reserve(patterns, 1);
     CTPatlakPattern* position = patterns->information.first + index;
-    CTIndex          size     = patterns->information.last++ - position;
-    if (size != 0) {
-        memmove(position + 1, position, size);
+    // Memmove does not work for some reason!
+    for (CTPatlakPattern* i = patterns->information.last++; i > position; i--) {
+        *i = *(i - 1);
     }
     *position = pattern;
 }
@@ -280,8 +295,7 @@ void ct_patlak_patterns_add(
     CTIndex         indicies = ct_patlak_patterns_indicies_size(patterns);
 
     // If it would not create too many collisions.
-    if (ct_patlak_patterns_range_size(&range) <=
-            PATLAK_PATTERNS_MAX_COLLISION &&
+    if (ct_patlak_patterns_range_size(&range) < PATLAK_PATTERNS_MAX_COLLISION &&
         indicies != 0) {
         ct_patlak_patterns_information_put(
             patterns,
