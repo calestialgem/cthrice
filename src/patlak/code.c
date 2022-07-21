@@ -113,6 +113,13 @@ void ct_patlak_codes_reserve(CTPatlakCodes* codes, CTIndex amount)
     codes->allocated = memory + new_capacity;
 }
 
+/* Add the code to the end. */
+void ct_patlak_codes_add(CTPatlakCodes* codes, CTPatlakCode code)
+{
+    ct_patlak_codes_reserve(codes, 1);
+    *codes->last++ = code;
+}
+
 /* Deallocate memory. */
 void ct_patlak_codes_free(CTPatlakCodes* codes)
 {
