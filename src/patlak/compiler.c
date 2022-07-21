@@ -47,6 +47,16 @@ void ct_patlak_compiler_string(
     CTIndex                 index,
     CTPatlakNode const*     node)
 {
+    for (char const* i = node->object.value.first + 1;
+         i < node->object.value.last - 1;
+         i++) {
+        ct_patlak_codes_add(
+            codes,
+            (CTPatlakCode){
+                .movement = 1,
+                .type     = CT_PATLAK_CODE_LITERAL,
+                .literal  = *i});
+    }
 }
 
 /* Compile the character range literal. */
