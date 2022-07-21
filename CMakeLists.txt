@@ -34,6 +34,7 @@ add_library(headers OBJECT
 
     src/patlak/builder.c
     src/patlak/code.c
+    src/patlak/compiler.c
     src/patlak/context.c
     src/patlak/decode.c
     src/patlak/lexer.c
