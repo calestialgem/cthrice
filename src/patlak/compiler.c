@@ -40,12 +40,7 @@ void ct_patlak_compiler_character(
 }
 
 /* Compile the string literal. */
-void ct_patlak_compiler_string(
-    CTPatlakCodes*          codes,
-    CTPatlakPatterns const* patterns,
-    CTPatlakTree const*     tree,
-    CTIndex                 index,
-    CTPatlakNode const*     node)
+void ct_patlak_compiler_string(CTPatlakCodes* codes, CTPatlakNode const* node)
 {
     for (char const* i = node->object.value.first + 1;
          i < node->object.value.last - 1;
@@ -158,7 +153,7 @@ void ct_patlak_compiler_object(
             ct_patlak_compiler_character(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_STRING:
-            ct_patlak_compiler_string(codes, patterns, tree, index, node);
+            ct_patlak_compiler_string(codes, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_RANGE:
             ct_patlak_compiler_range(codes, patterns, tree, index, node);
