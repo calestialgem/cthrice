@@ -19,146 +19,167 @@ void ct_patlak_compiler_object(
     CTPatlakTree const* tree,
     CTIndex             index);
 
-/* Compile the reference literal at the index. */
+/* Compile the reference literal. */
 void ct_patlak_compiler_reference(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the character literal at the index. */
+/* Compile the character literal. */
 void ct_patlak_compiler_character(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the string literal at the index. */
+/* Compile the string literal. */
 void ct_patlak_compiler_string(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the character range literal at the index. */
+/* Compile the character range literal. */
 void ct_patlak_compiler_range(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the wildcard literal at the index. */
+/* Compile the wildcard literal. */
 void ct_patlak_compiler_wildcard(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the OR binary operator at the index. */
+/* Compile the OR binary operator. */
 void ct_patlak_compiler_or(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the group at the index. */
+/* Compile the group. */
 void ct_patlak_compiler_group(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the fixed repeat at the index. */
+/* Compile the fixed repeat. */
 void ct_patlak_compiler_repeat_fixed(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the ranged repeat at the index. */
+/* Compile the ranged repeat. */
 void ct_patlak_compiler_repeat_range(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the infinite repeat at the index. */
+/* Compile the infinite repeat. */
 void ct_patlak_compiler_repeat_infinite(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the function call at the index. */
+/* Compile the function call. */
 void ct_patlak_compiler_function_call(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
-    CTIndex             index)
+    CTIndex             index,
+    CTPatlakNode const* node)
 {
 }
 
-/* Compile the object at the index. */
+/* Compile the object. */
 void ct_patlak_compiler_object(
     CTPatlakCodes*      codes,
     CTPatlakPatterns*   patterns,
     CTPatlakTree const* tree,
     CTIndex             index)
 {
-    CTPatlakNode* node = ct_patlak_tree_get(tree, index);
+    CTPatlakNode const* node = ct_patlak_tree_get(tree, index);
     switch (node->object.type) {
         case CT_PATLAK_OBJECT_LITERAL_REFERENCE:
-            ct_patlak_compiler_reference(codes, patterns, tree, index);
+            ct_patlak_compiler_reference(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_CHARACTER:
-            ct_patlak_compiler_character(codes, patterns, tree, index);
+            ct_patlak_compiler_character(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_STRING:
-            ct_patlak_compiler_string(codes, patterns, tree, index);
+            ct_patlak_compiler_string(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_RANGE:
-            ct_patlak_compiler_range(codes, patterns, tree, index);
+            ct_patlak_compiler_range(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_LITERAL_WILDCARD:
-            ct_patlak_compiler_wildcard(codes, patterns, tree, index);
+            ct_patlak_compiler_wildcard(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_OR:
-            ct_patlak_compiler_or(codes, patterns, tree, index);
+            ct_patlak_compiler_or(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_GROUP:
-            ct_patlak_compiler_group(codes, patterns, tree, index);
+            ct_patlak_compiler_group(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_REPEAT_FIXED:
-            ct_patlak_compiler_repeat_fixed(codes, patterns, tree, index);
+            ct_patlak_compiler_repeat_fixed(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_REPEAT_RANGE:
-            ct_patlak_compiler_repeat_range(codes, patterns, tree, index);
+            ct_patlak_compiler_repeat_range(codes, patterns, tree, index, node);
             return;
         case CT_PATLAK_OBJECT_REPEAT_INFINITE:
-            ct_patlak_compiler_repeat_infinite(codes, patterns, tree, index);
+            ct_patlak_compiler_repeat_infinite(
+                codes,
+                patterns,
+                tree,
+                index,
+                node);
             return;
         case CT_PATLAK_OBJECT_FUNCTION_CALL:
-            ct_patlak_compiler_function_call(codes, patterns, tree, index);
+            ct_patlak_compiler_function_call(
+                codes,
+                patterns,
+                tree,
+                index,
+                node);
             return;
         default:
             break;
