@@ -4,9 +4,14 @@
 #pragma once
 
 #include "patlak/code.c"
+#include "patlak/compiler.c"
 #include "patlak/decode.c"
+#include "patlak/lexer.c"
+#include "patlak/object.c"
+#include "patlak/parser.c"
 #include "patlak/pattern.c"
 #include "patlak/state.c"
+#include "patlak/token.c"
 #include "prelude/scalar.c"
 #include "prelude/string.c"
 
@@ -19,7 +24,19 @@ typedef struct {
 } CTPatlakContext;
 
 /* Compile the pattern by searching for references in the context. */
-void ct_patlak_compile(CTPatlakContext* context, CTString const* pattern) {}
+void ct_patlak_compile(CTPatlakContext* context, CTString const* pattern)
+{
+    CTPatlakTokens tokens = {0};
+    ct_patlak_lexer(&tokens, *pattern);
+
+    CTPatlakTree tree = {0};
+    ct_patlak_parser(&tree, &tokens);
+
+    ct_patlak_compiler(&context->codes, &context->patterns, &tree);
+
+    ct_patlak_tree_free(&tree);
+    ct_patlak_tokens_free(&tokens);
+}
 
 /* Match the pattern with the name to the input. Returns the initial portion of
  * the input that matched. Matches are checked from the begining. Empty match
