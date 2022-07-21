@@ -80,6 +80,27 @@ void ct_patlak_compiler_or(
     CTIndex                 index,
     CTPatlakNode const*     node)
 {
+    ct_patlak_codes_add(
+        codes,
+        (CTPatlakCode){
+            .type     = CT_PATLAK_CODE_BRANCH,
+            .branches = node->childeren});
+
+    for (CTIndex i = 0; i < node->childeren; i++) {
+        ct_patlak_codes_add(
+            codes,
+            (CTPatlakCode){
+                .movement = node->childeren - i,
+                .type     = CT_PATLAK_CODE_EMPTY});
+    }
+
+    for (CTIndex i = 0; i < node->childeren; i++) {
+        // Compile the branch and skip the size of the branch.
+        CTIndex start = ct_patlak_codes_size(codes);
+        ct_patlak_compiler_object(codes, patterns, tree, index + 1 + i);
+        ct_patlak_codes_get(codes, start - 1)->movement +=
+            ct_patlak_codes_size(codes) - start;
+    }
 }
 
 /* Compile the group. */
