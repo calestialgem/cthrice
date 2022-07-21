@@ -54,14 +54,15 @@ int main(int argument_count, char const* const* arguments)
     //     ct_compile(arguments[i]);
     // }
 
-#define PATTERNS_LENGTH 6
+#define PATTERNS_LENGTH 7
     CTString patterns[PATTERNS_LENGTH] = {
         ct_string_terminated("pata = 'pata'"),
         ct_string_terminated("pete = 'pete'"),
         ct_string_terminated("OR = 'pata' | 'pete' | 'piti'"),
         ct_string_terminated("fixed = 5'a'"),
         ct_string_terminated("ranged = [4,7]'ab'"),
-        ct_string_terminated("patapete = +{pata} *{pete} ?'!'")};
+        ct_string_terminated("infinite = *'ab'"),
+        ct_string_terminated("patapete = +{'pata'} *{'pete'} ?'!'")};
 
     CTPatlakContext context = {0};
 
