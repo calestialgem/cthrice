@@ -248,11 +248,12 @@ void ct_patlak_patterns_information_reserve(
 /* Put the pattern information to the position. */
 void ct_patlak_patterns_information_put(
     CTPatlakPatterns* patterns,
-    CTPatlakPattern*  position,
+    CTIndex           index,
     CTPatlakPattern   pattern)
 {
     ct_patlak_patterns_information_reserve(patterns, 1);
-    CTIndex size = patterns->information.last++ - position;
+    CTPatlakPattern* position = patterns->information.first + index;
+    CTIndex          size     = patterns->information.last++ - position;
     if (size != 0) {
         memmove(position + 1, position, size);
     }
@@ -282,7 +283,10 @@ void ct_patlak_patterns_add(
     if (ct_patlak_patterns_range_size(&range) <=
             PATLAK_PATTERNS_MAX_COLLISION &&
         indicies != 0) {
-        ct_patlak_patterns_information_put(patterns, range.last, pattern);
+        ct_patlak_patterns_information_put(
+            patterns,
+            range.last - patterns->information.first,
+            pattern);
 
         // Increase indicies.
         for (CTIndex* i = patterns->indicies.first + hash % indicies + 1;
@@ -294,7 +298,7 @@ void ct_patlak_patterns_add(
         // Just add to the end; rehash will handle the rest.
         ct_patlak_patterns_information_put(
             patterns,
-            patterns->information.last,
+            ct_patlak_patterns_information_size(patterns),
             pattern);
         ct_patlak_patterns_rehash(patterns);
     }

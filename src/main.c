@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: 2022 Cem Geçgel <gecgelcem@outlook.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "patlak/builder.c"
-#include "patlak/lexer.c"
-#include "patlak/object.c"
-#include "patlak/parser.c"
+#include "patlak/context.c"
 #include "patlak/printer.c"
-#include "patlak/token.c"
 #include "prelude/buffer.c"
 #include "prelude/expect.c"
 #include "prelude/file.c"
@@ -68,21 +64,15 @@ int main(int argument_count, char const* const* arguments)
             "+digits} some_function('0~9'), another_argument)"),
     };
 
-    CTPatlakTokens tokens = {0};
-    CTPatlakTree   tree   = {0};
+    CTPatlakContext context = {0};
 
     for (int i = 0; i < PATTERNS_LENGTH; i++) {
-        ct_patlak_tokens_clear(&tokens);
-        ct_patlak_tree_clear(&tree);
-        ct_patlak_lexer(&tokens, patterns[i]);
-        ct_patlak_printer_tokens(&tokens);
-        ct_patlak_parser(&tree, &tokens);
-        ct_patlak_printer_tree(&tree);
+        ct_patlak_compile(&context, patterns + i);
+        ct_patlak_printer_codes(&context.codes);
         printf("\n");
     }
 
-    ct_patlak_tree_free(&tree);
-    ct_patlak_tokens_free(&tokens);
+    ct_patlak_free(&context);
 
     return 0;
 }
