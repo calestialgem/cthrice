@@ -99,6 +99,14 @@ void ct_patlak_compiler_or(
         CTIndex branch                               = branchStart + i;
         ct_patlak_codes_get(codes, branch)->movement = start - branch;
     }
+    CTIndex destination = ct_patlak_codes_size(codes);
+    for (CTIndex i = 1; i < node->childeren; i++) {
+        CTIndex branch = branchStart + i;
+        CTIndex caseStart =
+            branch + ct_patlak_codes_get(codes, branch)->movement;
+        CTIndex caseEnd                               = caseStart - 1;
+        ct_patlak_codes_get(codes, caseEnd)->movement = destination - caseEnd;
+    }
 }
 
 /* Compile the group. */

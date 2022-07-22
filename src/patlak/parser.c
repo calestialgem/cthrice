@@ -232,11 +232,19 @@ void ct_patlak_parser_afterwards(
                 CTPatlakObject binaryOperator = {
                     .type  = CT_PATLAK_OBJECT_OR,
                     .value = ct_patlak_tokens_next(tokens)};
-                ct_patlak_builder_add(builder, binaryOperator);
-                ct_patlak_builder_push(builder);
-                ct_patlak_builder_add(builder, firstObject);
-                ct_patlak_parser_unit(builder, tokens);
-                ct_patlak_builder_pop(builder);
+                // If the same binary operator is above us, add the operands to
+                // that.
+                CTPatlakNode* last = ct_patlak_builder_last(builder);
+                if (last != NULL && last->object.type == binaryOperator.type) {
+                    ct_patlak_builder_add(builder, firstObject);
+                    ct_patlak_parser_unit(builder, tokens);
+                } else {
+                    ct_patlak_builder_add(builder, binaryOperator);
+                    ct_patlak_builder_push(builder);
+                    ct_patlak_builder_add(builder, firstObject);
+                    ct_patlak_parser_unit(builder, tokens);
+                    ct_patlak_builder_pop(builder);
+                }
                 return;
             }
             case CT_PATLAK_TOKEN_OPENING_BRACKET: {

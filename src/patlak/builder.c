@@ -98,13 +98,22 @@ void ct_patlak_builder_pop(CTPatlakTreeBuilder* builder)
     builder->parents.last--;
 }
 
+/* Get the last pushed node. */
+CTPatlakNode* ct_patlak_builder_last(CTPatlakTreeBuilder const* builder)
+{
+    if (ct_patlak_builder_finite(builder)) {
+        return ct_patlak_tree_get(builder->tree, *(builder->parents.last - 1));
+    }
+    return NULL;
+}
+
 /* Add childeren to the last pushed node. */
 void ct_patlak_builder_add(CTPatlakTreeBuilder* builder, CTPatlakObject object)
 {
     ct_patlak_tree_add(builder->tree, object);
-    if (ct_patlak_builder_finite(builder)) {
-        ct_patlak_tree_get(builder->tree, *(builder->parents.last - 1))
-            ->childeren++;
+    CTPatlakNode* last = ct_patlak_builder_last(builder);
+    if (last != NULL) {
+        last->childeren++;
     }
 }
 
